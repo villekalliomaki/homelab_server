@@ -1,0 +1,28 @@
+# Expected that the playbook running this is root by default.
+#
+# UID returned with service_user_output.uid, which will always be the same on the installation once created
+
+- name: Create an user for a podman service
+  register: service_user_output
+  ansible.builtin.user:
+      name: "{{ service_user.username }}"
+      create_home: true
+      system: true
+
+# Generate non-overlapping subuid and subgid ranges from the user's uid
+# Source: https://eengstrom.github.io/musings/generate-non-contiguous-subuid-subgid-maps-for-rootless-podman
+- name: Define subuids and subgids
+  ansible.builtin.lineinfile:
+      path: "{{ item }}"
+      mode: u=rw,o=r
+      regexp: "^{{ service_user_output.uid }}:"
+      line: "{{ service_user_output.uid }}:{{ service_user_output.uid | bitwise_shift_left(16) }}:65536"
+  loop:
+      - /etc/subuid
+      - /etc/subgid
+
+- name: Podman migrate to apply subgid and subuid # noqa no-changed-when
+  ansible.builtin.command: podman system migrate
+
+- name: Enable lingering for the user to get rid of systemd user session warning # noqa no-changed-when
+  ansible.builtin.command: "loginctl enable-linger {{ service_user_output.uid }}"

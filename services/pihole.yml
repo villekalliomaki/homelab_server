@@ -1,0 +1,25 @@
+- name: Pihole service
+  hosts: homelab
+  remote_user: root
+
+  vars_files:
+      - ../global.yml
+
+  vars:
+      service_user:
+          username: pihole
+
+  tasks:
+      - name: Create user
+        ansible.builtin.include_tasks: tasks/service_user.yml
+
+      - name: Create container
+        become: true
+        become_user: "{{ service_user.username }}"
+        containers.podman.podman_container:
+            name: pihole
+            image: docker.io/pihole/pihole:latest
+            publish:
+                - "{{ ansible_default_ipv4.address }}:{{ network.exposed_port.pihole_dns }}:53/tcp"
+                - "{{ ansible_default_ipv4.address }}:{{ network.exposed_port.pihole_dns }}:53/udp"
+                - "{{ ansible_default_ipv4.address }}:{{ network.exposed_port.pihole_admin }}:80"

@@ -1,0 +1,78 @@
+- name: Install or update system packages
+  hosts: homelab
+
+  tasks:
+      #
+      # pacman
+      #
+      - name: Update cache and upgrade
+        community.general.pacman:
+            update_cache: true
+            upgrade: true
+
+      - name: Install pacman packages
+        community.general.pacman:
+            state: present
+            package:
+                - less
+                - vim
+                - openssh
+                - podman
+                - htop
+                - restic
+                - wireguard-tools
+                - sudo
+                - git
+                - base-devel
+                # For building yay with Ansible
+                - python-pexpect
+
+      #
+      # AUR
+      #
+      - name: Clone yay repo # noqa latest[git]
+        become: true
+        become_user: aur_builder
+        ansible.builtin.git:
+            clone: true
+            repo: https://aur.archlinux.org/yay.git
+            dest: /tmp/yay
+
+      - name: Create a build user
+        ansible.builtin.user:
+            name: aur_builder
+            create_home: true
+            group: wheel
+
+      - name: Allow the `aur_builder` user to run `sudo pacman` without a password
+        ansible.builtin.lineinfile:
+            path: /etc/sudoers.d/11-install-aur_builder
+            line: "aur_builder ALL=(ALL) NOPASSWD: /usr/bin/pacman"
+            create: true
+            mode: u=rw,a=r
+            validate: "visudo -cf %s"
+
+      # https://github.com/DoTheEvo/ansible-arch/blob/cf3d0ea6ccaa4cbf6196f35327ffcb298d913e78/playbook_core.yml#L75C5-L81C45
+      - name: Install yay using makepkg
+        become: true
+        become_user: aur_builder
+        ansible.builtin.expect:
+            chdir: /tmp/yay
+            command: makepkg -si
+            timeout: 300
+            responses:
+                (?i)Proceed with installation: "y"
+
+      - name: Install yay packages (might take a while to build)
+        become: true
+        become_user: aur_builder
+        kewlfft.aur.aur:
+            use: yay
+            update_cache: true
+            name:
+                - nvidia-container-toolkit
+
+      - name: Re-enable need for password for pacman
+        ansible.builtin.file:
+            path: /etc/sudoers.d/11-install-aur_builder
+            state: absent

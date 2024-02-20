@@ -1,0 +1,13 @@
+- name: Configure everything podman related
+  hosts: homelab
+
+  tasks:
+      - name: Allow rootless bind to ports lower than 1024
+        ansible.posix.sysctl:
+            name: net.ipv4.ip_unprivileged_port_start
+            # DNS in the lowest port running rootless
+            value: 53
+            reload: true
+
+      - name: Generate Nvidia container toolkit CDI spec for GPU # noqa no-changed-when
+        ansible.builtin.command: nvidia-ctk cdi generate --output=/etc/cdi/nvidia.yaml

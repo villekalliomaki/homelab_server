@@ -1,0 +1,23 @@
+# Notes:
+# - Initially the file can be set by hand, but updating it this way keeps it the correct version here
+
+- name: Configure SSH server
+  hosts: homelab
+
+  tasks:
+      - name: Copy public keys
+        ansible.builtin.copy:
+            src: ../secrets/ssh/authorized_keys
+            dest: /root/.ssh/authorized_keys
+            mode: u=rw
+
+      - name: Copy config snippets
+        ansible.builtin.copy:
+            src: configs/ssh/
+            dest: /etc/ssh/sshd_config.d/
+            mode: u=rw
+
+      - name: Restart sshd
+        ansible.builtin.systemd:
+            name: sshd
+            state: restarted
