@@ -6,16 +6,23 @@
       - ../global.yml
 
   vars:
-      service_user:
-          username: pihole
+      service:
+          name: pihole
+          user: pihole
+      volume_subdirectories:
+          - pihole
+          - dnsmasq.d
 
   tasks:
       - name: Create user
         ansible.builtin.include_tasks: tasks/service_user.yml
 
+      - name: Create volume directory
+        ansible.builtin.include_tasks: tasks/volume_directory.yml
+
       - name: Create container
         become: true
-        become_user: "{{ service_user.username }}"
+        become_user: "{{ service.user }}"
         containers.podman.podman_container:
             name: pihole
             image: docker.io/pihole/pihole:latest
@@ -23,3 +30,6 @@
                 - "{{ ansible_default_ipv4.address }}:{{ network.exposed_port.pihole_dns }}:53/tcp"
                 - "{{ ansible_default_ipv4.address }}:{{ network.exposed_port.pihole_dns }}:53/udp"
                 - "{{ ansible_default_ipv4.address }}:{{ network.exposed_port.pihole_admin }}:80"
+            volume:
+                - "{{ volume_directory_output.path }}/pihole:/etc/pihole"
+                - "{{ volume_directory_output.path }}/dnsmasq.d:/etc/dnsmasq.d"

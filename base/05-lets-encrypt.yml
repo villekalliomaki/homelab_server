@@ -1,0 +1,25 @@
+- name: Set up Let's Encrypt certs with automatic renewals
+  hosts: homelab
+
+  vars:
+      cf_token_file: /root/secrets/cloudflare_certbot_token
+
+  tasks:
+      - name: Make sure Cloudflare token exists
+        ansible.builtin.lineinfile:
+            path: "{{ cf_token_file }}"
+            line: "dns_cloudflare_api_token = {{ external_tokens.cloudflare }}"
+
+      - name: Create or renew ACME cert with DNS challenge
+        register: cmd
+        changed_when: cmd.rc != 0
+        ansible.builtin.command: >
+            certbot certonly \
+              --non-interactive \
+              --agree-tos \
+              --dns-cloudflare \
+              --dns-cloudflare-credentials {{ cf_token_file }} \
+              --cert-name {{ base_domain }} \
+              --preferred-chain "ISRG Root X1" \
+              -d {{ base_domain }} \
+              -d *.{{ base_domain }}

@@ -1,11 +1,17 @@
-# Expected that the playbook running this is root by default.
+# Run this as root.
 #
 # UID returned with service_user_output.uid, which will always be the same on the installation once created
 
 - name: Create an user for a podman service
   register: service_user_output
   ansible.builtin.user:
-      name: "{{ service_user.username }}"
+      name: "{{ service.user }}"
+      groups:
+          # Not sure if user's own group is removed without this
+          - "{{ service.user }}"
+          # Required to read container logs, not ideal
+          # File log driver could be better
+          - systemd-journal
       create_home: true
       system: true
 

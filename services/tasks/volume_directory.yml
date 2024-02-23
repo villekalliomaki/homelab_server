@@ -1,0 +1,27 @@
+# Run this as root.
+#
+# Returns the path to the volume directory of the service as volume_directory_output.path
+# A list of subdirectories is returned (if requested) as volume_subdirectory_output.results,
+#   which includes the paths volume_subdirectory_output.results[0].path
+
+- name: Directory and permissions
+  register: volume_directory_output
+  ansible.builtin.file:
+      path: "{{ filesystem.container_volumes }}/{{ service.name }}"
+      state: directory
+      recurse: true
+      owner: "{{ service.user }}"
+      group: "{{ service.user }}"
+      mode: u=rwx
+
+- name: Create subdirectories if requested
+  when: volume_subdirectories is defined
+  register: volume_subdirectory_output
+  ansible.builtin.file:
+      path: "{{ filesystem.container_volumes }}/{{ service.name }}/{{ item }}"
+      state: directory
+      recurse: true
+      owner: "{{ service.user }}"
+      group: "{{ service.user }}"
+      mode: u=rwx
+  loop: "{{ volume_subdirectories }}"
