@@ -27,9 +27,9 @@
             name: pihole
             image: docker.io/pihole/pihole:latest
             publish:
-                - "{{ ansible_default_ipv4.address }}:{{ network.exposed_port.pihole_dns }}:53/tcp"
-                - "{{ ansible_default_ipv4.address }}:{{ network.exposed_port.pihole_dns }}:53/udp"
-                - "{{ ansible_default_ipv4.address }}:{{ network.exposed_port.pihole_admin }}:80"
+                - "{{ ansible_default_ipv4.address }}:{{ network.exposed_ports.pihole_dns }}:53/tcp"
+                - "{{ ansible_default_ipv4.address }}:{{ network.exposed_ports.pihole_dns }}:53/udp"
+                - "127.0.0.1:{{ network.service_ports.pihole_admin }}:80"
             volume:
                 - "{{ volume_directory_output.path }}/pihole:/etc/pihole"
                 - "{{ volume_directory_output.path }}/dnsmasq.d:/etc/dnsmasq.d"

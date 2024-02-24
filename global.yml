@@ -2,12 +2,19 @@
 
 network:
     # Ports open outside to the server
-    exposed_port:
+    exposed_ports:
         pihole_dns: 53
+        nginx_http_internal: 80
+        nginx_http_external: 81
+        nginx_https_internal: 443
+        nginx_https_external: 444
+    # Ports accessible between services
+    service_ports:
         pihole_admin: 2000
 
 filesystem:
     systemd_units: /etc/systemd/system
+    geoip_databases: /var/maxmind_geoip
     # Included in backups
     container_volumes: /var/container_volumes
     # For sharing logs between containers or to the host
@@ -27,6 +34,15 @@ base_domain: !vault |
     31343765333030323564373539393564616236303361363164373630373738616337643036626633
     3437643964343538640a626565663938326533386635666165373738343433323531343837376561
     6366
+
+# For Let's Encrypt and so on
+contact_email: !vault |
+    $ANSIBLE_VAULT;1.1;AES256
+    61383133666433333565336465343633353565636335646466336534366436303636393031613464
+    6335393634653164376438636131656338613431306236310a383130353864363131636130303233
+    65393132333435393165646162616563363832313632323861356532653233343264616232613566
+    3638656432313166300a623566376262343539333830313331373063363131393434333165346662
+    6135
 
 email:
     password: !vault |

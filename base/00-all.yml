@@ -1,0 +1,20 @@
+- name: Run base installation
+  hosts: homelab
+
+- name: Packages
+  ansible.builtin.import_playbook: 01-packages.yml
+
+- name: SSH
+  ansible.builtin.import_playbook: 02-ssh.yml
+
+- name: Wireguard
+  ansible.builtin.import_playbook: 03-wireguard.yml
+
+- name: Podman
+  ansible.builtin.import_playbook: 04-podman.yml
+
+- name: Let's encrypt
+  ansible.builtin.import_playbook: 05-lets-encrypt.yml
+
+- name: Maxmind GeoIP
+  ansible.builtin.import_playbook: 06-geoip.yml

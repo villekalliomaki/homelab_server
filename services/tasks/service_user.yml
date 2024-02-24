@@ -7,8 +7,6 @@
   ansible.builtin.user:
       name: "{{ service.user }}"
       groups:
-          # Not sure if user's own group is removed without this
-          - "{{ service.user }}"
           # Required to read container logs, not ideal
           # File log driver could be better
           - systemd-journal

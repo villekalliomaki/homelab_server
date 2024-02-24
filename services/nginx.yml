@@ -1,0 +1,18 @@
+- name: Nginx reverse proxy
+  hosts: homelab
+  remote_user: root
+
+  vars_files:
+      - ../global.yml
+
+  vars:
+      service:
+          name: nginx
+          user: nginx
+      volume_subdirectories:
+          - config
+          - certificates
+      internal_certificate:
+          path: "{{  }}"
+
+  tasks:

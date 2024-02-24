@@ -9,5 +9,13 @@
             value: 53
             reload: true
 
+      # https://bbs.archlinux.org/viewtopic.php?id=266915
+      # - name: Fix nvidia-container-runtime config
+      #   ansible.builtin.lineinfile:
+      #       path: /etc/nvidia-container-runtime/config.toml
+      #       regexp: .*no-cgroups = false
+      #       line: no-cgroups = false
+
+      # Fails if no nvidia GPU installed
       - name: Generate Nvidia container toolkit CDI spec for GPU # noqa no-changed-when
         ansible.builtin.command: nvidia-ctk cdi generate --output=/etc/cdi/nvidia.yaml

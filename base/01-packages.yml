@@ -26,26 +26,34 @@
                 - base-devel
                 # For building yay with Ansible
                 - python-pexpect
-                - certbot
+                - certbot-dns-cloudflare
+                - nvidia
+                - cronie
+                - geoipupdate
 
       #
       # AUR
       #
-      - name: Clone yay repo # noqa latest[git]
-        become: true
-        become_user: aur_builder
-        ansible.builtin.git:
-            clone: true
-            repo: https://aur.archlinux.org/yay.git
-            dest: /tmp/yay
-
       - name: Create a build user
         ansible.builtin.user:
             name: aur_builder
             create_home: true
             group: wheel
 
-      - name: Allow the `aur_builder` user to run `sudo pacman` without a password
+      - name: Clone yay repo # noqa latest[git]
+        ansible.builtin.git:
+            repo: https://aur.archlinux.org/yay.git
+            clone: true
+            dest: /tmp/yay
+
+      - name: Set repo permissions
+        ansible.builtin.file:
+            state: directory
+            path: /tmp/yay
+            owner: aur_builder
+            recurse: true
+
+      - name: Allow the aur_builder user to run `sudo pacman` without a password
         ansible.builtin.lineinfile:
             path: /etc/sudoers.d/11-install-aur_builder
             line: "aur_builder ALL=(ALL) NOPASSWD: /usr/bin/pacman"
@@ -77,3 +85,9 @@
         ansible.builtin.file:
             path: /etc/sudoers.d/11-install-aur_builder
             state: absent
+
+      - name: Delete yay repo
+        ansible.builtin.file:
+            path: /tmp/yay
+            state: absent
+            recurse: true

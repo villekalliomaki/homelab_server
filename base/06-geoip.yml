@@ -1,0 +1,44 @@
+- name: Set up automatically updating geo IP database
+  hosts: homelab
+
+  vars_files:
+      - ../global.yml
+
+  vars:
+      maxmind:
+          account_id: !vault |
+              $ANSIBLE_VAULT;1.1;AES256
+              61636632343232303439373031313134653765366563663662373533326537316536616164646236
+              6534303663663639326361653464656230633331653064310a356131616465396664636465313233
+              35366134313462383839653234333334666530343033343136323034613034616238633133316466
+              3066626137336262610a373931653963386266623232333162653864373737383437333637343631
+              6239
+          license_key: !vault |
+              $ANSIBLE_VAULT;1.1;AES256
+              32636436333531366439623838623461633639323661343666373737376232636233616230623137
+              6132323731636336373333623933623334336530383063320a396366636466386262613066376664
+              33396335316163666531396233356663303133373565653439626465386464613535323262396163
+              3236383132323332380a393461343335666334613963653763383366393130646264393732623763
+              30643236613563373337303231626562366533376162656163646231306534306332336238393161
+              6630383061353266616366363131356437333464306436313437
+          edition_ids: GeoLite2-Country GeoLite2-City
+
+  tasks:
+      - name: Create geoipupdate config file
+        ansible.builtin.template:
+            dest: /etc/GeoIP.conf
+            src: configs/GeoIP.conf.j2
+            mode: u=rw
+
+      - name: Set up cron to update database daily
+        ansible.builtin.cron:
+            name: geoip_update
+            minute: "0"
+            hour: "0"
+            weekday: "*/3"
+            job: "MAILTO={{ contact_email }} geoipupdate --output -d {{ filesystem.geoip_databases }}"
+
+      - name: Update once
+        register: update_geoip_output
+        changed_when: update_geoip_output.rc != 0
+        ansible.builtin.command: "geoipupdate --output -d {{ filesystem.geoip_databases }}"

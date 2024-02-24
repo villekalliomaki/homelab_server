@@ -1,3 +1,11 @@
 {
-    "ansible.python.interpreterPath": "/bin/python"
+    "ansible.python.interpreterPath": "/bin/python",
+    "spellright.language": [
+        "en-US-10-1."
+    ],
+    "spellright.documentTypes": [
+        "markdown",
+        "latex",
+        "plaintext"
+    ]
 }
