@@ -1,7 +1,0 @@
-# Run as root on targets, needs a certificate authority from the secrets folder.
-#
-#
-
-- name: Private key
-  community.crypto.openssl_privatekey:
-    path: "{{  }}"

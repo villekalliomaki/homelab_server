@@ -90,4 +90,3 @@
         ansible.builtin.file:
             path: /tmp/yay
             state: absent
-            recurse: true

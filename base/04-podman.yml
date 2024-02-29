@@ -18,4 +18,7 @@
 
       # Fails if no nvidia GPU installed
       - name: Generate Nvidia container toolkit CDI spec for GPU # noqa no-changed-when
+        ignore_errors: true
+        failed_when: cdi_spec_output.rc != 0
+        register: cdi_spec_output
         ansible.builtin.command: nvidia-ctk cdi generate --output=/etc/cdi/nvidia.yaml

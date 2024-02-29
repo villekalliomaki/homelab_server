@@ -4,13 +4,13 @@ network:
     # Ports open outside to the server
     exposed_ports:
         pihole_dns: 53
-        nginx_http_internal: 80
-        nginx_http_external: 81
+        nginx_http: 80
         nginx_https_internal: 443
         nginx_https_external: 444
     # Ports accessible between services
     service_ports:
-        pihole_admin: 2000
+        pihole_admin: 3000
+        authelia: 3001
 
 filesystem:
     systemd_units: /etc/systemd/system
@@ -44,6 +44,7 @@ contact_email: !vault |
     3638656432313166300a623566376262343539333830313331373063363131393434333165346662
     6135
 
+# Email server for automated emails
 email:
     password: !vault |
         $ANSIBLE_VAULT;1.1;AES256

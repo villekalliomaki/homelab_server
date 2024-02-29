@@ -9,15 +9,16 @@
       service:
           name: pihole
           user: pihole
-      volume_subdirectories:
-          - pihole
-          - dnsmasq.d
+      volumes:
+          subdirectories:
+              - pihole
+              - dnsmasq.d
 
   tasks:
-      - name: Create user
+      - name: Service user
         ansible.builtin.include_tasks: tasks/service_user.yml
 
-      - name: Create volume directory
+      - name: Volume directories
         ansible.builtin.include_tasks: tasks/volume_directory.yml
 
       - name: Create container

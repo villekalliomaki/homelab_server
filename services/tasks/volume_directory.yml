@@ -1,8 +1,11 @@
 # Run this as root.
 #
-# Returns the path to the volume directory of the service as volume_directory_output.path
+# Returns the path to the volume directory of the service as volume_directory_output.path.
+#
 # A list of subdirectories is returned (if requested) as volume_subdirectory_output.results,
-#   which includes the paths volume_subdirectory_output.results[0].path
+# which includes the paths volume_subdirectory_output.results[0].path.
+#
+# Log directory is accessible with log_directory_output.path.
 
 - name: Directory and permissions
   register: volume_directory_output
@@ -14,8 +17,19 @@
       group: "{{ service.user }}"
       mode: u=rwx
 
+- name: Create log directory if requested
+  when: volumes.logs is defined
+  register: log_directory_output
+  ansible.builtin.file:
+      path: "{{ filesystem.container_logs }}/{{ volumes.logs }}"
+      state: directory
+      recurse: true
+      owner: "{{ service.user }}"
+      group: "{{ service.user }}"
+      mode: u=rwx
+
 - name: Create subdirectories if requested
-  when: volume_subdirectories is defined
+  when: volumes.subdirectories is defined
   register: volume_subdirectory_output
   ansible.builtin.file:
       path: "{{ filesystem.container_volumes }}/{{ service.name }}/{{ item }}"
@@ -24,4 +38,4 @@
       owner: "{{ service.user }}"
       group: "{{ service.user }}"
       mode: u=rwx
-  loop: "{{ volume_subdirectories }}"
+  loop: "{{ volumes.subdirectories }}"
