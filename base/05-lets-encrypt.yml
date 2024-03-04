@@ -36,3 +36,10 @@
               --preferred-chain "ISRG Root X1" \
               -d {{ base_domain }} \
               -d *.{{ base_domain }}
+
+      - name: Automatic daily renewal (if expiring in 30 days)
+        ansible.builtin.cron:
+            name: "cerbot_renew_{{ base_domain }}"
+            minute: 0
+            hour: 18
+            job: certbot renew

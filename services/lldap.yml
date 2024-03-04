@@ -1,0 +1,89 @@
+- name: Light LDAP
+  hosts: homelab
+  remote_user: root
+
+  vars_files:
+      - ../global.yml
+
+  vars:
+      service:
+          name: lldap
+          user: lldap
+      volumes:
+          subdirectories:
+              - postgresql
+      postgresql:
+          database: lldap
+          username: lldap
+          password: !vault |
+              $ANSIBLE_VAULT;1.1;AES256
+              66656236343462636133663765653638336433613662383438643062656164646336303834656433
+              6464616535313063396165353761303662396235386363310a323633623262623135336634613039
+              62306333383766356362626562663661303730656661386165313032346461303730663037303739
+              3033383733303438620a613438366330623536646333346461633161353164356565613037663935
+              3833
+      lldap:
+          jwt_secret: !vault |
+              $ANSIBLE_VAULT;1.1;AES256
+              32656636653865373666633666383336663037363464653135616164643133383964353737303133
+              3735323663316161646264356436306563386464653738390a646333623933313630303033623332
+              34656166393332376233383134383266383336656462646536316462643863636261653838663231
+              6539626665666237330a633232633135323439383266653832323135646362393237343436626636
+              61386131366636336566333238343438623838373637363136363433653264613162646434346637
+              37663062336334613634613034366163333434323932656163333936613462653331616434363035
+              63396266316163303261366535353962363364343431313039303762363631323338316334663939
+              36303932613163313563313838313731613237316535643562653162663661303038376463363031
+              64313938356131313864313630393132643732373335626564393363633765383237323234376439
+              36356230363036343532306233646535396265323633643865363264666433656430313734666637
+              31646335316236363136653130373063633264343232633366336431303661336464333062333933
+              30613939343766383339363932623566633539313262653837306236306461383463656462626161
+              3339
+          key_seed: !vault |
+              $ANSIBLE_VAULT;1.1;AES256
+              30356432613365343635363439646233616236303434626361623561666334363938323965636430
+              3134663435353530386535643831393337663431383961630a663763393137353865633531333931
+              32633930663933626236636536353435356365343738306234336136346366636532343030353530
+              3636383538366437330a313530326235336262626337633934323432656330643134316138316138
+              33393430656334393938333838376631323630616563396634373165306632626365386165373739
+              65616234333134636338333135633666343930383430613734616639353661646663356261343636
+              636266626533363137346636323231383834
+
+  tasks:
+      - name: Service user
+        ansible.builtin.include_tasks: tasks/service_user.yml
+
+      - name: Volume directories
+        ansible.builtin.include_tasks: tasks/volume_directory.yml
+
+      - name: Create service pod
+        become: true
+        become_user: "{{ service.user }}"
+        containers.podman.podman_pod:
+            name: "{{ service.name }}"
+            infra_name: "{{ service.name }}_pod"
+            publish:
+                - "{{ ansible_wg0.ipv4.address }}:{{ network.service_ports.lldap_ldap }}:3890"
+                - "{{ ansible_wg0.ipv4.address }}:{{ network.service_ports.lldap_admin }}:17170"
+
+      - name: Database
+        vars:
+            # Defined here and not above because volume_subdirectory_output doesn't exist there
+            postgresql_volume: "{{ volume_subdirectory_output.results[0].path }}"
+        ansible.builtin.include_tasks: tasks/postgresql.yml
+
+      - name: LLDAP container
+        become: true
+        become_user: "{{ service.user }}"
+        containers.podman.podman_container:
+            name: "{{ service.name }}_server"
+            pod: "{{ service.name }}"
+            image: docker.io/nitnelave/lldap
+            env:
+                TZ: Europe/Helsinki
+                LLDAP_LDAP_BASE_DN: "{{ lldap_admin.base_dn }}"
+                LLDAP_JWT_SECRET: "{{ lldap.jwt_secret }}"
+                LLDAP_KEY_SEED: "{{ lldap.key_seed }}"
+                LLDAP_LDAP_USER_EMAIL: "{{ lldap_admin.email }}"
+                LLDAP_LDAP_USER_DN: "{{ lldap_admin.username }}"
+                LLDAP_LDAP_USER_PASS: "{{ lldap_admin.password }}"
+                LLDAP_DATABASE_URL: "postgresql://{{ postgresql.username }}:{{ postgresql.password }}@127.0.0.1/{{ postgresql.database }}"

@@ -36,9 +36,15 @@
             minute: "0"
             hour: "0"
             weekday: "*/3"
-            job: "MAILTO={{ contact_email }} geoipupdate --output -d {{ filesystem.geoip_databases }}"
+            job: "MAILTO={{ contact_email }} geoipupdate --output -d {{ filesystem.geoip_databases }} && chmod a+rx {{ filesystem.geoip_databases }}/*"
 
       - name: Update once
         register: update_geoip_output
         changed_when: update_geoip_output.rc != 0
-        ansible.builtin.command: "geoipupdate --output -d {{ filesystem.geoip_databases }}"
+        ansible.builtin.command: "geoipupdate --output -d {{ filesystem.geoip_databases }} && chmod a+rx {{ filesystem.geoip_databases }}/*"
+
+      - name: Update directory permissions
+        ansible.builtin.file:
+            path: "{{ filesystem.geoip_databases }}"
+            state: directory
+            mode: u=rwx,a=rx

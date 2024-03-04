@@ -1,0 +1,171 @@
+theme: dark
+jwt_secret: "{{ authelia.jwt_secret }}"
+default_redirection_url: "https://{{ base_domain }}"
+
+session:
+    secret: "{{ authelia.session_secret }}"
+    name: "{{ base_domain }}_session"
+    domain: "{{ base_domain }}"
+    same_site: "lax"
+    inactivity: "15m"
+    expiration: "1h"
+    redis:
+        host: 127.0.0.1
+        port: 6379
+        database_index: 1
+        password: "{{ redis.password }}"
+
+server:
+    host: 0.0.0.0
+    port: 80
+    path: ""
+    buffers:
+        read: 8192
+        write: 8192
+
+log:
+    level: info
+    format: text
+    file_path: "/logs/authelia.log"
+    keep_stdout: true
+
+telemetry:
+    metrics:
+        enabled: true
+        address: tcp://0.0.0.0:9959
+
+authentication_backend:
+    password_reset:
+        disable: false
+    refresh_interval: 1m
+    ldap:
+        implementation: custom
+        url: "ldap://{{ ansible_wg0.ipv4.address }}:{{ network.service_ports.lldap_ldap }}"
+        timeout: 5s
+        start_tls: false
+
+        base_dn: "{{ lldap_admin.base_dn }}"
+        username_attribute: uid
+        additional_users_dn: ou=people
+        users_filter: "(&({username_attribute}={input})(objectClass=person))"
+        additional_groups_dn: ou=groups
+        groups_filter: "(member={dn})"
+        group_name_attribute: cn
+        mail_attribute: mail
+        display_name_attribute: displayName
+        user: "uid={{ lldap_admin.username }},ou=people,{{ lldap_admin.base_dn }}"
+        password: "{{ lldap_admin.password }}"
+
+storage:
+    encryption_key: "{{ authelia.encryption_key }}"
+    postgres:
+        host: 127.0.0.1
+        schema: public
+        database: "{{ postgresql.database }}"
+        username: "{{ postgresql.username }}"
+        password: "{{ postgresql.password }}"
+        timeout: 5s
+
+notifier:
+    smtp:
+        host: "{{ email.host }}"
+        port: "{{ email.port }}"
+        username: "{{ email.username }}"
+        password: "{{ email.password }}"
+        sender: "Authelia SSO (sso.{{ base_domain }}) <{{ email.username }}>"
+        subject: "[sso.{{ base_domain }}] {title}"
+
+regulation:
+    max_retries: 5
+    find_time: 5m
+    ban_time: 60m
+
+password_policy:
+    zxcvbn:
+        enabled: true
+        min_score: 3
+
+access_control:
+    default_policy: deny
+
+    networks:
+        - name: internal
+          networks:
+              - "10.1.1.0/24"
+              - "10.1.2.0/24"
+              - "10.1.3.0/24"
+
+    rules:
+        ##
+        ## Bypass to access SSO
+        ##
+        - domain:
+              - "sso.{{ base_domain }}"
+              - "liftlog.{{ base_domain }}"
+          policy: bypass
+
+        ##
+        ## Just SSO (one factor, only account needed)
+        ##
+        - domain:
+              - "{{ base_domain }}"
+              - "start.{{ base_domain }}"
+              - "media.{{ base_domain }}"
+              - "jellyseerr.{{ base_domain }}"
+              - "dynmap.{{ base_domain }}"
+              - "liftlog.{{ base_domain }}"
+          policy: one_factor
+
+        ##
+        ## Internal access without SSO
+        ##
+        - domain:
+              - "archive.{{ base_domain }}"
+              - "media.{{ base_domain }}"
+              - "n8n.{{ base_domain }}"
+              - "git.{{ base_domain }}"
+              - "seafile.{{ base_domain }}"
+          policy: bypass
+          networks:
+              - "internal"
+
+        ##
+        ## 2FA external (anywhere)
+        ##
+        - domain:
+              - "n8n.{{ base_domain }}"
+              - "git.{{ base_domain }}"
+          policy: two_factor
+
+        ##
+        ## Media management (2FA)
+        ##
+        - domain:
+              - "radarr.{{ base_domain }}"
+              - "sonarr.{{ base_domain }}"
+              - "jackett.{{ base_domain }}"
+              - "deluge.{{ base_domain }}"
+              - "bazarr.{{ base_domain }}"
+              - "deemix.{{ base_domain }}"
+          policy: two_factor
+          subject:
+              - ["group:lldap_admin"]
+              - ["group:media"]
+
+        ##
+        ## Admin only (2FA)
+        ##
+        - domain:
+              - "ldap.{{ base_domain }}"
+              - "grafana.{{ base_domain }}"
+              - "pihole.{{ base_domain }}"
+              - "gallery.{{ base_domain }}"
+              - "notes.{{ base_domain }}"
+              - "archivebox.{{ base_domain }}"
+              - "code.{{ base_domain }}"
+              - "ollama.{{ base_domain }}"
+              - "guacamole.{{ base_domain }}"
+              - "node-red.{{ base_domain }}"
+          policy: two_factor
+          subject:
+              - ["group:lldap_admin"]

@@ -1,0 +1,5 @@
+- name: Base
+  ansible.builtin.import_playbook: base/all.yml
+
+- name: Services
+  ansible.builtin.import_playbook: services/all.yml

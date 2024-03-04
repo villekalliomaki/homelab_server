@@ -1,0 +1,21 @@
+# The database directory is given with postgresql_volume. Assumed that a pod
+# exists with the same name as the service.
+#
+# Requires a pod with the name of the service.
+#
+# Nothing is returned, because the database is accessible with the default port inside
+# the service container as localhost.
+
+- name: Create and run PostgreSQL database
+  become: true
+  become_user: "{{ service.user }}"
+  containers.podman.podman_container:
+      name: "{{ service.name }}_postgresql"
+      pod: "{{ service.name }}"
+      image: docker.io/library/postgres:16.2
+      volumes:
+          - "{{ postgresql_volume }}:/var/lib/postgresql/data:U"
+      env:
+          POSTGRES_DB: "{{ postgresql.database }}"
+          POSTGRES_USER: "{{ postgresql.username }}"
+          POSTGRES_PASSWORD: "{{ postgresql.password }}"

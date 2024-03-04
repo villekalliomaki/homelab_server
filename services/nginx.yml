@@ -11,10 +11,10 @@
           user: nginx
       volumes:
           subdirectories:
+              # Order matters for output
               - config
               - certificates
-          logs:
-              - nginx
+          logs: nginx
 
       # The static config is generated from these. Endpoint is not generated from global variables
       # to allow proxying to services not managed here.
@@ -25,7 +25,7 @@
                 endpoint: "127.0.0.1:{{ network.service_ports.pihole_admin }}"
           external:
               - name: homepage
-                domain: "{{ base_domain }}"
+                domain: "start.{{ base_domain }}"
                 # CHANGE!!!
                 endpoint: "127.0.0.1:{{ network.service_ports.pihole_admin }}"
           both:
@@ -40,7 +40,7 @@
       - name: Volume directories
         ansible.builtin.include_tasks: tasks/volume_directory.yml
 
-      # Internal certificate
+      # Internal certificate:
       - name: Create a private key
         community.crypto.openssl_privatekey:
             path: "{{ volume_subdirectory_output.results[1].path }}/internal.key"
@@ -74,11 +74,32 @@
             dest: "{{ volume_subdirectory_output.results[1].path }}/internal.crt"
             mode: u=rw
 
-      - name: Generate dhparams
+      - name: Generate internal dhparams
         community.crypto.openssl_dhparam:
             path: "{{ volume_subdirectory_output.results[1].path }}/internal_dhparams.pem"
             size: 4096
             mode: u=rw
+
+      # External certificate:
+      # Issue is that nginx is not running as root, and changing permissions in certbot managed
+      # directory makes no sense. So just copying the certs to the container volume...
+      - name: Generate external dhparams
+        community.crypto.openssl_dhparam:
+            path: "{{ volume_subdirectory_output.results[1].path }}/external_dhparams.pem"
+            size: 4096
+            mode: u=rw
+
+      - name: Copy Let's Encrypt files to container volume
+        ansible.builtin.copy:
+            src: "{{ filesystem.lets_encrypt_certs.base_domain.live }}/{{ item }}"
+            dest: "{{ volume_subdirectory_output.results[1].path }}/external_{{ item }}"
+            remote_src: true
+            owner: "{{ service.user }}"
+            group: "{{ service.user }}"
+            mode: u=rw
+        loop:
+            - fullchain.pem
+            - privkey.pem
 
       # Generate config from templates
       - name: Make sure directory structure exists
@@ -101,16 +122,16 @@
             group: "{{ service.user }}"
             mode: u=rw
 
-      # Container itself
+      # Container itself:
       - name: Create and start container
         become: true
         become_user: "{{ service.user }}"
         containers.podman.podman_container:
-            name: nginx
+            name: "{{ service.name }}"
             image: docker.io/villekalliomaki/nginx
-            restart: true
             volumes:
-                - "{{ volume_directory_output.path }}:/etc/nginx:ro"
+                - "{{ volume_subdirectory_output.results[0].path }}:/etc/nginx:ro"
+                - "{{ volume_subdirectory_output.results[1].path }}:/etc/certificates:ro"
                 - "{{ filesystem.lets_encrypt_certs.base_directory }}:{{ filesystem.lets_encrypt_certs.base_directory }}:ro"
                 - "{{ filesystem.geoip_databases }}:/usr/share/GeoIP:ro"
                 - "{{ log_directory_output.path }}:/var/custom_logs"

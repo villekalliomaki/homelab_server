@@ -12,7 +12,6 @@
   ansible.builtin.file:
       path: "{{ filesystem.container_volumes }}/{{ service.name }}"
       state: directory
-      recurse: true
       owner: "{{ service.user }}"
       group: "{{ service.user }}"
       mode: u=rwx
@@ -23,7 +22,6 @@
   ansible.builtin.file:
       path: "{{ filesystem.container_logs }}/{{ volumes.logs }}"
       state: directory
-      recurse: true
       owner: "{{ service.user }}"
       group: "{{ service.user }}"
       mode: u=rwx
@@ -34,7 +32,6 @@
   ansible.builtin.file:
       path: "{{ filesystem.container_volumes }}/{{ service.name }}/{{ item }}"
       state: directory
-      recurse: true
       owner: "{{ service.user }}"
       group: "{{ service.user }}"
       mode: u=rwx

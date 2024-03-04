@@ -1,0 +1,18 @@
+# No persistent storage, so no volume is needed.
+#
+# Requires a pod with the name of the service.
+
+- name: Create and run Redis container
+  become: true
+  become_user: "{{ service.user }}"
+  containers.podman.podman_container:
+      name: "{{ service.name }}_redis"
+      pod: "{{ service.name }}"
+      image: docker.io/library/redis:7.2
+      # Binding to 0.0.0.0 doesn't expose Redis to outside pod
+      command: >
+          redis-server
+          --maxmemory 200mb
+          --requirepass {{ redis.password }}
+          --protected-mode no
+          --bind 0.0.0.0
