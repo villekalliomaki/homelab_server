@@ -13,7 +13,13 @@
       name: "{{ service.name }}_postgresql"
       pod: "{{ service.name }}"
       image: docker.io/library/postgres:16.2
+      network:
+          - pasta
+      # Has to be recreated to avoid permission errors with uid mapping
+      recreate: true
       volumes:
+          # The :U at the end *should* chown the contents of the volume directory to
+          # the user the container happends to be mapped to with subuid and subgid
           - "{{ postgresql_volume }}:/var/lib/postgresql/data:U"
       env:
           POSTGRES_DB: "{{ postgresql.database }}"

@@ -1,0 +1,32 @@
+- name: Trilium notes
+  hosts: homelab
+  remote_user: root
+
+  vars_files:
+      - ../global.yml
+
+  vars:
+      service:
+          name: trilium
+          user: trilium
+
+  tasks:
+      - name: Service user
+        ansible.builtin.include_tasks: tasks/service_user.yml
+
+      - name: Volume directories
+        ansible.builtin.include_tasks: tasks/volume_directory.yml
+
+      - name: Create container
+        become: true
+        become_user: "{{ service.user }}"
+        containers.podman.podman_container:
+            name: trilium
+            image: docker.io/zadam/trilium
+            recreate: true
+            network:
+                - pasta
+            publish:
+                - "{{ network.internal_ip }}:{{ network.service_ports.trilium }}:8080"
+            volumes:
+                - "{{ volume_directory_output.path }}:/home/node/trilium-data"

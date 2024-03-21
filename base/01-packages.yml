@@ -30,6 +30,7 @@
                 - nvidia
                 - cronie
                 - geoipupdate
+                - passt
 
       #
       # AUR

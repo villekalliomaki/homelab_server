@@ -22,12 +22,14 @@
           internal:
               - name: pihole
                 domain: "pihole.{{ base_domain }}"
-                endpoint: "127.0.0.1:{{ network.service_ports.pihole_admin }}"
+                endpoint: "{{ ansible_wg0.ipv4.address }}:{{ network.service_ports.pihole_admin }}"
+              - name: trilium
+                domain: "notes.{{ base_domain }}"
+                endpoint: "{{ ansible_wg0.ipv4.address }}:{{ network.service_ports.trilium }}"
           external:
               - name: homepage
                 domain: "start.{{ base_domain }}"
-                # CHANGE!!!
-                endpoint: "127.0.0.1:{{ network.service_ports.pihole_admin }}"
+                endpoint: "{{ ansible_wg0.ipv4.address }}:{{ network.service_ports.homepage }}"
           both:
               - name: root_redirect
                 domain: "{{ base_domain }}"
@@ -74,20 +76,23 @@
             dest: "{{ volume_subdirectory_output.results[1].path }}/internal.crt"
             mode: u=rw
 
-      - name: Generate internal dhparams
-        community.crypto.openssl_dhparam:
-            path: "{{ volume_subdirectory_output.results[1].path }}/internal_dhparams.pem"
-            size: 4096
-            mode: u=rw
+      # TEMPORARY COMMENT
+      # - name: Generate internal dhparams
+      #   community.crypto.openssl_dhparam:
+      #       path: "{{ volume_subdirectory_output.results[1].path }}/internal_dhparams.pem"
+      #       size: 4096
+      #       # mode: u=rw
 
       # External certificate:
       # Issue is that nginx is not running as root, and changing permissions in certbot managed
       # directory makes no sense. So just copying the certs to the container volume...
-      - name: Generate external dhparams
-        community.crypto.openssl_dhparam:
-            path: "{{ volume_subdirectory_output.results[1].path }}/external_dhparams.pem"
-            size: 4096
-            mode: u=rw
+
+      # TEMPORARY COMMENT
+      # - name: Generate external dhparams
+      #   community.crypto.openssl_dhparam:
+      #       path: "{{ volume_subdirectory_output.results[1].path }}/external_dhparams.pem"
+      #       size: 4096
+      #       # mode: u=rw
 
       - name: Copy Let's Encrypt files to container volume
         ansible.builtin.copy:
@@ -129,6 +134,9 @@
         containers.podman.podman_container:
             name: "{{ service.name }}"
             image: docker.io/villekalliomaki/nginx
+            recreate: true
+            network:
+                - pasta
             volumes:
                 - "{{ volume_subdirectory_output.results[0].path }}:/etc/nginx:ro"
                 - "{{ volume_subdirectory_output.results[1].path }}:/etc/certificates:ro"
@@ -136,6 +144,6 @@
                 - "{{ filesystem.geoip_databases }}:/usr/share/GeoIP:ro"
                 - "{{ log_directory_output.path }}:/var/custom_logs"
             publish:
-                - "{{ ansible_default_ipv4.address }}:{{ network.exposed_ports.nginx_http }}:{{ network.exposed_ports.nginx_http }}"
-                - "{{ ansible_default_ipv4.address }}:{{ network.exposed_ports.nginx_https_internal }}:{{ network.exposed_ports.nginx_https_internal }}"
-                - "{{ ansible_default_ipv4.address }}:{{ network.exposed_ports.nginx_https_external }}:{{ network.exposed_ports.nginx_https_external }}"
+                - "{{ network.external_ip }}:{{ network.exposed_ports.nginx_http }}:{{ network.exposed_ports.nginx_http }}"
+                - "{{ network.external_ip }}:{{ network.exposed_ports.nginx_https_internal }}:{{ network.exposed_ports.nginx_https_internal }}"
+                - "{{ network.external_ip }}:{{ network.exposed_ports.nginx_https_external }}:{{ network.exposed_ports.nginx_https_external }}"

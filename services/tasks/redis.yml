@@ -9,6 +9,8 @@
       name: "{{ service.name }}_redis"
       pod: "{{ service.name }}"
       image: docker.io/library/redis:7.2
+      network:
+          - pasta
       # Binding to 0.0.0.0 doesn't expose Redis to outside pod
       command: >
           redis-server

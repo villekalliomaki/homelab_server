@@ -90,8 +90,8 @@
             name: "{{ service.name }}"
             infra_name: "{{ service.name }}_pod"
             publish:
-                - "{{ ansible_wg0.ipv4.address }}:{{ network.service_ports.authelia }}:80"
-                - "{{ ansible_wg0.ipv4.address }}:{{ network.service_ports.authelia_metrics }}:9959"
+                - "{{ network.internal_ip }}:{{ network.service_ports.authelia }}:80"
+                - "{{ network.internal_ip }}:{{ network.service_ports.authelia_metrics }}:9959"
 
       - name: Database
         vars:
@@ -114,6 +114,9 @@
             name: "{{ service.name }}_server"
             pod: "{{ service.name }}"
             image: docker.io/authelia/authelia
+            recreate: true
+            network:
+                - pasta
             volume:
                 - "{{ volume_subdirectory_output.results[1].path }}:/config:ro"
                 - "{{ log_directory_output.path }}:/logs"

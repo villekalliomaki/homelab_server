@@ -1,6 +1,8 @@
 # Networking
 
-The default for podman v4.0 an newer is netavark which supports rootless containers.
+The default for podman v4.0 an newer is netavark which supports rootless containers. Dynamics addresses are fine to use, because Ansible gets the address dynamically on each run for the default interface and wg0.
+
+Alpine container test command for pasta: `podman run -it --rm --network=pasta alpine sh`
 
 # Rootless podman
 

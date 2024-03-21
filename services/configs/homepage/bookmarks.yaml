@@ -1,0 +1,12 @@
+- Homelab repo:
+      - Github:
+            - icon: github.png
+              href: https://github.com/villekalliomaki/homelab_server
+
+- Mail:
+      - Webmail:
+            - icon: roundcube.svg
+              href: "https://{{ email.host }}/mail"
+      - Admin:
+            - abbr: MB
+              href: "https://{{ email.host }}/admin"

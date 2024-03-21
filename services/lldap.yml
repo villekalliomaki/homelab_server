@@ -62,8 +62,8 @@
             name: "{{ service.name }}"
             infra_name: "{{ service.name }}_pod"
             publish:
-                - "{{ ansible_wg0.ipv4.address }}:{{ network.service_ports.lldap_ldap }}:3890"
-                - "{{ ansible_wg0.ipv4.address }}:{{ network.service_ports.lldap_admin }}:17170"
+                - "{{ network.internal_ip }}:{{ network.service_ports.lldap_ldap }}:3890"
+                - "{{ network.internal_ip }}:{{ network.service_ports.lldap_admin }}:17170"
 
       - name: Database
         vars:
@@ -78,6 +78,9 @@
             name: "{{ service.name }}_server"
             pod: "{{ service.name }}"
             image: docker.io/nitnelave/lldap
+            recreate: true
+            network:
+                - pasta
             env:
                 TZ: Europe/Helsinki
                 LLDAP_LDAP_BASE_DN: "{{ lldap_admin.base_dn }}"

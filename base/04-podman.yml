@@ -7,6 +7,8 @@
             name: net.ipv4.ip_unprivileged_port_start
             # DNS in the lowest port running rootless
             value: 53
+            # Arch doesn't load /etc/sysctl.conf at boot I guess
+            sysctl_file: /etc/sysctl.d/99-sysctl.conf
             reload: true
 
       # https://bbs.archlinux.org/viewtopic.php?id=266915

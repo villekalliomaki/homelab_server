@@ -1,0 +1,96 @@
+- Media:
+      - Jellyfin:
+            icon: jellyfin.png
+            href: "https://media.{{ base_domain }}"
+            widget:
+                type: jellyfin
+                # Update url when ready
+                key: "{{ api_keys.jellyfin }}"
+                enableBlocks: true # optional, defaults to false
+                enableNowPlaying: false # optional, defaults to true
+      - Jellyseerr:
+            icon: jellyseerr.png
+            href: "https://jellyseerr.{{ base_domain }}"
+            widget:
+                type: jellyseerr
+                # Update url when ready
+                key: "{{ api_keys.jellyseerr }}"
+      - Deemix:
+            icon: mdi-folder-music
+            href: "https://deemix.{{ base_domain }}"
+      - Deluge:
+            icon: deluge.png
+            href: "https://deluge.{{ base_domain }}"
+            widget:
+                type: deluge
+                # Update url when ready
+                password: "{{ api_keys.deluge }}"
+      - Radarr:
+            icon: radarr.png
+            href: "https://radarr.{{ base_domain }}"
+            widget:
+                type: radarr
+                # Update url when ready
+                key: " {{api_keys.radarr }}"
+                enableQueue: true
+      - Sonarr:
+            icon: sonarr.png
+            href: "https://sonarr.{{ base_domain }}"
+            widget:
+                type: sonarr
+                # Update url when ready
+                key: "{{ api_keys.sonarr }}"
+                enableQueue: true
+      - Jackett:
+            icon: jackett.png
+            href: "https://jackett.{{ base_domain }}"
+
+- Services:
+      - Photoprism:
+            icon: photoprism.png
+            href: "https://gallery.{{ base_domain }}/"
+      - Paperless-ngx:
+            icon: paperless-ngx.svg
+            href: "https://archive.{{ base_domain }}/"
+      - Trilium:
+            icon: trilium.png
+            href: "https://notes.{{ base_domain }}/"
+      - ArchiveBox:
+            icon: archivebox.png
+            href: "https://archivebox.{{ base_domain }}/"
+      - VS code:
+            icon: code-server.png
+            href: "https://code.{{ base_domain }}/"
+      - Ollama Web UI:
+            icon: mdi-expansion-card
+            href: "https://ollama.{{ base_domain }}/"
+      - Seafile:
+            icon: seafile.svg
+            href: "https://seafile.{{ base_domain }}/"
+
+- Management:
+      - PiHole:
+            icon: pi-hole.png
+            href: "https://pihole.{{ base_domain }}/admin/"
+            widget:
+                type: pihole
+                url: "http://{{ ansible_wg0.ipv4.address }}:{{ network.service_ports.pihole_admin }}"
+                key: "{{ api_keys.pihole }}"
+      - Router:
+            icon: edgeos.png
+            href: https://10.1.1.1/
+      - Access point:
+            icon: tp-link.png
+            href: http://10.1.2.39/
+      - LLDAP:
+            icon: mdi-account-box-multiple
+            href: "https://ldap.{{ base_domain }}"
+      - Prometheus:
+            icon: prometheus.png
+            href: http://10.1.1.2:8007/targets?search=
+      - Grafana:
+            icon: grafana.png
+            href: "https://grafana.{{ base_domain }}"
+      - Guacamole:
+            icon: guacamole.png
+            href: "https://guacamole.{{ base_domain }}"

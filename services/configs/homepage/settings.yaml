@@ -1,0 +1,7 @@
+title: "{{ base_domain }}"
+theme: dark
+color: stone
+headerStyle: boxed
+language: en
+target: _self
+hideVersion: true
