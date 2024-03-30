@@ -12,15 +12,18 @@ server:
     buffers:
         read: 8192
         write: 8192
-
     timeouts:
         read: "6 seconds"
         write: "6 seconds"
         idle: "30 seconds"
+    endpoints:
+        authz:
+            auth-request:
+                implementation: "AuthRequest"
 
 log:
     level: debug
-    format: text
+    format: json
     file_path: "/logs/authelia.log"
     keep_stdout: true
 
@@ -173,7 +176,7 @@ session:
     cookies:
         - domain: "{{ base_domain }}"
           name: "{{ base_domain }}_session"
-          authelia_url: 'https://sso.{{ base_domain }}'
+          authelia_url: "https://sso.{{ base_domain }}"
     secret: "{{ authelia.session_secret }}"
     same_site: "lax"
     inactivity: "15m"

@@ -138,7 +138,8 @@
             recreate: true
             restart_policy: on-failure:10
             network:
-                - pasta
+                # Allow this container to reach the host
+                - pasta:--map-gw
             volumes:
                 - "{{ volume_subdirectory_output.results[0].path }}:/etc/nginx:ro"
                 - "{{ volume_subdirectory_output.results[1].path }}:/etc/certificates:ro"
