@@ -18,6 +18,29 @@ network:
         authelia_metrics: 3004
         trilium: 3005
         homepage: 3006
+        paperless_ngx: 3007
+        photoprism: 3008
+
+# Locked versions for services if required. If not set will default to latest.
+versions:
+    # https://hub.docker.com/r/authelia/authelia/tags
+    # https://github.com/authelia/authelia/releases
+    authelia: "4.38.6"
+    # https://github.com/gethomepage/homepage/pkgs/container/homepage
+    # https://github.com/gethomepage/homepage/releases
+    homepage: "v0.8.10"
+    # https://hub.docker.com/r/nitnelave/lldap/tags
+    # https://github.com/lldap/lldap/releases
+    lldap: "v0.5.0"
+    # https://hub.docker.com/r/paperlessngx/paperless-ngx/tags
+    # https://github.com/paperless-ngx/paperless-ngx/releases
+    paperless_ngx: "2.6.3"
+    # https://hub.docker.com/r/pihole/pihole/tags
+    # https://github.com/pi-hole/pi-hole/releases
+    pihole: "2024.03.1"
+    # https://hub.docker.com/r/zadam/trilium/tags
+    # https://github.com/zadam/trilium/releases
+    trilium: "0.63.5"
 
 filesystem:
     systemd_units: /etc/systemd/system

@@ -1,0 +1,38 @@
+# NOTE:
+#
+# Automatically generated file using `generate_actions.yml`.
+# Regenerate using: ansible-playbook services/actions/generate_actions.yml.
+#
+
+- name: "Container state change to absent, for ../homepage.yml"
+  vars:
+      container_state: "absent"
+  ansible.builtin.import_playbook: "../homepage.yml"
+- name: "Container state change to absent, for ../pihole.yml"
+  vars:
+      container_state: "absent"
+  ansible.builtin.import_playbook: "../pihole.yml"
+- name: "Container state change to absent, for ../authelia.yml"
+  vars:
+      container_state: "absent"
+  ansible.builtin.import_playbook: "../authelia.yml"
+- name: "Container state change to absent, for ../nginx.yml"
+  vars:
+      container_state: "absent"
+  ansible.builtin.import_playbook: "../nginx.yml"
+- name: "Container state change to absent, for ../lldap.yml"
+  vars:
+      container_state: "absent"
+  ansible.builtin.import_playbook: "../lldap.yml"
+- name: "Container state change to absent, for ../photoprism.yml"
+  vars:
+      container_state: "absent"
+  ansible.builtin.import_playbook: "../photoprism.yml"
+- name: "Container state change to absent, for ../paperless_ngx.yml"
+  vars:
+      container_state: "absent"
+  ansible.builtin.import_playbook: "../paperless_ngx.yml"
+- name: "Container state change to absent, for ../trilium.yml"
+  vars:
+      container_state: "absent"
+  ansible.builtin.import_playbook: "../trilium.yml"

@@ -1,22 +1,25 @@
-# yamllint disable rule:comments-indentation
+theme: dark
+jwt_secret: "{{ authelia.jwt_secret }}"
+default_redirection_url: "https://{{ base_domain }}"
 
-theme: "dark"
-
-## Set the default 2FA method for new users and for when a user has a preferred method configured that has been
-## disabled. This setting must be a method that is enabled.
-## Options are totp, webauthn, mobile_push.
-# default_2fa_method: ''
+session:
+    secret: "{{ authelia.session_secret }}"
+    name: "{{ base_domain }}_session"
+    domain: "{{ base_domain }}"
+    same_site: "lax"
+    inactivity: "15m"
+    expiration: "1h"
+    redis:
+        host: 127.0.0.1
+        port: 6379
+        database_index: 1
+        password: "{{ redis.password }}"
 
 server:
-    address: "tcp://:80/"
-    buffers:
-        read: 8192
-        write: 8192
-
-    timeouts:
-        read: "6 seconds"
-        write: "6 seconds"
-        idle: "30 seconds"
+    host: 0.0.0.0
+    port: 80
+    path: ""
+    
 
 log:
     level: debug
@@ -29,60 +32,56 @@ telemetry:
         enabled: true
         address: tcp://0.0.0.0:9959
 
-totp:
-    issuer: "sso.{{ base_domain }}"
-
-webauthn:
-    display_name: "sso.{{ base_domain }}"
-
-duo_api:
-    disable: true
-
-identity_validation:
-    reset_password:
-        jwt_secret: "{{ authelia.jwt_secret }}"
-
-ntp:
-    address: "udp://time.cloudflare.com:123"
-
 authentication_backend:
     password_reset:
         disable: false
-
-    ## Refresh Interval docs: https://www.authelia.com/c/1fa#refresh-interval
-    refresh_interval: "1 minutes"
-
-    ##
-    ## LDAP (Authentication Provider)
-    ##
-    ## This is the recommended Authentication Provider in production
-    ## because it allows Authelia to offload the stateful operations
-    ## onto the LDAP service.
+    refresh_interval: 1m
     ldap:
         implementation: custom
-        address: "ldap://{{ ansible_wg0.ipv4.address }}:{{ network.service_ports.lldap_ldap }}"
+        url: "ldap://{{ ansible_wg0.ipv4.address }}:{{ network.service_ports.lldap_ldap }}"
         timeout: 5s
         start_tls: false
-        attributes:
-            group_name: cn
-            mail: mail
-            username: uid
-            display_name: displayName
+
         base_dn: "{{ lldap_admin.base_dn }}"
+        username_attribute: uid
         additional_users_dn: ou=people
         users_filter: "(&({username_attribute}={input})(objectClass=person))"
         additional_groups_dn: ou=groups
         groups_filter: "(member={dn})"
+        group_name_attribute: cn
+        mail_attribute: mail
+        display_name_attribute: displayName
         user: "uid={{ lldap_admin.username }},ou=people,{{ lldap_admin.base_dn }}"
         password: "{{ lldap_admin.password }}"
+
+storage:
+    encryption_key: "{{ authelia.encryption_key }}"
+    postgres:
+        host: 127.0.0.1
+        schema: public
+        database: "{{ postgresql.database }}"
+        username: "{{ postgresql.username }}"
+        password: "{{ postgresql.password }}"
+        timeout: 5s
+
+notifier:
+    smtp:
+        host: "{{ email.host }}"
+        port: "{{ email.port }}"
+        username: "{{ email.username }}"
+        password: "{{ email.password }}"
+        sender: "Authelia SSO (sso.{{ base_domain }}) <{{ email.username }}>"
+        subject: "[sso.{{ base_domain }}] {title}"
+
+regulation:
+    max_retries: 5
+    find_time: 5m
+    ban_time: 60m
 
 password_policy:
     zxcvbn:
         enabled: true
         min_score: 3
-
-privacy_policy:
-    enabled: false
 
 access_control:
     default_policy: deny
@@ -168,42 +167,3 @@ access_control:
           policy: two_factor
           subject:
               - ["group:lldap_admin"]
-
-session:
-    cookies:
-        - domain: "{{ base_domain }}"
-          name: "{{ base_domain }}_session"
-          authelia_url: 'https://sso.{{ base_domain }}'
-    secret: "{{ authelia.session_secret }}"
-    same_site: "lax"
-    inactivity: "15m"
-    expiration: "1h"
-    remember_me: "1M"
-    redis:
-        host: 127.0.0.1
-        port: 6379
-        database_index: 1
-        password: "{{ redis.password }}"
-
-regulation:
-    max_retries: 3
-    find_time: "2 minutes"
-    ban_time: "5 minutes"
-
-storage:
-    encryption_key: "{{ authelia.encryption_key }}"
-    postgres:
-        address: "tcp://127.0.0.1:5432"
-        schema: public
-        database: "{{ postgresql.database }}"
-        username: "{{ postgresql.username }}"
-        password: "{{ postgresql.password }}"
-        timeout: 5s
-
-notifier:
-    smtp:
-        address: "submissions://{{ email.host }}:{{ email.port }}"
-        username: "{{ email.username }}"
-        password: "{{ email.password }}"
-        sender: "Authelia SSO (sso.{{ base_domain }}) <{{ email.username }}>"
-        subject: "[sso.{{ base_domain }}] {title}"

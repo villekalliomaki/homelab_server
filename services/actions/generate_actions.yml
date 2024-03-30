@@ -1,0 +1,36 @@
+# Value of container_state must be one of:
+# - absent
+# - present
+# - stopped
+# - started
+# - created
+
+- name: Generate locally playbook imports from present files in the services directory
+  hosts: 127.0.0.1
+
+  vars:
+      container_state: absent
+
+  tasks:
+      - name: Find playbooks
+        register: playbook_files_output
+        delegate_to: 127.0.0.1
+        ansible.builtin.find:
+            paths: ../
+            patterns: "*.yml"
+            recurse: false
+            file_type: file
+
+      - name: Generate playbooks
+        vars:
+            container_state: "{{ item }}"
+        ansible.builtin.template:
+            src: import_service_playbook.j2
+            dest: "{{ item }}.yml"
+            mode: u=rwx
+        loop:
+            - absent
+            - present
+            - stopped
+            - started
+            - created

@@ -17,13 +17,14 @@
       - name: Volume directories
         ansible.builtin.include_tasks: tasks/volume_directory.yml
 
-      - name: Create container
+      - name: Trilium container
         become: true
         become_user: "{{ service.user }}"
         containers.podman.podman_container:
             name: trilium
-            image: docker.io/zadam/trilium
+            image: "docker.io/zadam/trilium:{{ versions.trilium }}"
             recreate: true
+            restart_policy: on-failure:10
             network:
                 - pasta
             publish:

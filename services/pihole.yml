@@ -21,13 +21,15 @@
       - name: Volume directories
         ansible.builtin.include_tasks: tasks/volume_directory.yml
 
-      - name: Create container
+      - name: Pihole container
         become: true
         become_user: "{{ service.user }}"
         containers.podman.podman_container:
             name: pihole
-            image: docker.io/pihole/pihole:latest
+            state: "{{ container_state | default('started') }}"
+            image: "docker.io/pihole/pihole:{{ versions.pihole }}"
             recreate: true
+            restart_policy: on-failure:10
             network:
                 - pasta
             publish:

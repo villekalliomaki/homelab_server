@@ -1,4 +1,4 @@
-- name: Start homepage
+- name: Homepage
   hosts: homelab
   remote_user: root
 
@@ -79,13 +79,15 @@
         with_community.general.filetree: configs/homepage
         when: item.state == 'file'
 
-      - name: Create container
+      - name: Homepage container
         become: true
         become_user: "{{ service.user }}"
         containers.podman.podman_container:
             name: homepage
-            image: ghcr.io/gethomepage/homepage
+            state: "{{ container_state | default('started') }}"
+            image: "ghcr.io/gethomepage/homepage:{{ versions.homepage }}"
             recreate: true
+            restart_policy: on-failure:10
             network:
                 - pasta
             publish:

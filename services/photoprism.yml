@@ -1,0 +1,54 @@
+- name: Photoprism gallery
+  hosts: homelab
+  remote_user: root
+
+  vars_files:
+      - ../global.yml
+
+  vars:
+      service:
+          name: photoprism
+          user: photoprism
+      volumes:
+          subdirectories:
+              - config
+              - originals
+              - import
+      admin_password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          61343837656230616237396539333362653331303461633331383566356433353537646135616536
+          3130633665653134623135616331343131303065396562370a396137636261653461313333666134
+          36323133356166396537373230396165633238386231356366663964633862386539636333626666
+          3634303239346539350a363436323537623532343761643238343063353265633330306666343237
+          32306361653266336638343966326631633762646638346263636635306435383333
+
+  tasks:
+      - name: Service user
+        ansible.builtin.include_tasks: tasks/service_user.yml
+
+      - name: Volume directories
+        ansible.builtin.include_tasks: tasks/volume_directory.yml
+
+      - name: Photoprism container
+        become: true
+        become_user: "{{ service.user }}"
+        containers.podman.podman_container:
+            name: photoprism
+            image: docker.io/photoprism/photoprism:latest
+            recreate: true
+            restart_policy: on-failure:10
+            network:
+                - pasta
+            env:
+                PHOTOPRISM_ADMIN_PASSWORD: "{{ admin_password }}"
+                PHOTOPRISM_RESOLUTION_LIMIT: 900
+                PHOTOPRISM_IMPORT_PATH: /photoprism/import
+            publish:
+                - "{{ network.internal_ip }}:{{ network.service_ports.photoprism }}:2342"
+            volumes:
+                # Database and so on
+                - "{{ volume_subdirectory_output.results[0].path }}:/photoprism/storage"
+                # Actual original images
+                - "{{ volume_subdirectory_output.results[1].path }}:/photoprism/originals"
+                # Import folder
+                - "{{ volume_subdirectory_output.results[2].path }}:/photoprism/import"

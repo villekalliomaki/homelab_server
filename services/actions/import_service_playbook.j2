@@ -1,0 +1,12 @@
+# NOTE:
+#
+# Automatically generated file using `generate_actions.yml`.
+# Regenerate using: ansible-playbook services/actions/generate_actions.yml.
+#
+
+{% for file in playbook_files_output.files %}
+- name: "Container state change to {{ container_state }}, for {{ file.path }}"
+  vars:
+      container_state: "{{ container_state }}"
+  ansible.builtin.import_playbook: "{{ file.path }}"
+{% endfor %}

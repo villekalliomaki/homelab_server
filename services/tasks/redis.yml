@@ -7,10 +7,10 @@
   become_user: "{{ service.user }}"
   containers.podman.podman_container:
       name: "{{ service.name }}_redis"
+      state: "{{ container_state | default('started') }}"
       pod: "{{ service.name }}"
       image: docker.io/library/redis:7.2
-      network:
-          - pasta
+      restart_policy: on-failure:10
       # Binding to 0.0.0.0 doesn't expose Redis to outside pod
       command: >
           redis-server

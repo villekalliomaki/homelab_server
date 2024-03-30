@@ -2,7 +2,9 @@
 
 The default for podman v4.0 an newer is netavark which supports rootless containers. Dynamics addresses are fine to use, because Ansible gets the address dynamically on each run for the default interface and wg0.
 
-Alpine container test command for pasta: `podman run -it --rm --network=pasta alpine sh`
+Alpine container test command for pasta: `podman run -it --rm --network=pasta alpine sh`.
+
+If a service consists of multiple containers in a single pod, only the pod should have it's network mode set to pasta. The containers will inherit the network configuration from the pod. If the containers have networks settings defined, they won't be able to comminnicate with each other.
 
 # Rootless podman
 

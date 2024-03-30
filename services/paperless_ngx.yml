@@ -1,0 +1,128 @@
+- name: Paperless-ngx document archive
+  hosts: homelab
+  remote_user: root
+
+  vars_files:
+      - ../global.yml
+
+  vars:
+      service:
+          name: paperless_ngx
+          user: paperless_ngx
+      volumes:
+          subdirectories:
+              - postgresql
+              - server
+      postgresql:
+          database: paperless_ngx
+          username: paperless_ngx
+          password: !vault |
+              $ANSIBLE_VAULT;1.1;AES256
+              36393964346632613834353363623863636338646264343935393638323439343931633630393165
+              6539313339633462613630376338316333303832613032610a333636646639373431333236343464
+              39656630623139616639373462613438616237363466363364623139323733363030663733373434
+              3333346166656136630a653430366565316261636165386366623034643063396233326633353435
+              34373236376236343630623731326531303730326232303033386333623163633366383566383335
+              3761353430383863643833643631643934386562353636326636
+      redis:
+          password: !vault |
+              $ANSIBLE_VAULT;1.1;AES256
+              61383331346131366233616363646236643936393135613837346639633561313265623833366133
+              3265383238663434306462333735656331636264353037360a616430393864396636353638623362
+              36623366336166323762613132643337316134666364383432323734306330653536326330633935
+              3031383938633864390a306162366437353563323466363637646433643334323238663464316462
+              62313632336539656465333431363062626132656339356430393436373962643661
+      paperless_ngx_admin:
+          username: !vault |
+              $ANSIBLE_VAULT;1.1;AES256
+              32396234653737343935613231633731326132643039323366326531363534323163353338353233
+              3733646661303561326365363333393932396436353562390a353864643463313639616430653466
+              62353965393633623532336638356236396461326361323866323365383736626463353831653736
+              3662343838383235610a353662356135303735313234633663326433356464336666613537313237
+              3732
+          password: !vault |
+              $ANSIBLE_VAULT;1.1;AES256
+              61316337643339303566333135306335373930363466353833326361323361316164623061333936
+              3962386333626237346564333364353937363930613032660a313835356262643431373530353263
+              33646666326463373339393263663630333038336463613431363764396439383937613034313531
+              6662613163346639300a373238313833646439616461666234663135646266336237653263383166
+              39313966636538373362356131643537316535383961373536626261616664316135626563386538
+              3434336262316462623733353434383263623731323335333863
+      secret_key: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          63366664646639326336366534363034306165353836386635333461326562383661656339303232
+          3236323666333231313765333139353031326638633062640a343363336639653763363430366637
+          38363931626631306437333762656161353632353130353162373533663765643865363662316466
+          3466383037393137380a653763626565663465316330643139383464393536396437656462613231
+          65666630646664613337323064323636393032393063306365666332396265626662653031356161
+          32393864613539666436653761636338616366613337656338353637376232306635396333646133
+          35376537396336653138356364393332366466386166393434323265393237376366366231323865
+          38313532373362343035363663343833316333633937363733316161653763653961356434653762
+          39303132646436623665373237303564643838663666326464373134356537303063626563663239
+          30313435333637633738356530613836363430366337316439363237333839393634633238623538
+          65383335316632623039316234633664633233306363666636666431613033626261613837386166
+          30343630383566373265323233653833623734653063653463323733313030393063633439363061
+          3330
+
+  tasks:
+      - name: Service user
+        ansible.builtin.include_tasks: tasks/service_user.yml
+
+      - name: Volume directories
+        ansible.builtin.include_tasks: tasks/volume_directory.yml
+
+      - name: Create service pod
+        become: true
+        become_user: "{{ service.user }}"
+        containers.podman.podman_pod:
+            name: "{{ service.name }}"
+            state: "{{ container_state | default('started') }}"
+            infra_name: "{{ service.name }}_pod"
+            network:
+                - pasta
+            publish:
+                - "{{ network.internal_ip }}:{{ network.service_ports.paperless_ngx }}:8000"
+
+      - name: Database
+        vars:
+            # Defined here and not above because volume_subdirectory_output doesn't exist there
+            postgresql_volume: "{{ volume_subdirectory_output.results[0].path }}"
+        ansible.builtin.include_tasks: tasks/postgresql.yml
+
+      - name: Redis
+        ansible.builtin.include_tasks: tasks/redis.yml
+
+      - name: Paperless-ngx container
+        become: true
+        become_user: "{{ service.user }}"
+        containers.podman.podman_container:
+            name: "{{ service.name }}_server"
+            state: "{{ container_state | default('started') }}"
+            pod: "{{ service.name }}"
+            image: "docker.io/paperlessngx/paperless-ngx:{{ versions.paperless_ngx }}"
+            recreate: true
+            restart_policy: on-failure:10
+            volumes:
+                - "{{ volume_subdirectory_output.results[1].path }}:/data"
+            env:
+                # General settings
+                PAPERLESS_DATA_DIR: /data/data
+                PAPERLESS_MEDIA_ROOT: /data/media
+                PAPERLESS_CONSUMPTION_DIR: /data/consume
+                PAPERLESS_OCR_LANGUAGE: fin+eng
+                PAPERLESS_OCR_LANGUAGES: fin
+                # Security
+                PAPERLESS_SECRET_KEY: "{{ secret_key }}"
+                PAPERLESS_ADMIN_USER: "{{ paperless_ngx_admin.username }}"
+                PAPERLESS_ADMIN_PASSWORD: "{{ paperless_ngx_admin.password }}"
+                PAPERLESS_URL: "https://archive.{{ base_domain }}"
+                PAPERLESS_CSRF_TRUSTED_ORIGINS: "https://archive.{{ base_domain }}"
+                PAPERLESS_ALLOWED_HOSTS: archive.{{ base_domain }},10.1.1.2,10.1.3.1,localhost
+                PAPERLESS_CORS_ALLOWED_HOSTS: "https://archive.{{ base_domain }}"
+                # PostgreSQL
+                PAPERLESS_DBHOST: 10.1.1.2
+                PAPERLESS_DBNAME: "{{ postgresql.database }}"
+                PAPERLESS_DBUSER: "{{ postgresql.username }}"
+                PAPERLESS_DBPASS: "{{ postgresql.password }}"
+                # Redis
+                PAPERLESS_REDIS: "redis://:{{ redis.password }}@localhost/1"
