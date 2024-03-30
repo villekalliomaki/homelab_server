@@ -1,4 +1,4 @@
-- name: Pihole service
+- name: Deemix Deezer downloader
   hosts: homelab
   remote_user: root
 
@@ -7,12 +7,12 @@
 
   vars:
       service:
-          name: pihole
-          user: pihole
+          name: deemix
+          user: deemix
       volumes:
           subdirectories:
-              - pihole
-              - dnsmasq.d
+              - config
+              - music
 
   tasks:
       - name: Service user
@@ -21,21 +21,19 @@
       - name: Volume directories
         ansible.builtin.include_tasks: tasks/volume_directory.yml
 
-      - name: Pihole container
+      - name: Deemix container
         become: true
         become_user: "{{ service.user }}"
         containers.podman.podman_container:
             name: "{{ service.name }}"
             state: "{{ container_state | default('started') }}"
-            image: "docker.io/pihole/pihole:{{ versions.pihole }}"
+            image: registry.gitlab.com/bockiii/deemix-docker:latest
             recreate: true
             restart_policy: on-failure:10
             network:
                 - pasta
             publish:
-                - "{{ network.external_ip }}:{{ network.exposed_ports.pihole_dns }}:53/tcp"
-                - "{{ network.external_ip }}:{{ network.exposed_ports.pihole_dns }}:53/udp"
-                - "{{ network.internal_ip }}:{{ network.service_ports.pihole_admin }}:80"
-            volume:
-                - "{{ volume_directory_output.path }}/pihole:/etc/pihole"
-                - "{{ volume_directory_output.path }}/dnsmasq.d:/etc/dnsmasq.d"
+                - "{{ network.internal_ip }}:{{ network.service_ports.deemix }}:6595"
+            volumes:
+                - "{{ volume_subdirectory_output.results[0].path }}:/config"
+                - "{{ volume_subdirectory_output.results[1].path }}:/downloads"

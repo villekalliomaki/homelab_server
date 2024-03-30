@@ -1,0 +1,8 @@
+- name: Run everything
+  hosts: homelab
+
+- name: Provision server
+  ansible.builtin.import_playbook: base/all.yml
+
+- name: Run all services
+  ansible.builtin.import_playbook: services/actions/started.yml

@@ -4,6 +4,10 @@
 # Regenerate using: ansible-playbook services/actions/generate_actions.yml.
 #
 
+- name: "Container state change to present, for ../deemix.yml"
+  vars:
+      container_state: "present"
+  ansible.builtin.import_playbook: "../deemix.yml"
 - name: "Container state change to present, for ../homepage.yml"
   vars:
       container_state: "present"

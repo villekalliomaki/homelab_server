@@ -33,7 +33,8 @@
         become: true
         become_user: "{{ service.user }}"
         containers.podman.podman_container:
-            name: photoprism
+            name: "{{ service.name }}"
+            state: "{{ container_state | default('started') }}"
             image: docker.io/photoprism/photoprism:latest
             recreate: true
             restart_policy: on-failure:10

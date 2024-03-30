@@ -11,3 +11,11 @@ To build and push:
 ```sh
 docker buildx build --builder default --platform linux/amd64 --push -t villekalliomaki/nginx:latest .
 ```
+
+To build with fresher packages, clear build cache before: `docker buildx prune -a`.
+
+# Troubleshooting
+
+### ERROR: failed to solve: dockerfile parse error on line 10: unknown instruction: apt-get
+
+???

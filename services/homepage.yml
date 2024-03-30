@@ -83,7 +83,7 @@
         become: true
         become_user: "{{ service.user }}"
         containers.podman.podman_container:
-            name: homepage
+            name: "{{ service.name }}"
             state: "{{ container_state | default('started') }}"
             image: "ghcr.io/gethomepage/homepage:{{ versions.homepage }}"
             recreate: true

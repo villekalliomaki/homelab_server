@@ -6,6 +6,8 @@
 # which includes the paths volume_subdirectory_output.results[0].path.
 #
 # Log directory is accessible with log_directory_output.path.
+#
+# If requested, cache directories are returned as cache_directory_output.results.
 
 - name: Directory and permissions
   register: volume_directory_output
@@ -25,6 +27,17 @@
       owner: "{{ service.user }}"
       group: "{{ service.user }}"
       mode: u=rwx
+
+- name: Create cache directory if requested
+  when: volume.cache_directories is defined
+  register: cache_directory_output
+  ansible.builtin.file:
+      path: "{{ filesystem.cache }}/{{ service.name }}/{{ item }}"
+      state: directory
+      owner: "{{ service.user }}"
+      group: "{{ service.user }}"
+      mode: u=rwx
+  loop: "{{ volumes.cache_directories }}"
 
 - name: Create subdirectories if requested
   when: volumes.subdirectories is defined

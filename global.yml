@@ -20,6 +20,7 @@ network:
         homepage: 3006
         paperless_ngx: 3007
         photoprism: 3008
+        deemix: 3009
 
 # Locked versions for services if required. If not set will default to latest.
 versions:
@@ -41,6 +42,9 @@ versions:
     # https://hub.docker.com/r/zadam/trilium/tags
     # https://github.com/zadam/trilium/releases
     trilium: "0.63.5"
+    # https://hub.docker.com/r/jellyfin/jellyfin/tags
+    # https://github.com/jellyfin/jellyfin/releases
+    jellyfin: "10.8.13"
 
 filesystem:
     systemd_units: /etc/systemd/system
@@ -55,6 +59,8 @@ filesystem:
         base_domain:
             live: "/etc/letsencrypt/live/{{ base_domain }}"
             archive: "/etc/letsencrypt/archive/{{ base_domain }}"
+    # Heavy writes and reads
+    cache: "???"
 
 # 2nd level base domain for all services
 # base_domain: !vault |

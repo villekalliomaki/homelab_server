@@ -1,7 +1,10 @@
-ARG NGINX_VERSION=1.25.3
+# Versions: https://nginx.org/en/download.html
+ARG NGINX_VERSION=1.25.4
 
+# Image search: https://hub.docker.com/_/nginx/tags?page=1&name=1.25.4-bookworm
 FROM nginx:$NGINX_VERSION-bookworm as build
 
+# Releases: https://github.com/leev/ngx_http_geoip2_module/releases
 ARG GEOIP2_VERSION=3.4
 
 RUN mkdir -p /var/lib/GeoIP/

@@ -1,0 +1,31 @@
+- name: Jellyfin media player
+  hosts: homelab
+  remote_user: root
+
+  vars_files:
+      - ../global.yml
+
+  vars:
+      service:
+          name: jellyfin
+          user: jellyfin
+      volumes:
+          subdirectories:
+              - config
+          cache_directories:
+              - transcodes
+
+  tasks:
+      - name: Service user
+        ansible.builtin.include_tasks: tasks/service_user.yml
+
+      - name: Volume directories
+        ansible.builtin.include_tasks: tasks/volume_directory.yml
+
+      - name: Photoprism container
+        become: true
+        become_user: "{{ service.user }}"
+        containers.podman.podman_container:
+            name: "{{ service.name }}"
+            state: "{{ container_state | default('started') }}"
+            image: "docker.io/jellyfin/jellyfin:{{ versions.jellyfin }}"
