@@ -1,0 +1,11 @@
+# Create a pod with consistent settings and naming.
+- name: "Service pod for {{ service.name }}"
+  become: true
+  become_user: "{{ service.user }}"
+  containers.podman.podman_pod:
+      name: "{{ service.name }}"
+      state: "{{ container_state | default('started') }}"
+      infra_name: "{{ service.name }}_pod"
+      network:
+          - pasta
+      publish: "{{ service.publish }}"

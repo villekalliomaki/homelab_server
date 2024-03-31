@@ -26,6 +26,9 @@
               - name: trilium
                 domain: "notes.{{ base_domain }}"
                 endpoint: "{{ ansible_wg0.ipv4.address }}:{{ network.service_ports.trilium }}"
+              - name: seafile
+                domain: "seafile.{{ base_domain }}"
+                endpoint: "{{ ansible_wg0.ipv4.address }}:{{ network.service_ports.seafile }}"
           external:
               - name: homepage
                 domain: "start.{{ base_domain }}"

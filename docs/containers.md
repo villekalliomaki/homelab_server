@@ -12,6 +12,10 @@ All services have their own non-root user, which is used to run all the podman c
 
 # Troubleshooting
 
-## Error from `podman system migrate`
+### Error from `podman system migrate`
 
 Something like "overlay is not supported over extfs at /var/lib/containers/storage/overlay" is solved by rebooting. Deleting ~/.config/containers can help too.
+
+### AttributeError: 'list' object has no attribute 'get'
+
+For some reason Ansible doesn't work like it should with pods that already exist. Easiest way to fix the error is to stop and remove all containers in a service, and then run the setup playbook again.

@@ -36,6 +36,10 @@
   vars:
       container_state: "present"
   ansible.builtin.import_playbook: "../paperless_ngx.yml"
+- name: "Container state change to present, for ../seafile.yml"
+  vars:
+      container_state: "present"
+  ansible.builtin.import_playbook: "../seafile.yml"
 - name: "Container state change to present, for ../trilium.yml"
   vars:
       container_state: "present"

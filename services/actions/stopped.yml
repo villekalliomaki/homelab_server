@@ -36,6 +36,10 @@
   vars:
       container_state: "stopped"
   ansible.builtin.import_playbook: "../paperless_ngx.yml"
+- name: "Container state change to stopped, for ../seafile.yml"
+  vars:
+      container_state: "stopped"
+  ansible.builtin.import_playbook: "../seafile.yml"
 - name: "Container state change to stopped, for ../trilium.yml"
   vars:
       container_state: "stopped"

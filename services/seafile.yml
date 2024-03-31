@@ -1,0 +1,81 @@
+- name: Seafile cloud storage
+  hosts: homelab
+  remote_user: root
+
+  vars_files:
+      - ../global.yml
+
+  vars:
+      service:
+          name: seafile
+          user: seafile
+          publish:
+              - "{{ network.internal_ip }}:{{ network.service_ports.seafile }}:80"
+      volumes:
+          subdirectories:
+              - mariadb
+              - data
+      mariadb:
+          root_password: !vault |
+              $ANSIBLE_VAULT;1.1;AES256
+              37636430623066666430306337646435623663373762616333653534666162336536646532303239
+              3938646561643538396532343739643566646539646536350a386535356264323437323733393437
+              30663037343463346132626235386535643465326335306531376337343938323132323465623632
+              3434353930633432630a623065376563333632623439363135356436393838646131353539393431
+              37306239393461616265653161386333616263343739616331623962316430666334343035313565
+              3934333933636138316238366562663061636635646161343934
+      seafile_admin:
+          email: !vault |
+              $ANSIBLE_VAULT;1.1;AES256
+              36303038353761633565656266656133346139663539633639343334346261326562343664663363
+              6366666536313564393261613032346235633231613830620a393033326435386134653061653164
+              35623263343164663237366432346265646638373163633262636566326331653963326165663435
+              3662663863303366640a633431626564383637373065306434383234646539356432346231396330
+              3335
+          password: !vault |
+              $ANSIBLE_VAULT;1.1;AES256
+              64346130666533383661356663303364356334303630623939363462663461343731663530323032
+              3838376138393862643231306333396537306461383634660a333739633130643133616338313832
+              63303234373866396163393961353531646239346336303462386632663562623865323066643263
+              6531306632353734640a343236336266623935366137633832316331656130366266393863343932
+              34363832396663323934633931653964656235616465643033663736386638376535303164303665
+              6237356439396237643130363532303731303837356637393731
+
+  tasks:
+      - name: Service user
+        ansible.builtin.include_tasks: tasks/service_user.yml
+
+      - name: Volume directories
+        ansible.builtin.include_tasks: tasks/volume_directory.yml
+
+      - name: Service pod
+        ansible.builtin.include_tasks: tasks/pod.yml
+
+      - name: Database
+        vars:
+            # Defined here and not above because volume_subdirectory_output doesn't exist there
+            mariadb_volume: "{{ volume_subdirectory_output.results[0].path }}"
+        ansible.builtin.include_tasks: tasks/mariadb.yml
+
+      - name: Seafile container
+        become: true
+        become_user: "{{ service.user }}"
+        containers.podman.podman_container:
+            name: "{{ service.name }}_server"
+            state: "{{ container_state | default('started') }}"
+            pod: "{{ service.name }}"
+            image: "docker.io/seafileltd/seafile-mc:{{ versions.seafile }}"
+            recreate: true
+            restart_policy: on-failure:10
+            env:
+                TIME_ZONE: Europe/Helsinki
+                DB_HOST: "127.0.0.1"
+                DB_ROOT_PASSWD: "{{ mariadb.root_password }}"
+                SEAFILE_ADMIN_EMAIL: "{{ seafile_admin.email }}"
+                SEAFILE_ADMIN_PASSWORD: "{{ seafile_admin.password }}"
+                SEAFILE_SERVER_HOSTNAME: "seafile.{{ base_domain }}"
+                SERVICE_URL: "https://seafile.{{ base_domain }}/"
+                FILE_SERVER_ROOT: "https://seafile.{{ base_domain }}/seafhttp"
+                SEAFILE_SERVER_LETSENCRYPT: false
+            volumes:
+                - "{{ volume_subdirectory_output.results[1].path }}:/shared"

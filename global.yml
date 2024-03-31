@@ -21,6 +21,7 @@ network:
         paperless_ngx: 3007
         photoprism: 3008
         deemix: 3009
+        seafile: 3010
 
 # Locked versions for services if required. If not set will default to latest.
 versions:
@@ -45,6 +46,8 @@ versions:
     # https://hub.docker.com/r/jellyfin/jellyfin/tags
     # https://github.com/jellyfin/jellyfin/releases
     jellyfin: "10.8.13"
+    # https://hub.docker.com/r/seafileltd/seafile-mc/tags
+    seafile: "11.0.6"
 
 filesystem:
     systemd_units: /etc/systemd/system
@@ -61,6 +64,10 @@ filesystem:
             archive: "/etc/letsencrypt/archive/{{ base_domain }}"
     # Heavy writes and reads
     cache: "???"
+    media:
+        movies: "???"
+        series: "???"
+        music: "???"
 
 # 2nd level base domain for all services
 # base_domain: !vault |

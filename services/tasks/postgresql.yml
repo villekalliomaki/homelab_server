@@ -6,7 +6,7 @@
 # Nothing is returned, because the database is accessible with the default port inside
 # the service container as localhost.
 
-- name: Create and run PostgreSQL database
+- name: PostgreSQL container
   become: true
   become_user: "{{ service.user }}"
   containers.podman.podman_container:

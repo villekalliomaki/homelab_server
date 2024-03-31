@@ -9,6 +9,8 @@
       service:
           name: paperless_ngx
           user: paperless_ngx
+          publish:
+              - "{{ network.internal_ip }}:{{ network.service_ports.paperless_ngx }}:8000"
       volumes:
           subdirectories:
               - postgresql
@@ -71,17 +73,8 @@
       - name: Volume directories
         ansible.builtin.include_tasks: tasks/volume_directory.yml
 
-      - name: Create service pod
-        become: true
-        become_user: "{{ service.user }}"
-        containers.podman.podman_pod:
-            name: "{{ service.name }}"
-            state: "{{ container_state | default('started') }}"
-            infra_name: "{{ service.name }}_pod"
-            network:
-                - pasta
-            publish:
-                - "{{ network.internal_ip }}:{{ network.service_ports.paperless_ngx }}:8000"
+      - name: Service pod
+        ansible.builtin.include_tasks: tasks/pod.yml
 
       - name: Database
         vars:

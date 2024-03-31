@@ -36,6 +36,10 @@
   vars:
       container_state: "created"
   ansible.builtin.import_playbook: "../paperless_ngx.yml"
+- name: "Container state change to created, for ../seafile.yml"
+  vars:
+      container_state: "created"
+  ansible.builtin.import_playbook: "../seafile.yml"
 - name: "Container state change to created, for ../trilium.yml"
   vars:
       container_state: "created"
