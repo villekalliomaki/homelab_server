@@ -1,0 +1,13 @@
+[email_settings]
+from = "Backup Runner <noreply@example.org>"
+to = "Notification Recipient <noreply@example.org>"
+host = "mail.example.org"
+port = 465
+username = "noreply@example.org"
+password = "12345"
+
+[[backups]]
+name = "test1"
+source_paths = "/tmp/backup_test/source1 /tmp/backup_test/source2"
+target_repo = "/tmp/backup_test/repo"
+repo_password = "123123123"

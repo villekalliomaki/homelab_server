@@ -7,6 +7,7 @@ Directory structure:
 -   `containers`: Custom container build files.
 -   `docs`: General documentation in markdown files.
 -   `secrets`: Passphrases, certificates and keys not kept in version control. Synced seperately with Syncthing.
+-   `backups`: Deployment and scripts for automated backups.
 
 These can also have subdirectories, for example for common reusable groups of tasks.
 
