@@ -22,7 +22,7 @@ pub struct EmailSettings {
 #[derive(Deserialize)]
 pub struct Backup {
     pub name: String,
-    // Comma separated list
+    // Space separated list
     pub source_paths: String,
     pub target_repo: String,
     pub repo_password: String,

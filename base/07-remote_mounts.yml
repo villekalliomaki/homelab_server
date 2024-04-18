@@ -1,0 +1,34 @@
+- name: Mount locations permanently
+  hosts: homelab
+
+  vars_files:
+      - ../global.yml
+
+  vars:
+      storagebox:
+          password_path: ~/secrets/storagebox_password
+          ssh_target: "{{ ssh.storagebox.username }}@{{ ssh.storagebox.host }}"
+
+  tasks:
+      - name: Save storagebox password for sshpass
+        ansible.builtin.copy:
+            dest: "{{ storagebox.password_path }}"
+            content: "{{ ssh.storagebox.password }}"
+            mode: a=,u=rw
+
+      - name: Copy SSH public key to storagebox
+        register: ssh_copy_id_storagebox
+        changed_when: ssh_copy_id_storagebox.rc == 0
+        ansible.builtin.command: "sshpass -f {{ storagebox.password_path }} ssh-copy-id -p23 -s {{ storagebox.ssh_target }}"
+
+      # Ignore the 'boot' due to 'opts' contains 'noauto' can probably be ignored
+      # because looks like systemd is doing the mount here at boot
+      - name: Mount storagebox remote location
+        ansible.posix.mount:
+            state: mounted
+            # No port here! Also root (/) or home (~/) mount paths don't work!
+            src: "{{ storagebox.ssh_target }}:./"
+            path: "{{ filesystem.mounts.storagebox }}"
+            fstype: fuse.sshfs
+            # Not needed probbaly: uid=0,gid=0,idmap=user maps whatever user the storagebox files are under to root locally
+            opts: port=23,noauto,x-systemd.automount,_netdev,reconnect,identityfile=/root/.ssh/id_ed25519

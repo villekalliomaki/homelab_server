@@ -1,0 +1,15 @@
+[email_settings]
+from = "Backup Runner <{{ email.username }}>"
+to = "Ville Kalliomäki <{{ contact_email }}>"
+host = "{{ email.host }}"
+port = {{ email.port }}
+username = "{{ email.username }}"
+password = "{{ email.password }}"
+
+{% for backup in backups %}
+[[backups]]
+name = "{{ backup.name }}"
+source_paths = "{{ backup.source_paths }}"
+target_repo = "{{ backup.target_repo }}"
+repo_password = "{{ backup.repo_password }}"
+{% endfor %}

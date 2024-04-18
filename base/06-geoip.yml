@@ -28,7 +28,7 @@
         ansible.builtin.template:
             dest: /etc/GeoIP.conf
             src: configs/GeoIP.conf.j2
-            mode: u=rw
+            mode: a=,u=rw
 
       - name: Set up cron to update database daily
         ansible.builtin.cron:

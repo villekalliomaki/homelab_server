@@ -1,0 +1,31 @@
+- name: Generate management scripts
+  hosts: homelab
+  remote_user: root
+
+  vars_files:
+      - ../global.yml
+
+  tasks:
+      - name: Make sure scripts dir exists
+        ansible.builtin.file:
+            state: directory
+            path: ~/scripts
+            mode: u=rw
+
+      - name: Find playbooks
+        register: playbook_files_output
+        delegate_to: 127.0.0.1
+        ansible.builtin.find:
+            paths: ../
+            patterns: "*.yml"
+            recurse: false
+            file_type: file
+
+      - name: Generate podman management scripts
+        ansible.builtin.template:
+            src: podman_manage.sh.j2
+            dest: "~/scripts/podman_{{ item }}_all.sh"
+            mode: u=rwx
+        loop:
+            - stop
+            - rm

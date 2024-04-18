@@ -12,14 +12,14 @@
         ansible.builtin.file:
             path: /root/secrets
             state: directory
-            mode: u=rw
+            mode: a=,u=rw
 
       - name: Make sure Cloudflare token exists
         ansible.builtin.lineinfile:
             path: "{{ cf_token_file }}"
             line: "dns_cloudflare_api_token = {{ external_tokens.cloudflare }}"
             create: true
-            mode: u=rw
+            mode: a=,u=rw
 
       - name: Create or renew ACME cert with DNS challenge
         register: cmd

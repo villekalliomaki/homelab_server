@@ -1,0 +1,37 @@
+- name: Install backup_runner
+  hosts: homelab
+
+  vars_files:
+      - ../global.yml
+
+  vars:
+      backups:
+          - name: Container volumes
+            source_paths: "{{ filesystem.container_volumes }}"
+            target_repo: "{{ filesystem.mounts.storagebox }}/backups/container_volumes"
+            repo_password: !vault |
+                $ANSIBLE_VAULT;1.1;AES256
+                37373631313836363836626238323738333162386262316633613534613864333037346465303332
+                6631383034633333343366353730313331373166343865310a666561373236633231373934353631
+                33323062656530303937346664343731633164353230653766313230646238613333386264393737
+                6437326434306130620a623138613631343461363539383366643663346232633231363735303261
+                39346438656631303033646462383861346530636634343661373830643139346463
+
+  tasks:
+      - name: Create config file from template
+        ansible.builtin.template:
+            src: backup_runner.toml.j2
+            dest: /root/secrets/backup_runner.toml
+            mode: a=,u=rw
+
+      - name: Print repo passwords
+        ansible.builtin.debug:
+            msg: "{{ item.name }}: {{ item.repo_password }}"
+        loop: "{{ backups }}"
+
+      - name: Schedule automatic backups
+        ansible.builtin.cron:
+            name: backup_runner
+            minute: "0"
+            hour: "3"
+            job: /root/.cargo/bin/backup_runner --config-file /root/secrets/backup_runner.toml

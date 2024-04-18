@@ -4,5 +4,8 @@
 - name: Provision server
   ansible.builtin.import_playbook: base/all.yml
 
+- name: Install backups
+  ansible.builtin.import_playbook: backups/all.yml
+
 - name: Run all services
   ansible.builtin.import_playbook: services/actions/started.yml

@@ -21,9 +21,9 @@
     <li>Data processed: <%= format!("{}", Byte::from(summary.1.total_bytes_processed)) %></li>
     <li>Data added (before compression): <%= format!("{}", Byte::from(summary.1.data_added)) %></li>
     <li>Data added (compressed): <%= format!("{}", Byte::from(summary.1.data_added_packed)) %></li>
-    <li>Start time: <%= summary.1.backup_start.format("%H:%M:%S, %d.%m.%Y").to_string() %></li>
-    <li>End time: <%= summary.1.backup_start.format("%H:%M:%S, %d.%m.%Y").to_string() %></li>
-    <li>Duration (seconds): <%= summary.1.backup_duration %>s</li>
+    <li>Start time: <%= summary.1.backup_start.format("%H:%M:%S (%d.%m.%Y")).to_string() %></li>
+    <li>End time: <%= summary.1.backup_start.format("%H:%M:%S (%d.%m.%Y)").to_string() %></li>
+    <li>Duration (seconds): <%= format!("{:.4}", summary.1.backup_duration) %>s</li>
 </ul>
 <% } %>
 <% } %>

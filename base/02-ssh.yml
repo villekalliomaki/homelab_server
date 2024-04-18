@@ -5,17 +5,29 @@
   hosts: homelab
 
   tasks:
-      - name: Copy public keys
+      - name: Copy authorized keys
         ansible.builtin.copy:
             src: ../secrets/ssh/authorized_keys
             dest: /root/.ssh/authorized_keys
-            mode: u=rw
+            mode: a=,u=rw
+
+      - name: Copy private key
+        ansible.builtin.copy:
+            src: ../secrets/ssh/id_ed25519
+            dest: /root/.ssh/id_ed25519
+            mode: a=,u=rw
+
+      - name: Copy public key
+        ansible.builtin.copy:
+            src: ../secrets/ssh/id_ed25519
+            dest: /root/.ssh/id_ed25519.pub
+            mode: a=r,u+w
 
       - name: Copy config snippets
         ansible.builtin.copy:
             src: configs/ssh/
             dest: /etc/ssh/sshd_config.d/
-            mode: u=rw
+            mode: a=,u=rw
 
       - name: Restart sshd
         ansible.builtin.systemd:

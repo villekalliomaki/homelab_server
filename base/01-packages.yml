@@ -31,6 +31,9 @@
                 - cronie
                 - geoipupdate
                 - passt
+                - rust
+                - sshfs
+                - sshpass
 
       #
       # AUR
@@ -42,15 +45,18 @@
             group: wheel
 
       - name: Clone yay repo # noqa latest[git]
+        become: true
+        become_user: aur_builder
         ansible.builtin.git:
             repo: https://aur.archlinux.org/yay.git
-            clone: true
-            dest: /tmp/yay
+            dest: ~/yay
 
       - name: Set repo permissions
+        become: true
+        become_user: aur_builder
         ansible.builtin.file:
             state: directory
-            path: /tmp/yay
+            path: ~/yay
             owner: aur_builder
             recurse: true
 
@@ -67,7 +73,7 @@
         become: true
         become_user: aur_builder
         ansible.builtin.expect:
-            chdir: /tmp/yay
+            chdir: ~/yay
             command: makepkg -si
             timeout: 300
             responses:
@@ -85,9 +91,4 @@
       - name: Re-enable need for password for pacman
         ansible.builtin.file:
             path: /etc/sudoers.d/11-install-aur_builder
-            state: absent
-
-      - name: Delete yay repo
-        ansible.builtin.file:
-            path: /tmp/yay
             state: absent

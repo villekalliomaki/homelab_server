@@ -10,6 +10,10 @@ If a service consists of multiple containers in a single pod, only the pod shoul
 
 All services have their own non-root user, which is used to run all the podman containers related to that service. Every service should be its own self contained system, unless it provides something to other services, like LDAP.
 
+# Naming
+
+All playbooks directly in `./services` have to be the same name as the service user, because the file names are used to generate scripts and other playbooks.
+
 # Troubleshooting
 
 ### Error from `podman system migrate`

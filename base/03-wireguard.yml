@@ -10,7 +10,7 @@
         ansible.builtin.copy:
             src: ../secrets/wg/marion/wg0.conf
             dest: /etc/wireguard/wg0.conf
-            mode: u=rw
+            mode: a=,u=rw
 
       - name: Automatic start
         ansible.builtin.systemd_service:

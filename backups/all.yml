@@ -1,0 +1,8 @@
+- name: Run backup installation
+  hosts: homelab
+
+- name: Install backup_runner
+  ansible.builtin.import_playbook: 01-install.yml
+
+- name: Provision configs and automated backups
+  ansible.builtin.import_playbook: 02-provision.yml

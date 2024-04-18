@@ -10,6 +10,8 @@ Initialize a local repository: `restic init --repo /tmp/backup_test/repo`
 
 Initialize a remote repository: `restic -r sftp:foo:/srv/restic-repo init`
 
+If the password has already been encrypted with ansible-vault, it will be printed when provisioning the backups.
+
 # Backup runner config template
 
 ```toml
