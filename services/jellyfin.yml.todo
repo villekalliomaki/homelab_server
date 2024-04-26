@@ -22,7 +22,7 @@
       - name: Volume directories
         ansible.builtin.include_tasks: tasks/volume_directory.yml
 
-      - name: Photoprism container
+      - name: Jellyfin container
         become: true
         become_user: "{{ service.user }}"
         containers.podman.podman_container:

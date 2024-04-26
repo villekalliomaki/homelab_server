@@ -24,8 +24,12 @@
       - name: Generate podman management scripts
         ansible.builtin.template:
             src: podman_manage.sh.j2
-            dest: "~/scripts/podman_{{ item }}_all.sh"
+            dest: "~/scripts/podman_{{ item | replace(' ', '_') }}_all.sh"
             mode: u=rwx
         loop:
             - stop
             - rm
+            - ps
+            - pod stop
+            - pod rm
+            - pod ps

@@ -13,7 +13,6 @@
               - "{{ network.internal_ip }}:{{ network.service_ports.authelia }}:80"
               - "{{ network.internal_ip }}:{{ network.service_ports.authelia_metrics }}:9959"
       volumes:
-          logs: authelia
           subdirectories:
               - postgresql
               - config
@@ -112,7 +111,6 @@
             pod: "{{ service.name }}"
             image: "docker.io/authelia/authelia:{{ versions.authelia }}"
             recreate: true
-            restart_policy: on-failure:10
+            restart_policy: on-failure
             volume:
                 - "{{ volume_subdirectory_output.results[1].path }}:/config:ro"
-                - "{{ log_directory_output.path }}:/logs"

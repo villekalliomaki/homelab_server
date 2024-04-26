@@ -7,5 +7,11 @@
 - name: Install backups
   ansible.builtin.import_playbook: backups/all.yml
 
+- name: Generate action playbooks
+  ansible.builtin.import_playbook: services/actions/generate_actions.yml
+
+- name: Generate podman scripts
+  ansible.builtin.import_playbook: services/scripts/generate_scripts.yml
+
 - name: Run all services
   ansible.builtin.import_playbook: services/actions/started.yml

@@ -22,6 +22,7 @@ network:
         photoprism: 3008
         deemix: 3009
         seafile: 3010
+        prometheus: 3011
 
 # Locked versions for services if required. If not set will default to latest.
 versions:
@@ -48,6 +49,9 @@ versions:
     jellyfin: "10.8.13"
     # https://hub.docker.com/r/seafileltd/seafile-mc/tags
     seafile: "11.0.6"
+    # https://hub.docker.com/r/prom/prometheus/tags
+    # https://github.com/prometheus/prometheus/releases
+    prometheus: "v2.51.2"
 
 filesystem:
     systemd_units: /etc/systemd/system

@@ -19,7 +19,7 @@
 
       - name: Copy public key
         ansible.builtin.copy:
-            src: ../secrets/ssh/id_ed25519
+            src: ../secrets/ssh/id_ed25519.pub
             dest: /root/.ssh/id_ed25519.pub
             mode: a=r,u+w
 

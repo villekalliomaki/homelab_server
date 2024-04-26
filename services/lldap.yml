@@ -76,7 +76,7 @@
             pod: "{{ service.name }}"
             image: "docker.io/nitnelave/lldap:{{ versions.lldap }}"
             recreate: true
-            restart_policy: on-failure:10
+            restart_policy: on-failure
             env:
                 TZ: Europe/Helsinki
                 LLDAP_LDAP_BASE_DN: "{{ lldap_admin.base_dn }}"

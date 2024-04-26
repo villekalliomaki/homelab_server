@@ -5,7 +5,8 @@
 # A list of subdirectories is returned (if requested) as volume_subdirectory_output.results,
 # which includes the paths volume_subdirectory_output.results[0].path.
 #
-# Log directory is accessible with log_directory_output.path.
+# Container log directory is accessible with container_log_directory_output.path.
+# Custom log directories are returned with custom_log_directories_output.results[0].path.
 #
 # If requested, cache directories are returned as cache_directory_output.results.
 
@@ -16,17 +17,27 @@
       state: directory
       owner: "{{ service.user }}"
       group: "{{ service.user }}"
-      mode: u=rwx
+      mode: a=,u=rwx
 
-- name: Create log directory if requested
-  when: volumes.logs is defined
-  register: log_directory_output
+- name: Always create log container directory
+  register: container_log_directory_output
   ansible.builtin.file:
-      path: "{{ filesystem.container_logs }}/{{ volumes.logs }}"
+      path: "{{ filesystem.container_logs }}/{{ service.name }}"
       state: directory
       owner: "{{ service.user }}"
       group: "{{ service.user }}"
       mode: u=rwx
+
+- name: Create custom log directories if requested
+  register: custom_log_directories_output
+  when: volumes.logs is defined
+  ansible.builtin.file:
+      path: "{{ filesystem.container_logs }}/{{ service.name }}/{{ item }}"
+      state: directory
+      owner: "{{ service.user }}"
+      group: "{{ service.user }}"
+      mode: u=rwx
+  loop: "{{ volumes.logs }}"
 
 - name: Create cache directory if requested
   when: volume.cache_directories is defined

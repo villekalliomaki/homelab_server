@@ -19,7 +19,7 @@
       - name: Copy SSH public key to storagebox
         register: ssh_copy_id_storagebox
         changed_when: ssh_copy_id_storagebox.rc == 0
-        ansible.builtin.command: "sshpass -f {{ storagebox.password_path }} ssh-copy-id -p23 -s {{ storagebox.ssh_target }}"
+        ansible.builtin.command: "sshpass -f {{ storagebox.password_path }} ssh-copy-id -sftp -p23 -s {{ storagebox.ssh_target }}"
 
       # Ignore the 'boot' due to 'opts' contains 'noauto' can probably be ignored
       # because looks like systemd is doing the mount here at boot
