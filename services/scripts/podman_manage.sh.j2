@@ -8,7 +8,7 @@
 
 {% for file in playbook_files_output.files %}
 
-echo "Running {{ item }} for {{ file.path | split("/") | last | split(".") | first }}"
+echo "--- Running {{ item }} for {{ file.path | split("/") | last | split(".") | first }}"
 
 su --login -c "podman {{ item }} -a" {{ file.path | split("/") | last | split(".") | first }}
 

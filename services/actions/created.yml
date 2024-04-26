@@ -4,38 +4,42 @@
 # Regenerate using: ansible-playbook services/actions/generate_actions.yml.
 #
 
-- name: "Container state change to created, for ../deemix.yml"
-  vars:
-      container_state: "created"
-  ansible.builtin.import_playbook: "../deemix.yml"
-- name: "Container state change to created, for ../homepage.yml"
-  vars:
-      container_state: "created"
-  ansible.builtin.import_playbook: "../homepage.yml"
-- name: "Container state change to created, for ../pihole.yml"
-  vars:
-      container_state: "created"
-  ansible.builtin.import_playbook: "../pihole.yml"
-- name: "Container state change to created, for ../authelia.yml"
-  vars:
-      container_state: "created"
-  ansible.builtin.import_playbook: "../authelia.yml"
-- name: "Container state change to created, for ../nginx.yml"
-  vars:
-      container_state: "created"
-  ansible.builtin.import_playbook: "../nginx.yml"
 - name: "Container state change to created, for ../lldap.yml"
   vars:
       container_state: "created"
   ansible.builtin.import_playbook: "../lldap.yml"
+- name: "Container state change to created, for ../homepage.yml"
+  vars:
+      container_state: "created"
+  ansible.builtin.import_playbook: "../homepage.yml"
+- name: "Container state change to created, for ../deemix.yml"
+  vars:
+      container_state: "created"
+  ansible.builtin.import_playbook: "../deemix.yml"
 - name: "Container state change to created, for ../photoprism.yml"
   vars:
       container_state: "created"
   ansible.builtin.import_playbook: "../photoprism.yml"
+- name: "Container state change to created, for ../nginx.yml"
+  vars:
+      container_state: "created"
+  ansible.builtin.import_playbook: "../nginx.yml"
 - name: "Container state change to created, for ../paperless_ngx.yml"
   vars:
       container_state: "created"
   ansible.builtin.import_playbook: "../paperless_ngx.yml"
+- name: "Container state change to created, for ../authelia.yml"
+  vars:
+      container_state: "created"
+  ansible.builtin.import_playbook: "../authelia.yml"
+- name: "Container state change to created, for ../pihole.yml"
+  vars:
+      container_state: "created"
+  ansible.builtin.import_playbook: "../pihole.yml"
+- name: "Container state change to created, for ../prometheus.yml"
+  vars:
+      container_state: "created"
+  ansible.builtin.import_playbook: "../prometheus.yml"
 - name: "Container state change to created, for ../seafile.yml"
   vars:
       container_state: "created"

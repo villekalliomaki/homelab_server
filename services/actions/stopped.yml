@@ -4,38 +4,42 @@
 # Regenerate using: ansible-playbook services/actions/generate_actions.yml.
 #
 
-- name: "Container state change to stopped, for ../deemix.yml"
-  vars:
-      container_state: "stopped"
-  ansible.builtin.import_playbook: "../deemix.yml"
-- name: "Container state change to stopped, for ../homepage.yml"
-  vars:
-      container_state: "stopped"
-  ansible.builtin.import_playbook: "../homepage.yml"
-- name: "Container state change to stopped, for ../pihole.yml"
-  vars:
-      container_state: "stopped"
-  ansible.builtin.import_playbook: "../pihole.yml"
-- name: "Container state change to stopped, for ../authelia.yml"
-  vars:
-      container_state: "stopped"
-  ansible.builtin.import_playbook: "../authelia.yml"
-- name: "Container state change to stopped, for ../nginx.yml"
-  vars:
-      container_state: "stopped"
-  ansible.builtin.import_playbook: "../nginx.yml"
 - name: "Container state change to stopped, for ../lldap.yml"
   vars:
       container_state: "stopped"
   ansible.builtin.import_playbook: "../lldap.yml"
+- name: "Container state change to stopped, for ../homepage.yml"
+  vars:
+      container_state: "stopped"
+  ansible.builtin.import_playbook: "../homepage.yml"
+- name: "Container state change to stopped, for ../deemix.yml"
+  vars:
+      container_state: "stopped"
+  ansible.builtin.import_playbook: "../deemix.yml"
 - name: "Container state change to stopped, for ../photoprism.yml"
   vars:
       container_state: "stopped"
   ansible.builtin.import_playbook: "../photoprism.yml"
+- name: "Container state change to stopped, for ../nginx.yml"
+  vars:
+      container_state: "stopped"
+  ansible.builtin.import_playbook: "../nginx.yml"
 - name: "Container state change to stopped, for ../paperless_ngx.yml"
   vars:
       container_state: "stopped"
   ansible.builtin.import_playbook: "../paperless_ngx.yml"
+- name: "Container state change to stopped, for ../authelia.yml"
+  vars:
+      container_state: "stopped"
+  ansible.builtin.import_playbook: "../authelia.yml"
+- name: "Container state change to stopped, for ../pihole.yml"
+  vars:
+      container_state: "stopped"
+  ansible.builtin.import_playbook: "../pihole.yml"
+- name: "Container state change to stopped, for ../prometheus.yml"
+  vars:
+      container_state: "stopped"
+  ansible.builtin.import_playbook: "../prometheus.yml"
 - name: "Container state change to stopped, for ../seafile.yml"
   vars:
       container_state: "stopped"
