@@ -28,6 +28,10 @@
   vars:
       container_state: "stopped"
   ansible.builtin.import_playbook: "../paperless_ngx.yml"
+- name: "Container state change to stopped, for ../radarr.yml"
+  vars:
+      container_state: "stopped"
+  ansible.builtin.import_playbook: "../radarr.yml"
 - name: "Container state change to stopped, for ../authelia.yml"
   vars:
       container_state: "stopped"
@@ -36,6 +40,14 @@
   vars:
       container_state: "stopped"
   ansible.builtin.import_playbook: "../pihole.yml"
+- name: "Container state change to stopped, for ../prowlarr.yml"
+  vars:
+      container_state: "stopped"
+  ansible.builtin.import_playbook: "../prowlarr.yml"
+- name: "Container state change to stopped, for ../sonarr.yml"
+  vars:
+      container_state: "stopped"
+  ansible.builtin.import_playbook: "../sonarr.yml"
 - name: "Container state change to stopped, for ../prometheus.yml"
   vars:
       container_state: "stopped"

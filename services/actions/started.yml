@@ -28,6 +28,10 @@
   vars:
       container_state: "started"
   ansible.builtin.import_playbook: "../paperless_ngx.yml"
+- name: "Container state change to started, for ../radarr.yml"
+  vars:
+      container_state: "started"
+  ansible.builtin.import_playbook: "../radarr.yml"
 - name: "Container state change to started, for ../authelia.yml"
   vars:
       container_state: "started"
@@ -36,6 +40,14 @@
   vars:
       container_state: "started"
   ansible.builtin.import_playbook: "../pihole.yml"
+- name: "Container state change to started, for ../prowlarr.yml"
+  vars:
+      container_state: "started"
+  ansible.builtin.import_playbook: "../prowlarr.yml"
+- name: "Container state change to started, for ../sonarr.yml"
+  vars:
+      container_state: "started"
+  ansible.builtin.import_playbook: "../sonarr.yml"
 - name: "Container state change to started, for ../prometheus.yml"
   vars:
       container_state: "started"

@@ -1,0 +1,51 @@
+- name: Prometheus exporter for all services
+  hosts: homelab
+  remote_user: root
+
+  vars_files:
+      - ../../global.yml
+
+  # This service runs on all service users, so it doesn't have it's own at all.
+  #
+  # Must run before all services, or at least before running Prometheus.
+  tasks:
+      - name: Find playbooks
+        register: playbook_files_output
+        delegate_to: 127.0.0.1
+        ansible.builtin.find:
+            paths: ../
+            patterns: "*.yml"
+            recurse: false
+            file_type: file
+
+      - name: List users
+        ansible.builtin.debug:
+            msg: "{{ index }}: {{ item.path | split('/') | last | split('.') | first }}"
+        loop: "{{ playbook_files_output.files }}"
+        loop_control:
+            index_var: index
+
+      - name: Run podman exporter container for each
+        become: true
+        become_user: "{{ item.path | split('/') | last | split('.') | first }}"
+        containers.podman.podman_container:
+            name: "{{ item.path | split('/') | last | split('.') | first }}_podman_exporter"
+            image: quay.io/navidys/prometheus-podman-exporter
+            # The XDG_RUNTIME_DIR should be /run/user/$UID fo all users, but for some reason it's always /run/user/1000 from su - [user]
+            # and with Ansible lookup, so just getting the UID directly.
+            volume:
+                - "/run/user/{{ lookup('ansible.builtin.env', 'UID') }}/podman/podman.sock:/run/podman/podman.sock"
+            publish:
+                - "{{ network.internal_ip }}:{{ network.podman_exporter_range_start + index }}:9882"
+            env:
+                CONTAINER_HOST: unix:///run/podman/podman.sock
+        loop: "{{ playbook_files_output.files }}"
+        loop_control:
+            index_var: index
+
+      - name: Generate scrape config file for Prometheus
+        delegate_to: 127.0.0.1
+        ansible.builtin.template:
+            src: scrape_podman_exporter.yml.j2
+            dest: ../configs/prometheus/scrape_podman_exporter.yml
+            mode: a=,u=rw

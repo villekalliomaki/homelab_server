@@ -23,6 +23,12 @@ network:
         deemix: 3009
         seafile: 3010
         prometheus: 3011
+        prowlarr: 3012
+        radarr: 3013
+        sonarr: 3014
+        jellyseer: 3015
+        loki: 3016
+    podman_exporter_range_start: 5000
 
 # Locked versions for services if required. If not set will default to latest.
 versions:
@@ -72,6 +78,7 @@ filesystem:
         movies: "???"
         series: "???"
         music: "???"
+        downloads: "???"
     mounts:
         storagebox: /mnt/storagebox
 

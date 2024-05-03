@@ -17,13 +17,24 @@
       - name: Volume directories
         ansible.builtin.include_tasks: tasks/volume_directory.yml
 
-      - name: Generate config file
+      - name: Generate config files
+        with_community.general.filetree: configs/prometheus
+        when: item.state == 'file'
         ansible.builtin.template:
-            src: configs/prometheus.yml
-            dest: "{{ volume_directory_output.path }}/config.yml"
+            src: "{{ item.src }}"
+            dest: "{{ volume_directory_output.path }}/{{ item.path }}"
             owner: "{{ service.user }}"
             group: "{{ service.user }}"
-            mode: u=rw
+            mode: a=,u=rw
+
+      - name: Find playbooks
+        register: playbook_files_output
+        delegate_to: 127.0.0.1
+        ansible.builtin.find:
+            paths: ../
+            patterns: "*.yml"
+            recurse: false
+            file_type: file
 
       - name: Prometheus container
         become: true
@@ -32,10 +43,12 @@
             name: "{{ service.name }}"
             state: "{{ container_state | default('started') }}"
             image: "docker.io/prom/prometheus:{{ versions.prometheus }}"
+            # Map real to to nobody inside container
+            userns: keep-id:uid=65534,gid=65534
             network:
                 - pasta
             publish:
                 - "{{ network.internal_ip }}:{{ network.service_ports.prometheus }}:9090"
             volumes:
                 - "{{ volume_directory_output.path }}:/prometheus"
-            command: --config.file=/prometheus/config.yml
+            command: --config.file=/prometheus/general_config.yml

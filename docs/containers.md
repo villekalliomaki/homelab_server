@@ -6,13 +6,13 @@ Alpine container test command for pasta: `podman run -it --rm --network=pasta al
 
 If a service consists of multiple containers in a single pod, only the pod should have it's network mode set to pasta. The containers will inherit the network configuration from the pod. If the containers have networks settings defined, they won't be able to comminnicate with each other.
 
-# Rootless podman
-
-All services have their own non-root user, which is used to run all the podman containers related to that service. Every service should be its own self contained system, unless it provides something to other services, like LDAP.
-
 # Naming
 
 All playbooks directly in `./services` have to be the same name as the service user, because the file names are used to generate scripts and other playbooks.
+
+# Monitoring
+
+A podman exporter instance is created to all service users, with the ports being generated from the list of service playbook files.
 
 # Troubleshooting
 
@@ -23,3 +23,10 @@ Something like "overlay is not supported over extfs at /var/lib/containers/stora
 ### AttributeError: 'list' object has no attribute 'get'
 
 For some reason Ansible doesn't work like it should with pods that already exist. Easiest way to fix the error is to stop and remove all containers in a service, and then run the setup playbook again.
+
+### Permission errors inside container
+
+Some of these could work:
+
+-   Map the real user to something else inside the container, ofter to "nobody" with `userns: keep-id:uid=65534,gid=65534`
+-   Make sure files or directories have the execution permission added, if for some reason the container check and errors from it being missing.

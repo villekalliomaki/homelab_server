@@ -28,6 +28,10 @@
   vars:
       container_state: "absent"
   ansible.builtin.import_playbook: "../paperless_ngx.yml"
+- name: "Container state change to absent, for ../radarr.yml"
+  vars:
+      container_state: "absent"
+  ansible.builtin.import_playbook: "../radarr.yml"
 - name: "Container state change to absent, for ../authelia.yml"
   vars:
       container_state: "absent"
@@ -36,6 +40,14 @@
   vars:
       container_state: "absent"
   ansible.builtin.import_playbook: "../pihole.yml"
+- name: "Container state change to absent, for ../prowlarr.yml"
+  vars:
+      container_state: "absent"
+  ansible.builtin.import_playbook: "../prowlarr.yml"
+- name: "Container state change to absent, for ../sonarr.yml"
+  vars:
+      container_state: "absent"
+  ansible.builtin.import_playbook: "../sonarr.yml"
 - name: "Container state change to absent, for ../prometheus.yml"
   vars:
       container_state: "absent"
