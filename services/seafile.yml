@@ -65,6 +65,9 @@
             state: "{{ container_state | default('started') }}"
             pod: "{{ service.name }}"
             image: "docker.io/seafileltd/seafile-mc:{{ versions.seafile }}"
+            log_driver: json-file
+            log_options:
+                path: "{{ container_log_directory_output.path }}/container.log"
             recreate: true
             restart_policy: on-failure:10
             env:

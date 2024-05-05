@@ -28,6 +28,9 @@
             name: "{{ service.name }}"
             state: "{{ container_state | default('started') }}"
             image: "docker.io/pihole/pihole:{{ versions.pihole }}"
+            log_driver: json-file
+            log_options:
+                path: "{{ container_log_directory_output.path }}/container.log"
             recreate: true
             restart_policy: on-failure:10
             network:
