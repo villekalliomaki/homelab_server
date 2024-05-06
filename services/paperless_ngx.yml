@@ -97,7 +97,7 @@
             log_options:
                 path: "{{ container_log_directory_output.path }}/container.log"
             recreate: true
-            restart_policy: on-failure:10
+            restart_policy: on-failure
             volumes:
                 - "{{ volume_subdirectory_output.results[1].path }}:/data"
             user: "{{ ansible_user_id }}:{{ ansible_user_id }}"

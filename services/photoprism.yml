@@ -39,7 +39,7 @@
             log_driver: json-file
             log_options:
                 path: "{{ container_log_directory_output.path }}/container.log"
-            restart_policy: on-failure:10
+            restart_policy: on-failure
             network:
                 - pasta
             env:

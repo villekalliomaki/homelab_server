@@ -22,11 +22,12 @@
         become_user: "{{ service.user }}"
         containers.podman.podman_container:
             name: "{{ service.name }}"
+            image: lscr.io/linuxserver/radarr
             state: "{{ container_state | default('started') }}"
             log_driver: json-file
             log_options:
                 path: "{{ container_log_directory_output.path }}/container.log"
-            image: lscr.io/linuxserver/radarr
+            restart_policy: on-failure
             volumes:
                 - "{{ volume_directory_output.path }}:/config"
                 # - "{{ filesystem.media.movies }}:/media/movies"
