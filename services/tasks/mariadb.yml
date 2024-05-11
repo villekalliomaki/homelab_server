@@ -19,3 +19,6 @@
       env:
           MARIADB_AUTO_UPGRADE: 1
           MARIADB_ROOT_PASSWORD: "{{ mariadb.root_password }}"
+      log_driver: json-file
+      log_options:
+          path: "{{ container_log_directory_output.path }}/mariadb.log"

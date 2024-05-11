@@ -25,3 +25,6 @@
           POSTGRES_DB: "{{ postgresql.database }}"
           POSTGRES_USER: "{{ postgresql.username }}"
           POSTGRES_PASSWORD: "{{ postgresql.password }}"
+      log_driver: json-file
+      log_options:
+          path: "{{ container_log_directory_output.path }}/postgresql.log"

@@ -100,7 +100,9 @@
         ansible.builtin.template:
             src: configs/authelia.yml
             dest: "{{ volume_subdirectory_output.results[1].path }}/configuration.yml"
-            mode: u=rw
+            owner: "{{ service.user }}"
+            group: "{{ service.user }}"
+            mode: a=,u=rw
 
       - name: Authelia container
         become: true
