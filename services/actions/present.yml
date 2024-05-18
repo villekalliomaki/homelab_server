@@ -4,46 +4,46 @@
 # Regenerate using: ansible-playbook services/actions/generate_actions.yml.
 #
 
-- name: "Container state change to present, for ../lldap.yml"
-  vars:
-      container_state: "present"
-  ansible.builtin.import_playbook: "../lldap.yml"
-- name: "Container state change to present, for ../loki.yml"
-  vars:
-      container_state: "present"
-  ansible.builtin.import_playbook: "../loki.yml"
-- name: "Container state change to present, for ../homepage.yml"
-  vars:
-      container_state: "present"
-  ansible.builtin.import_playbook: "../homepage.yml"
 - name: "Container state change to present, for ../deemix.yml"
   vars:
       container_state: "present"
   ansible.builtin.import_playbook: "../deemix.yml"
-- name: "Container state change to present, for ../photoprism.yml"
+- name: "Container state change to present, for ../homepage.yml"
   vars:
       container_state: "present"
-  ansible.builtin.import_playbook: "../photoprism.yml"
-- name: "Container state change to present, for ../nginx.yml"
-  vars:
-      container_state: "present"
-  ansible.builtin.import_playbook: "../nginx.yml"
-- name: "Container state change to present, for ../paperless_ngx.yml"
-  vars:
-      container_state: "present"
-  ansible.builtin.import_playbook: "../paperless_ngx.yml"
-- name: "Container state change to present, for ../radarr.yml"
-  vars:
-      container_state: "present"
-  ansible.builtin.import_playbook: "../radarr.yml"
-- name: "Container state change to present, for ../authelia.yml"
-  vars:
-      container_state: "present"
-  ansible.builtin.import_playbook: "../authelia.yml"
+  ansible.builtin.import_playbook: "../homepage.yml"
 - name: "Container state change to present, for ../pihole.yml"
   vars:
       container_state: "present"
   ansible.builtin.import_playbook: "../pihole.yml"
+- name: "Container state change to present, for ../loki.yml"
+  vars:
+      container_state: "present"
+  ansible.builtin.import_playbook: "../loki.yml"
+- name: "Container state change to present, for ../authelia.yml"
+  vars:
+      container_state: "present"
+  ansible.builtin.import_playbook: "../authelia.yml"
+- name: "Container state change to present, for ../nginx.yml"
+  vars:
+      container_state: "present"
+  ansible.builtin.import_playbook: "../nginx.yml"
+- name: "Container state change to present, for ../lldap.yml"
+  vars:
+      container_state: "present"
+  ansible.builtin.import_playbook: "../lldap.yml"
+- name: "Container state change to present, for ../radarr.yml"
+  vars:
+      container_state: "present"
+  ansible.builtin.import_playbook: "../radarr.yml"
+- name: "Container state change to present, for ../prometheus.yml"
+  vars:
+      container_state: "present"
+  ansible.builtin.import_playbook: "../prometheus.yml"
+- name: "Container state change to present, for ../photoprism.yml"
+  vars:
+      container_state: "present"
+  ansible.builtin.import_playbook: "../photoprism.yml"
 - name: "Container state change to present, for ../prowlarr.yml"
   vars:
       container_state: "present"
@@ -52,10 +52,14 @@
   vars:
       container_state: "present"
   ansible.builtin.import_playbook: "../sonarr.yml"
-- name: "Container state change to present, for ../prometheus.yml"
+- name: "Container state change to present, for ../grafana.yml"
   vars:
       container_state: "present"
-  ansible.builtin.import_playbook: "../prometheus.yml"
+  ansible.builtin.import_playbook: "../grafana.yml"
+- name: "Container state change to present, for ../paperless_ngx.yml"
+  vars:
+      container_state: "present"
+  ansible.builtin.import_playbook: "../paperless_ngx.yml"
 - name: "Container state change to present, for ../seafile.yml"
   vars:
       container_state: "present"

@@ -75,9 +75,9 @@
             state: "{{ container_state | default('started') }}"
             pod: "{{ service.name }}"
             image: "docker.io/nitnelave/lldap:{{ versions.lldap }}"
-            log_driver: json-file
+            log_driver: k8s-file
             log_options:
-                path: "{{ container_log_directory_output.path }}/container.log"
+                path: "{{ container_log_directory_output.path }}/container_log"
             restart_policy: on-failure
             env:
                 TZ: Europe/Helsinki

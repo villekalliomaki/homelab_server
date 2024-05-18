@@ -93,9 +93,9 @@
             state: "{{ container_state | default('started') }}"
             pod: "{{ service.name }}"
             image: "docker.io/paperlessngx/paperless-ngx:{{ versions.paperless_ngx }}"
-            log_driver: json-file
+            log_driver: k8s-file
             log_options:
-                path: "{{ container_log_directory_output.path }}/container.log"
+                path: "{{ container_log_directory_output.path }}/container_log"
             recreate: true
             restart_policy: on-failure
             volumes:

@@ -30,6 +30,9 @@
               - name: seafile
                 domain: "seafile.{{ base_domain }}"
                 endpoint: "{{ ansible_wg0.ipv4.address }}:{{ network.service_ports.seafile }}"
+              - name: grafana
+                domain: "grafana.{{ base_domain }}"
+                endpoint: "{{ ansible_wg0.ipv4.address }}:{{ network.service_ports.grafana }}"
           external:
               - name: homepage
                 domain: "start.{{ base_domain }}"
@@ -156,9 +159,9 @@
             name: "{{ service.name }}"
             state: "{{ container_state | default('started') }}"
             image: docker.io/villekalliomaki/nginx
-            log_driver: json-file
+            log_driver: k8s-file
             log_options:
-                path: "{{ container_log_directory_output.path }}/container.log"
+                path: "{{ container_log_directory_output.path }}/container_log"
             recreate: true
             restart_policy: on-failure
             network:

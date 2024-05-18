@@ -43,9 +43,9 @@
             name: "{{ service.name }}"
             state: "{{ container_state | default('started') }}"
             image: "docker.io/prom/prometheus:{{ versions.prometheus }}"
-            log_driver: json-file
+            log_driver: k8s-file
             log_options:
-                path: "{{ container_log_directory_output.path }}/container.log"
+                path: "{{ container_log_directory_output.path }}/container_log"
             restart_policy: on-failure
             # Map real to to nobody inside container
             userns: keep-id:uid=65534,gid=65534

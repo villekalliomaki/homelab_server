@@ -88,8 +88,8 @@
             image: "ghcr.io/gethomepage/homepage:{{ versions.homepage }}"
             log_driver: json-file
             log_options:
-                path: "{{ container_log_directory_output.path }}/container.log"
-            restart_policy: on-failure
+                path: "{{ container_log_directory_output.path }}/container_log"
+            restart_policy: k8s-file
             network:
                 - pasta
             publish:

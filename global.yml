@@ -28,6 +28,7 @@ network:
         sonarr: 3014
         jellyseer: 3015
         loki: 3016
+        grafana: 3017
     podman_exporter_range_start: 5000
 
 # Locked versions for services if required. If not set will default to latest.
