@@ -24,7 +24,7 @@
             name: "{{ service.name }}"
             state: "{{ container_state | default('started') }}"
             image: lscr.io/linuxserver/sonarr
-            log_driver: k8s-files
+            log_driver: k8s-file
             log_options:
                 path: "{{ container_log_directory_output.path }}/container_log"
             restart_policy: on-failure

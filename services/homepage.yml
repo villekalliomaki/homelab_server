@@ -86,10 +86,10 @@
             name: "{{ service.name }}"
             state: "{{ container_state | default('started') }}"
             image: "ghcr.io/gethomepage/homepage:{{ versions.homepage }}"
-            log_driver: json-file
+            log_driver: k8s-file
             log_options:
                 path: "{{ container_log_directory_output.path }}/container_log"
-            restart_policy: k8s-file
+            restart_policy: on-failure
             network:
                 - pasta
             publish:
