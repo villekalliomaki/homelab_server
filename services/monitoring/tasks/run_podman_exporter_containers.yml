@@ -1,0 +1,238 @@
+- name: "Run podman exporter container for lldap"
+  become: true
+  become_user: "lldap"
+  containers.podman.podman_container:
+      name: "lldap_podman_exporter"
+      image: quay.io/navidys/prometheus-podman-exporter
+      # The XDG_RUNTIME_DIR should be /run/user/$UID fo all users, but for some reason it's always /run/user/1000 from su - [user]
+      # and with Ansible lookup, so just getting the UID directly.
+      volume:
+          - "/run/user//podman/podman.sock:/run/podman/podman.sock"
+      publish:
+          - "10.1.3.1:5000:9882"
+      env:
+          CONTAINER_HOST: unix:///run/podman/podman.sock
+- name: "Run podman exporter container for loki"
+  become: true
+  become_user: "loki"
+  containers.podman.podman_container:
+      name: "loki_podman_exporter"
+      image: quay.io/navidys/prometheus-podman-exporter
+      # The XDG_RUNTIME_DIR should be /run/user/$UID fo all users, but for some reason it's always /run/user/1000 from su - [user]
+      # and with Ansible lookup, so just getting the UID directly.
+      volume:
+          - "/run/user//podman/podman.sock:/run/podman/podman.sock"
+      publish:
+          - "10.1.3.1:5001:9882"
+      env:
+          CONTAINER_HOST: unix:///run/podman/podman.sock
+- name: "Run podman exporter container for homepage"
+  become: true
+  become_user: "homepage"
+  containers.podman.podman_container:
+      name: "homepage_podman_exporter"
+      image: quay.io/navidys/prometheus-podman-exporter
+      # The XDG_RUNTIME_DIR should be /run/user/$UID fo all users, but for some reason it's always /run/user/1000 from su - [user]
+      # and with Ansible lookup, so just getting the UID directly.
+      volume:
+          - "/run/user//podman/podman.sock:/run/podman/podman.sock"
+      publish:
+          - "10.1.3.1:5002:9882"
+      env:
+          CONTAINER_HOST: unix:///run/podman/podman.sock
+- name: "Run podman exporter container for deemix"
+  become: true
+  become_user: "deemix"
+  containers.podman.podman_container:
+      name: "deemix_podman_exporter"
+      image: quay.io/navidys/prometheus-podman-exporter
+      # The XDG_RUNTIME_DIR should be /run/user/$UID fo all users, but for some reason it's always /run/user/1000 from su - [user]
+      # and with Ansible lookup, so just getting the UID directly.
+      volume:
+          - "/run/user//podman/podman.sock:/run/podman/podman.sock"
+      publish:
+          - "10.1.3.1:5003:9882"
+      env:
+          CONTAINER_HOST: unix:///run/podman/podman.sock
+- name: "Run podman exporter container for promtail"
+  become: true
+  become_user: "promtail"
+  containers.podman.podman_container:
+      name: "promtail_podman_exporter"
+      image: quay.io/navidys/prometheus-podman-exporter
+      # The XDG_RUNTIME_DIR should be /run/user/$UID fo all users, but for some reason it's always /run/user/1000 from su - [user]
+      # and with Ansible lookup, so just getting the UID directly.
+      volume:
+          - "/run/user//podman/podman.sock:/run/podman/podman.sock"
+      publish:
+          - "10.1.3.1:5004:9882"
+      env:
+          CONTAINER_HOST: unix:///run/podman/podman.sock
+- name: "Run podman exporter container for photoprism"
+  become: true
+  become_user: "photoprism"
+  containers.podman.podman_container:
+      name: "photoprism_podman_exporter"
+      image: quay.io/navidys/prometheus-podman-exporter
+      # The XDG_RUNTIME_DIR should be /run/user/$UID fo all users, but for some reason it's always /run/user/1000 from su - [user]
+      # and with Ansible lookup, so just getting the UID directly.
+      volume:
+          - "/run/user//podman/podman.sock:/run/podman/podman.sock"
+      publish:
+          - "10.1.3.1:5005:9882"
+      env:
+          CONTAINER_HOST: unix:///run/podman/podman.sock
+- name: "Run podman exporter container for nginx"
+  become: true
+  become_user: "nginx"
+  containers.podman.podman_container:
+      name: "nginx_podman_exporter"
+      image: quay.io/navidys/prometheus-podman-exporter
+      # The XDG_RUNTIME_DIR should be /run/user/$UID fo all users, but for some reason it's always /run/user/1000 from su - [user]
+      # and with Ansible lookup, so just getting the UID directly.
+      volume:
+          - "/run/user//podman/podman.sock:/run/podman/podman.sock"
+      publish:
+          - "10.1.3.1:5006:9882"
+      env:
+          CONTAINER_HOST: unix:///run/podman/podman.sock
+- name: "Run podman exporter container for paperless_ngx"
+  become: true
+  become_user: "paperless_ngx"
+  containers.podman.podman_container:
+      name: "paperless_ngx_podman_exporter"
+      image: quay.io/navidys/prometheus-podman-exporter
+      # The XDG_RUNTIME_DIR should be /run/user/$UID fo all users, but for some reason it's always /run/user/1000 from su - [user]
+      # and with Ansible lookup, so just getting the UID directly.
+      volume:
+          - "/run/user//podman/podman.sock:/run/podman/podman.sock"
+      publish:
+          - "10.1.3.1:5007:9882"
+      env:
+          CONTAINER_HOST: unix:///run/podman/podman.sock
+- name: "Run podman exporter container for grafana"
+  become: true
+  become_user: "grafana"
+  containers.podman.podman_container:
+      name: "grafana_podman_exporter"
+      image: quay.io/navidys/prometheus-podman-exporter
+      # The XDG_RUNTIME_DIR should be /run/user/$UID fo all users, but for some reason it's always /run/user/1000 from su - [user]
+      # and with Ansible lookup, so just getting the UID directly.
+      volume:
+          - "/run/user//podman/podman.sock:/run/podman/podman.sock"
+      publish:
+          - "10.1.3.1:5008:9882"
+      env:
+          CONTAINER_HOST: unix:///run/podman/podman.sock
+- name: "Run podman exporter container for radarr"
+  become: true
+  become_user: "radarr"
+  containers.podman.podman_container:
+      name: "radarr_podman_exporter"
+      image: quay.io/navidys/prometheus-podman-exporter
+      # The XDG_RUNTIME_DIR should be /run/user/$UID fo all users, but for some reason it's always /run/user/1000 from su - [user]
+      # and with Ansible lookup, so just getting the UID directly.
+      volume:
+          - "/run/user//podman/podman.sock:/run/podman/podman.sock"
+      publish:
+          - "10.1.3.1:5009:9882"
+      env:
+          CONTAINER_HOST: unix:///run/podman/podman.sock
+- name: "Run podman exporter container for authelia"
+  become: true
+  become_user: "authelia"
+  containers.podman.podman_container:
+      name: "authelia_podman_exporter"
+      image: quay.io/navidys/prometheus-podman-exporter
+      # The XDG_RUNTIME_DIR should be /run/user/$UID fo all users, but for some reason it's always /run/user/1000 from su - [user]
+      # and with Ansible lookup, so just getting the UID directly.
+      volume:
+          - "/run/user//podman/podman.sock:/run/podman/podman.sock"
+      publish:
+          - "10.1.3.1:5010:9882"
+      env:
+          CONTAINER_HOST: unix:///run/podman/podman.sock
+- name: "Run podman exporter container for pihole"
+  become: true
+  become_user: "pihole"
+  containers.podman.podman_container:
+      name: "pihole_podman_exporter"
+      image: quay.io/navidys/prometheus-podman-exporter
+      # The XDG_RUNTIME_DIR should be /run/user/$UID fo all users, but for some reason it's always /run/user/1000 from su - [user]
+      # and with Ansible lookup, so just getting the UID directly.
+      volume:
+          - "/run/user//podman/podman.sock:/run/podman/podman.sock"
+      publish:
+          - "10.1.3.1:5011:9882"
+      env:
+          CONTAINER_HOST: unix:///run/podman/podman.sock
+- name: "Run podman exporter container for prowlarr"
+  become: true
+  become_user: "prowlarr"
+  containers.podman.podman_container:
+      name: "prowlarr_podman_exporter"
+      image: quay.io/navidys/prometheus-podman-exporter
+      # The XDG_RUNTIME_DIR should be /run/user/$UID fo all users, but for some reason it's always /run/user/1000 from su - [user]
+      # and with Ansible lookup, so just getting the UID directly.
+      volume:
+          - "/run/user//podman/podman.sock:/run/podman/podman.sock"
+      publish:
+          - "10.1.3.1:5012:9882"
+      env:
+          CONTAINER_HOST: unix:///run/podman/podman.sock
+- name: "Run podman exporter container for sonarr"
+  become: true
+  become_user: "sonarr"
+  containers.podman.podman_container:
+      name: "sonarr_podman_exporter"
+      image: quay.io/navidys/prometheus-podman-exporter
+      # The XDG_RUNTIME_DIR should be /run/user/$UID fo all users, but for some reason it's always /run/user/1000 from su - [user]
+      # and with Ansible lookup, so just getting the UID directly.
+      volume:
+          - "/run/user//podman/podman.sock:/run/podman/podman.sock"
+      publish:
+          - "10.1.3.1:5013:9882"
+      env:
+          CONTAINER_HOST: unix:///run/podman/podman.sock
+- name: "Run podman exporter container for prometheus"
+  become: true
+  become_user: "prometheus"
+  containers.podman.podman_container:
+      name: "prometheus_podman_exporter"
+      image: quay.io/navidys/prometheus-podman-exporter
+      # The XDG_RUNTIME_DIR should be /run/user/$UID fo all users, but for some reason it's always /run/user/1000 from su - [user]
+      # and with Ansible lookup, so just getting the UID directly.
+      volume:
+          - "/run/user//podman/podman.sock:/run/podman/podman.sock"
+      publish:
+          - "10.1.3.1:5014:9882"
+      env:
+          CONTAINER_HOST: unix:///run/podman/podman.sock
+- name: "Run podman exporter container for seafile"
+  become: true
+  become_user: "seafile"
+  containers.podman.podman_container:
+      name: "seafile_podman_exporter"
+      image: quay.io/navidys/prometheus-podman-exporter
+      # The XDG_RUNTIME_DIR should be /run/user/$UID fo all users, but for some reason it's always /run/user/1000 from su - [user]
+      # and with Ansible lookup, so just getting the UID directly.
+      volume:
+          - "/run/user//podman/podman.sock:/run/podman/podman.sock"
+      publish:
+          - "10.1.3.1:5015:9882"
+      env:
+          CONTAINER_HOST: unix:///run/podman/podman.sock
+- name: "Run podman exporter container for trilium"
+  become: true
+  become_user: "trilium"
+  containers.podman.podman_container:
+      name: "trilium_podman_exporter"
+      image: quay.io/navidys/prometheus-podman-exporter
+      # The XDG_RUNTIME_DIR should be /run/user/$UID fo all users, but for some reason it's always /run/user/1000 from su - [user]
+      # and with Ansible lookup, so just getting the UID directly.
+      volume:
+          - "/run/user//podman/podman.sock:/run/podman/podman.sock"
+      publish:
+          - "10.1.3.1:5016:9882"
+      env:
+          CONTAINER_HOST: unix:///run/podman/podman.sock

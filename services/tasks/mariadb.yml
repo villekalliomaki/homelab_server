@@ -1,16 +1,19 @@
 # Location for persistent data is given with mariadb_volume. Assumed that
 # a pod exists with the same name as the service.
+#
+# Container name stored to mariadb_container_output.container.Name
 
 - name: MariaDB container
   become: true
   become_user: "{{ service.user }}"
+  register: mariadb_container_output
   containers.podman.podman_container:
-      name: "{{ service.name }}_postgresql"
+      name: "{{ service.name }}_mariadb"
       state: "{{ container_state | default('started') }}"
       pod: "{{ service.name }}"
       image: docker.io/library/mariadb:11.3
       # Has to be recreated to avoid permission errors with uid mapping
-      recreate: true
+      # recreate: true
       restart_policy: on-failure:10
       volumes:
           # The :U at the end *should* chown the contents of the volume directory to

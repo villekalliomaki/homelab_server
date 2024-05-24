@@ -11,6 +11,7 @@
           user: paperless_ngx
           publish:
               - "{{ network.internal_ip }}:{{ network.service_ports.paperless_ngx }}:8000"
+          userns: keep-id:uid=0,gid=0
       volumes:
           subdirectories:
               - postgresql
@@ -97,13 +98,13 @@
             log_options:
                 path: "{{ container_log_directory_output.path }}/container_log"
             recreate: true
-            restart_policy: on-failure
+            restart_policy: ”{{ podman.restart_policy }}"
             volumes:
-                - "{{ volume_subdirectory_output.results[1].path }}:/data"
-            user: "{{ ansible_user_id }}:{{ ansible_user_id }}"
+                - "{{ volume_subdirectory_output.results[1].path }}:/data:U"
+            # user: "0:0"
             env:
-                USERMAP_UID: "{{ ansible_user_id }}"
-                USERMAP_GID: "{{ ansible_user_id }}"
+                USERMAP_UID: "{{ service_user_output.uid }}"
+                USERMAP_GID: "{{ service_user_output.uid }}"
 
                 # General settings
                 PAPERLESS_DATA_DIR: /data/data
@@ -130,3 +131,6 @@
 
                 # Redis
                 PAPERLESS_REDIS: "redis://:{{ redis.password }}@localhost/1"
+            requires:
+                - "{{ redis_container_output.container.Name }}"
+                - "{{ postgresql_container_output.container.Name }}"

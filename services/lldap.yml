@@ -78,7 +78,7 @@
             log_driver: k8s-file
             log_options:
                 path: "{{ container_log_directory_output.path }}/container_log"
-            restart_policy: on-failure
+            restart_policy: ”{{ podman.restart_policy }}"
             env:
                 TZ: Europe/Helsinki
                 LLDAP_LDAP_BASE_DN: "{{ lldap_admin.base_dn }}"
@@ -88,3 +88,5 @@
                 LLDAP_LDAP_USER_DN: "{{ lldap_admin.username }}"
                 LLDAP_LDAP_USER_PASS: "{{ lldap_admin.password }}"
                 LLDAP_DATABASE_URL: "postgresql://{{ postgresql.username }}:{{ postgresql.password }}@127.0.0.1/{{ postgresql.database }}"
+            requires:
+                - "{{ postgresql_container_output.container.Name }}"

@@ -43,9 +43,8 @@
             log_driver: k8s-file
             log_options:
                 path: "{{ container_log_directory_output.path }}/container_log"
-            restart_policy: on-failure
-            network:
-                - pasta
+            restart_policy: ”{{ podman.restart_policy }}"
+            network: "{{ podman.network }}"
             user: "{{ ansible_user_id }}"
             volumes:
                 - "{{ volume_directory_output.path }}:/data"

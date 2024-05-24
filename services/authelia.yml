@@ -115,6 +115,9 @@
             log_driver: k8s-file
             log_options:
                 path: "{{ container_log_directory_output.path }}/container_log"
-            restart_policy: on-failure
+            restart_policy: ”{{ podman.restart_policy }}"
             volume:
                 - "{{ volume_subdirectory_output.results[1].path }}:/config:ro"
+            requires:
+                - "{{ redis_container_output.container.Name }}"
+                - "{{ postgresql_container_output.container.Name }}"

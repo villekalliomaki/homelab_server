@@ -18,30 +18,40 @@
             recurse: false
             file_type: file
 
-      - name: List users
-        ansible.builtin.debug:
-            msg: "{{ index }}: {{ item.path | split('/') | last | split('.') | first }}"
-        loop: "{{ playbook_files_output.files }}"
-        loop_control:
-            index_var: index
+      # - name: List users
+      #   ansible.builtin.debug:
+      #       msg: "{{ index }}: {{ item.path | split('/') | last | split('.') | first }}"
+      #   loop: "{{ playbook_files_output.files }}"
+      #   loop_control:
+      #       index_var: index
 
-      - name: Run podman exporter container for each
-        become: true
-        become_user: "{{ item.path | split('/') | last | split('.') | first }}"
-        containers.podman.podman_container:
-            name: "{{ item.path | split('/') | last | split('.') | first }}_podman_exporter"
-            image: quay.io/navidys/prometheus-podman-exporter
-            # The XDG_RUNTIME_DIR should be /run/user/$UID fo all users, but for some reason it's always /run/user/1000 from su - [user]
-            # and with Ansible lookup, so just getting the UID directly.
-            volume:
-                - "/run/user/{{ lookup('ansible.builtin.env', 'UID') }}/podman/podman.sock:/run/podman/podman.sock"
-            publish:
-                - "{{ network.internal_ip }}:{{ network.podman_exporter_range_start + index }}:9882"
-            env:
-                CONTAINER_HOST: unix:///run/podman/podman.sock
-        loop: "{{ playbook_files_output.files }}"
-        loop_control:
-            index_var: index
+      - name: Generate indexes
+        
+
+      - name: Generate tasks to run podman exporter
+        delegate_to: 127.0.0.1
+        ansible.builtin.template:
+            src: podman_exporter_task.yml.j2
+            dest: ./tasks/run_podman_exporter_containers.yml
+            mode: a=,u=rw
+
+      # - name: Run podman exporter container for each
+      #   become: true
+      #   become_user: "{{ item.path | split('/') | last | split('.') | first }}"
+      #   containers.podman.podman_container:
+      #       name: "{{ item.path | split('/') | last | split('.') | first }}_podman_exporter"
+      #       image: quay.io/navidys/prometheus-podman-exporter
+      #       # The XDG_RUNTIME_DIR should be /run/user/$UID fo all users, but for some reason it's always /run/user/1000 from su - [user]
+      #       # and with Ansible lookup, so just getting the UID directly.
+      #       volume:
+      #           - "/run/user/{{ lookup('ansible.builtin.env', 'UID') }}/podman/podman.sock:/run/podman/podman.sock"
+      #       publish:
+      #           - "{{ network.internal_ip }}:{{ network.podman_exporter_range_start + index }}:9882"
+      #       env:
+      #           CONTAINER_HOST: unix:///run/podman/podman.sock
+      #   loop: "{{ playbook_files_output.files }}"
+      #   loop_control:
+      #       index_var: index
 
       - name: Generate scrape config file for Prometheus
         delegate_to: 127.0.0.1

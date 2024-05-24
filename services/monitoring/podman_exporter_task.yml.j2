@@ -1,0 +1,16 @@
+{% for file in playbook_files_output.files %}
+- name: "Run podman exporter container for {{ file.path | split('/') | last | split('.') | first }}"
+  become: true
+  become_user: "{{ file.path | split('/') | last | split('.') | first }}"
+  containers.podman.podman_container:
+      name: "{{ file.path | split('/') | last | split('.') | first }}_podman_exporter"
+      image: quay.io/navidys/prometheus-podman-exporter
+      # The XDG_RUNTIME_DIR should be /run/user/$UID fo all users, but for some reason it's always /run/user/1000 from su - [user]
+      # and with Ansible lookup, so just getting the UID directly.
+      volume:
+          - "/run/user/{{ lookup('ansible.builtin.env', 'UID') }}/podman/podman.sock:/run/podman/podman.sock"
+      publish:
+          - "{{ network.internal_ip }}:{{ network.podman_exporter_range_start + ansible_index_var }}:9882"
+      env:
+          CONTAINER_HOST: unix:///run/podman/podman.sock
+{% endfor %}

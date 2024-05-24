@@ -7,6 +7,5 @@
       name: "{{ service.name }}"
       state: "{{ container_state | default('started') }}"
       infra_name: "{{ service.name }}_pod"
-      network:
-          - pasta
+      network: "{{ podman.network }}"
       publish: "{{ service.publish }}"

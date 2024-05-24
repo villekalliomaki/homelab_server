@@ -1,17 +1,20 @@
 # No persistent storage, so no volume is needed.
 #
 # Requires a pod with the name of the service.
+#
+# Container name stored to redis_container_output.container.Name
 
 - name: Create and run Redis container
   become: true
   become_user: "{{ service.user }}"
+  register: redis_container_output
   containers.podman.podman_container:
       name: "{{ service.name }}_redis"
       state: "{{ container_state | default('started') }}"
       pod: "{{ service.name }}"
       image: docker.io/library/redis:7.2
       restart_policy: on-failure:10
-      # Binding to 0.0.0.0 doesn't expose Redis to outside pod
+      # Binding to 0.0.0.0 doesn't expose Redis to outside pod because the port is not published
       command: >
           redis-server
           --maxmemory 200mb

@@ -1,5 +1,12 @@
 # Global variables which are used in multiple places, and can be centrally updated here
 
+# Default podman settings
+podman:
+    log_driver: k8s-file
+    restart_policy: on-failure
+    network:
+        - pasta
+
 network:
     external_ip: "{{ ansible_default_ipv4.address }}"
     internal_ip: "{{ ansible_wg0.ipv4.address }}"
