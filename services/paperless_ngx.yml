@@ -94,11 +94,11 @@
             state: "{{ container_state | default('started') }}"
             pod: "{{ service.name }}"
             image: "docker.io/paperlessngx/paperless-ngx:{{ versions.paperless_ngx }}"
-            log_driver: k8s-file
+            log_driver: "{{ podman.log_driver }}"
             log_options:
-                path: "{{ container_log_directory_output.path }}/container_log"
+                path: "{{ container_log_directory_output.path }}/{{ podman.container_log_file }}"
             recreate: true
-            restart_policy: ”{{ podman.restart_policy }}"
+            restart_policy: "{{ podman.restart_policy | regex_replace('[^A-Za-z0-9-:]', '') }}"
             volumes:
                 - "{{ volume_subdirectory_output.results[1].path }}:/data:U"
             # user: "0:0"

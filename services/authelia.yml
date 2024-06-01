@@ -112,10 +112,10 @@
             state: "{{ container_state | default('started') }}"
             pod: "{{ service.name }}"
             image: "docker.io/authelia/authelia:{{ versions.authelia }}"
-            log_driver: k8s-file
+            log_driver: "{{ podman.log_driver }}"
             log_options:
-                path: "{{ container_log_directory_output.path }}/container_log"
-            restart_policy: ”{{ podman.restart_policy }}"
+                path: "{{ container_log_directory_output.path }}/{{ podman.container_log_file }}"
+            restart_policy: "{{ podman.restart_policy | regex_replace('[^A-Za-z0-9-:]', '') }}"
             volume:
                 - "{{ volume_subdirectory_output.results[1].path }}:/config:ro"
             requires:

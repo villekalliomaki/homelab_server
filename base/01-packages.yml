@@ -34,6 +34,7 @@
                 - rust
                 - sshfs
                 - sshpass
+                - nvidia-container-toolkit
 
       #
       # AUR
@@ -79,14 +80,16 @@
             responses:
                 (?i)Proceed with installation: "y"
 
-      - name: Install yay packages (might take a while to build)
-        become: true
-        become_user: aur_builder
-        kewlfft.aur.aur:
-            use: yay
-            update_cache: true
-            name:
-                - nvidia-container-toolkit
+      # nvidia-container-toolkit is now in official repos, so aur build is not needed
+      #
+      # - name: Install yay packages (might take a while to build)
+      #   become: true
+      #   become_user: aur_builder
+      #   kewlfft.aur.aur:
+      #       use: yay
+      #       update_cache: true
+      #       name:
+      #           - nvidia-container-toolkit
 
       - name: Re-enable need for password for pacman
         ansible.builtin.file:

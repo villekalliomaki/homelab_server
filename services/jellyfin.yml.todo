@@ -10,8 +10,6 @@
           name: jellyfin
           user: jellyfin
       volumes:
-          subdirectories:
-              - config
           cache_directories:
               - transcodes
 
@@ -29,3 +27,22 @@
             name: "{{ service.name }}"
             state: "{{ container_state | default('started') }}"
             image: "docker.io/jellyfin/jellyfin:{{ versions.jellyfin }}"
+            log_driver: "{{ podman.log_driver }}"
+            log_options:
+                path: "{{ container_log_directory_output.path }}/{{ podman.container_log_file }}"
+            restart_policy: "{{ podman.restart_policy | regex_replace('[^A-Za-z0-9-:]', '') }}"
+            network: "{{ podman.network }}"
+            env:
+                PUID: 0
+                PGID: 0
+                # Not sure if these even do anything
+                NVIDIA_DRIVER_CAPABILITIES: all
+                NVIDIA_VISIBLE_DEVICES: all
+            device:
+                - nvidia.com/gpu=all
+            volumes:
+                - "{{ volume_subdirectory_output.path }}:/config"
+                - "{{ cache_directory_output.results[0].path }}:/cache"
+                - "{{ filesystem.media.movies }}:/media/movies"
+                - "{{ filesystem.media.series }}:/media/series"
+                - "{{ filesystem.media.music }}:/media/music"

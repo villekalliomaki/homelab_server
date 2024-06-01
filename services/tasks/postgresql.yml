@@ -18,8 +18,9 @@
       pod: "{{ service.name }}"
       image: docker.io/library/postgres:16.2
       # Has to be recreated to avoid permission errors with uid mapping
+      # But commented out because breaks something else (???)
       # recreate: true
-      restart_policy: on-failure:10
+      restart_policy: "{{ podman.restart_policy | regex_replace('[^A-Za-z0-9-:]', '') }}"
       volumes:
           # The :U at the end *should* chown the contents of the volume directory to
           # the user the container happends to be mapped to with subuid and subgid
@@ -28,6 +29,6 @@
           POSTGRES_DB: "{{ postgresql.database }}"
           POSTGRES_USER: "{{ postgresql.username }}"
           POSTGRES_PASSWORD: "{{ postgresql.password }}"
-      log_driver: json-file
+      log_driver: "{{ podman.log_driver }}"
       log_options:
-          path: "{{ container_log_directory_output.path }}/postgresql.log"
+          path: "{{ container_log_directory_output.path }}/postgresql_log"

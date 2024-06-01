@@ -13,7 +13,7 @@
       state: "{{ container_state | default('started') }}"
       pod: "{{ service.name }}"
       image: docker.io/library/redis:7.2
-      restart_policy: on-failure:10
+      restart_policy: "{{ podman.restart_policy | regex_replace('[^A-Za-z0-9-:]', '') }}"
       # Binding to 0.0.0.0 doesn't expose Redis to outside pod because the port is not published
       command: >
           redis-server
@@ -21,6 +21,6 @@
           --requirepass {{ redis.password }}
           --protected-mode no
           --bind 0.0.0.0
-      log_driver: json-file
+      log_driver: "{{ podman.log_driver }}"
       log_options:
-          path: "{{ container_log_directory_output.path }}/redis.log"
+          path: "{{ container_log_directory_output.path }}/redis_log"

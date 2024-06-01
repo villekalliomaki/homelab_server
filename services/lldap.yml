@@ -75,10 +75,10 @@
             state: "{{ container_state | default('started') }}"
             pod: "{{ service.name }}"
             image: "docker.io/nitnelave/lldap:{{ versions.lldap }}"
-            log_driver: k8s-file
+            log_driver: "{{ podman.log_driver }}"
             log_options:
-                path: "{{ container_log_directory_output.path }}/container_log"
-            restart_policy: ”{{ podman.restart_policy }}"
+                path: "{{ container_log_directory_output.path }}/{{ podman.container_log_file }}"
+            restart_policy: "{{ podman.restart_policy | regex_replace('[^A-Za-z0-9-:]', '') }}"
             env:
                 TZ: Europe/Helsinki
                 LLDAP_LDAP_BASE_DN: "{{ lldap_admin.base_dn }}"

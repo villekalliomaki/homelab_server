@@ -30,3 +30,7 @@ Some of these could work:
 
 -   Map the real user to something else inside the container, ofter to "nobody" with `userns: keep-id:uid=65534,gid=65534`
 -   Make sure files or directories have the execution permission added, if for some reason the container check and errors from it being missing.
+
+### Error `AttributeError: 'list' object has no attribute 'get'` when starting a service
+
+If the containers related to a pod are stopped or deleted without deleting the pod, manually or in a script, Ansible will throw an error when trying to create the existing pod. (probably)

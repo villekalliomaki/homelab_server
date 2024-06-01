@@ -3,7 +3,11 @@
 # Default podman settings
 podman:
     log_driver: k8s-file
-    restart_policy: on-failure
+    container_log_file: container_logs
+    # For some reason when this is used in a template, it is evaluated to "”on-failure\"" (note the single right double quotation mark)
+    #
+    # This can be fixed by sanitizing the value: "{{ podman.restart_policy | regex_replace('[^A-Za-z0-9-:]', '') }}"
+    restart_policy: on-failure:10
     network:
         - pasta
 

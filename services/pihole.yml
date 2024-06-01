@@ -28,10 +28,10 @@
             name: "{{ service.name }}"
             state: "{{ container_state | default('started') }}"
             image: "docker.io/pihole/pihole:{{ versions.pihole }}"
-            log_driver: k8s-file
+            log_driver: "{{ podman.log_driver }}"
             log_options:
-                path: "{{ container_log_directory_output.path }}/container_log"
-            restart_policy: ”{{ podman.restart_policy }}"
+                path: "{{ container_log_directory_output.path }}/{{ podman.container_log_file }}"
+            restart_policy: "{{ podman.restart_policy | regex_replace('[^A-Za-z0-9-:]', '') }}"
             network: "{{ podman.network }}"
             publish:
                 - "{{ network.external_ip }}:{{ network.exposed_ports.pihole_dns }}:53/tcp"

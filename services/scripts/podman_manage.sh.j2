@@ -13,7 +13,7 @@ normal=$(tput sgr0)
 
 echo "${bold}Running {{ item }} for {{ file.path | split("/") | last | split(".") | first }}:${normal}"
 
-su --login -c 'podman {{ item }} -a {% if item == "ps" %}--format {% raw %}"{{.Status}}: {{.Names}}      {{.ID}}     {{.Image}}     {{.Ports}}"{% endraw %}{% endif %}' {{ file.path | split("/") | last | split(".") | first }}
+su --login -c 'podman {{ item }} -a {% if item == "stop" or item == "pod stop" %}--time 60{% endif %}{% if item == "ps" %}--format {% raw %}"{{.Status}}: {{.Names}}      {{.ID}}     {{.Image}}     {{.Ports}}"{% endraw %}{% endif %}' {{ file.path | split("/") | last | split(".") | first }}
 
 echo ""
 
