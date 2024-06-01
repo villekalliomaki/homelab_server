@@ -16,6 +16,10 @@
             content: "{{ ssh.storagebox.password }}"
             mode: a=,u=rw
 
+      # If this returns an error code 6, the public ket of the storagebox server is still unknown,
+      # but still seems to work even if the error occurs?
+      #
+      # Fixed by once trying to connect manually, and saving the host to known_hosts
       - name: Copy SSH public key to storagebox
         register: ssh_copy_id_storagebox
         changed_when: ssh_copy_id_storagebox.rc == 0

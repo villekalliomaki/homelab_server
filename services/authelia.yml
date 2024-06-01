@@ -12,6 +12,9 @@
           publish:
               - "{{ network.internal_ip }}:{{ network.service_ports.authelia }}:80"
               - "{{ network.internal_ip }}:{{ network.service_ports.authelia_metrics }}:9959"
+              # TEMP for migration
+              # gnitVaygH32hfphXx6VrHxHZCiyMQGLg5543ZMEaTdhSFf8sWM
+              - "{{ network.external_ip }}:5432:5432"
       volumes:
           subdirectories:
               - postgresql

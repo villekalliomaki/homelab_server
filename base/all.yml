@@ -21,3 +21,6 @@
 
 - name: Remote locations mounts
   ansible.builtin.import_playbook: 07-remote_mounts.yml
+
+- name: Common directories
+  ansible.builtin.import_playbook: 08-directories.yml

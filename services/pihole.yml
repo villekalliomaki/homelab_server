@@ -11,7 +11,7 @@
           user: pihole
       volumes:
           subdirectories:
-              - pihole
+              - config
               - dnsmasq.d
 
   tasks:
@@ -38,5 +38,10 @@
                 - "{{ network.external_ip }}:{{ network.exposed_ports.pihole_dns }}:53/udp"
                 - "{{ network.internal_ip }}:{{ network.service_ports.pihole_admin }}:80"
             volume:
-                - "{{ volume_directory_output.path }}/pihole:/etc/pihole"
+                - "{{ volume_directory_output.path }}/config:/etc/pihole"
                 - "{{ volume_directory_output.path }}/dnsmasq.d:/etc/dnsmasq.d"
+            env:
+                PIHOLE_UID: 0
+                PIHOLE_GID: 0
+                DNSMASQ_USER: root
+                INTERFACE: enp3s0

@@ -15,18 +15,20 @@
   ansible.builtin.file:
       path: "{{ filesystem.container_volumes }}/{{ service.name }}"
       state: directory
+      recurse: true
       owner: "{{ service.user }}"
       group: "{{ service.user }}"
-      mode: a=,u=rwx
+      mode: a=,u=rwx,g=rwx
 
 - name: Always create log container directory
   register: container_log_directory_output
   ansible.builtin.file:
       path: "{{ filesystem.container_logs }}/{{ service.name }}"
       state: directory
+      recurse: true
       owner: "{{ service.user }}"
       group: "{{ service.user }}"
-      mode: u=rwx
+      mode: u=rwx,g=rwx
 
 - name: Create custom log directories if requested
   register: custom_log_directories_output
@@ -34,9 +36,10 @@
   ansible.builtin.file:
       path: "{{ filesystem.container_logs }}/{{ service.name }}/{{ item }}"
       state: directory
+      recurse: true
       owner: "{{ service.user }}"
       group: "{{ service.user }}"
-      mode: u=rwx
+      mode: u=rwx,g=rwx
   loop: "{{ volumes.logs }}"
 
 - name: Create cache directory if requested
@@ -45,9 +48,10 @@
   ansible.builtin.file:
       path: "{{ filesystem.cache }}/{{ service.name }}/{{ item }}"
       state: directory
+      recurse: true
       owner: "{{ service.user }}"
       group: "{{ service.user }}"
-      mode: u=rwx
+      mode: u=rwx,g=rwx
   loop: "{{ volumes.cache_directories }}"
 
 - name: Create subdirectories if requested
@@ -56,7 +60,8 @@
   ansible.builtin.file:
       path: "{{ filesystem.container_volumes }}/{{ service.name }}/{{ item }}"
       state: directory
+      recurse: true
       owner: "{{ service.user }}"
       group: "{{ service.user }}"
-      mode: a=,u=rwx
+      mode: a=,u=rwx,g=rwx
   loop: "{{ volumes.subdirectories }}"

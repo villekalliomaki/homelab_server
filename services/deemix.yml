@@ -12,7 +12,6 @@
       volumes:
           subdirectories:
               - config
-              - music
 
   tasks:
       - name: Service user
@@ -37,4 +36,4 @@
                 - "{{ network.internal_ip }}:{{ network.service_ports.deemix }}:6595"
             volumes:
                 - "{{ volume_subdirectory_output.results[0].path }}:/config"
-                - "{{ volume_subdirectory_output.results[1].path }}:/downloads"
+                - "{{ filesystem.media.music }}:/downloads"

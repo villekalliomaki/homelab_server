@@ -1,0 +1,22 @@
+- name: Set up common directories and their permissions
+  hosts: homelab
+
+  vars_files:
+      - ../global.yml
+
+  tasks:
+      - name: Music library
+        ansible.builtin.file:
+            path: "{{ filesystem.media.music }}"
+            state: directory
+            recurse: true
+            mode: a=rwx
+
+      # Subdirectories are more restrictive
+      - name: Container volume directory
+        ansible.builtin.file:
+            path: "{{ filesystem.container_volumes }}"
+            state: directory
+            owner: root
+            group: root
+            mode: a=rwx
