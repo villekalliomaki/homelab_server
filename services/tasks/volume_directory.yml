@@ -8,7 +8,7 @@
 # Container log directory is accessible with container_log_directory_output.path.
 # Custom log directories are returned with custom_log_directories_output.results[0].path.
 #
-# If requested, cache directories are returned as cache_directory_output.results.
+# If requested, cache directories are returned as cache_directories_output.results[0].path.
 
 - name: Directory and permissions
   register: volume_directory_output
@@ -44,7 +44,7 @@
 
 - name: Create cache directory if requested
   when: volume.cache_directories is defined
-  register: cache_directory_output
+  register: cache_directories_output
   ansible.builtin.file:
       path: "{{ filesystem.cache }}/{{ service.name }}/{{ item }}"
       state: directory

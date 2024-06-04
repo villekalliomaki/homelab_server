@@ -32,6 +32,8 @@
                 path: "{{ container_log_directory_output.path }}/{{ podman.container_log_file }}"
             restart_policy: "{{ podman.restart_policy | regex_replace('[^A-Za-z0-9-:]', '') }}"
             network: "{{ podman.network }}"
+            publish:
+                - "{{ network.internal_ip }}:{{ network.service_ports.jellyfin }}:8096"
             env:
                 PUID: 0
                 PGID: 0
@@ -41,8 +43,8 @@
             device:
                 - nvidia.com/gpu=all
             volumes:
-                - "{{ volume_subdirectory_output.path }}:/config"
-                - "{{ cache_directory_output.results[0].path }}:/cache"
+                - "{{ volume_directory_output.path }}:/config"
+                # - "{{ cache_directories_output.results[0].path }}:/cache"
                 - "{{ filesystem.media.movies }}:/media/movies"
                 - "{{ filesystem.media.series }}:/media/series"
                 - "{{ filesystem.media.music }}:/media/music"

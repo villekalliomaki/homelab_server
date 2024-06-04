@@ -40,6 +40,7 @@ network:
         jellyseer: 3015
         loki: 3016
         grafana: 3017
+        jellyfin: 3018
     podman_exporter_range_start: 5000
 
 # Locked versions for services if required. If not set will default to latest.
@@ -62,7 +63,7 @@ versions:
     pihole: "2024.03.1"
     # https://hub.docker.com/r/zadam/trilium/tags
     # https://github.com/zadam/trilium/releases
-    trilium: "0.63.5"
+    trilium: "0.63.7"
     # https://hub.docker.com/r/jellyfin/jellyfin/tags
     # https://github.com/jellyfin/jellyfin/releases
     jellyfin: "10.8.13"

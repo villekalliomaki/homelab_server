@@ -44,6 +44,9 @@
               - name: grafana
                 domain: "grafana.{{ base_domain }}"
                 endpoint: "{{ ansible_wg0.ipv4.address }}:{{ network.service_ports.grafana }}"
+              - name: media
+                domain: "media.{{ base_domain }}"
+                endpoint: "{{ ansible_wg0.ipv4.address }}:{{ network.service_ports.jellyfin }}"
 
   tasks:
       - name: Service user
