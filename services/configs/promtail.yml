@@ -28,4 +28,21 @@ scrape_configs:
                 - localhost
             labels:
                 job: nginx_access_log
-                __path__: "/container_logs/nginx/access_log"
+                __path__: /var/log/containers/nginx/access_log/access_log
+    - job_name: podman_containers
+      static_configs:
+          - targets:
+                - localhost
+            labels:
+                job: podman_containers
+                __path__: "/var/log/containers/*/{{ podman.container_log_file }}"
+      pipeline_stages:
+          - match:
+                selector: '{job="podman_containers/podman_containers"}'
+                stages:
+                    - regex:
+                          # YAML regex uses '' not ""
+                          expression: '^\/var\/log\/containers\/(?P<container_name>[^\/]+)\/{{ podman.container_log_file }}'
+                          source: __path__
+                    - labels:
+                          container_name:

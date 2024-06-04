@@ -1,6 +1,8 @@
 - name: Configure everything podman related
   hosts: homelab
 
+  vars_files: ../global.yml
+
   tasks:
       - name: Allow rootless bind to ports lower than 1024
         ansible.posix.sysctl:
@@ -19,8 +21,37 @@
       #       line: no-cgroups = false
 
       # Fails if no nvidia GPU installed
+      #
+      # This is probably also done by the pacman package
       - name: Generate Nvidia container toolkit CDI spec for GPU # noqa no-changed-when
         ignore_errors: true
         failed_when: cdi_spec_output.rc != 0
         register: cdi_spec_output
         ansible.builtin.command: nvidia-ctk cdi generate --output=/etc/cdi/nvidia.yaml
+
+      - name: Crete a group for reading podman logs
+        ansible.builtin.group:
+            name: podman-logs
+            state: present
+
+      - name: Create a group for media files
+        ansible.builtin.group:
+            name: media
+            state: present
+
+      - name: Create logs permission update script
+        ansible.builtin.template:
+            src: scripts/fix_podman_log_permissions.sh.j2
+            dest: /root/scripts/fix_podman_log_permissions.sh
+            mode: a=,u=rwx
+
+      # Podman doesn't allow setting a mode for the container log output file,
+      # so they have to be periodically updated so promtail can read them
+      #
+      # Any delay is setting the permissions __should__ not result in any lines being lost,
+      # because promtail and/or loki should be smart enought to save the lines they missed
+      - name: Container log permission cron
+        ansible.builtin.cron:
+            name: container_log_permissions
+            minute: "*/5"
+            job: /root/scripts/fix_podman_log_permissions.sh

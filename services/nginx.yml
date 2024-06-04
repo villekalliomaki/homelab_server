@@ -30,9 +30,9 @@
               - name: seafile
                 domain: "seafile.{{ base_domain }}"
                 endpoint: "{{ ansible_wg0.ipv4.address }}:{{ network.service_ports.seafile }}"
-              - name: grafana
-                domain: "grafana.{{ base_domain }}"
-                endpoint: "{{ ansible_wg0.ipv4.address }}:{{ network.service_ports.grafana }}"
+              - name: deemix
+                domain: "deemix.{{ base_domain }}"
+                endpoint: "{{ ansible_wg0.ipv4.address }}:{{ network.service_ports.deemix }}"
           external:
               - name: homepage
                 domain: "start.{{ base_domain }}"
@@ -41,6 +41,9 @@
               - name: root_redirect
                 domain: "{{ base_domain }}"
                 redirect: "start.{{ base_domain }}"
+              - name: grafana
+                domain: "grafana.{{ base_domain }}"
+                endpoint: "{{ ansible_wg0.ipv4.address }}:{{ network.service_ports.grafana }}"
 
   tasks:
       - name: Service user

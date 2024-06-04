@@ -6,12 +6,27 @@
   register: service_user_output
   ansible.builtin.user:
       name: "{{ service.user }}"
-      groups:
-          # Required to read container logs, not ideal
-          # File log driver could be better
-          - systemd-journal
+      # Removes unnecesary groups
+      groups: ""
       create_home: true
       system: true
+
+- name: Add podman logs group if promtail
+  when: service.user == "promtail"
+  ansible.builtin.user:
+      name: "{{ service.user }}"
+      groups:
+          - systemd-journal
+          - podman-logs
+      append: true
+
+- name: Add media group if applicaple
+  when: service.user in ["jellyfin", "jellyseer", "radarr", "sonarr", "deemix"]
+  ansible.builtin.user:
+      name: "{{ service.user }}"
+      groups:
+          - media
+      append: true
 
 # Generate non-overlapping subuid and subgid ranges from the user's uid
 # Source: https://eengstrom.github.io/musings/generate-non-contiguous-subuid-subgid-maps-for-rootless-podman

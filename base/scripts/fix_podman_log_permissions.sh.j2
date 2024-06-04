@@ -1,0 +1,7 @@
+#!/bin/bash
+
+echo "Group ownership at {{ filesystem.container_logs }} to podman-logs"
+chown -R :podman-logs {{ filesystem.container_logs }}
+
+echo "Adding podman-logs group read permissions to {{ filesystem.container_logs }}"
+chmod -R g+r {{ filesystem.container_logs }}

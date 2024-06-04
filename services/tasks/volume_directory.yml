@@ -39,7 +39,7 @@
       recurse: true
       owner: "{{ service.user }}"
       group: "{{ service.user }}"
-      mode: u=rwx,g=rwx
+      mode: a=,u=rwx,g=rwx
   loop: "{{ volumes.logs }}"
 
 - name: Create cache directory if requested

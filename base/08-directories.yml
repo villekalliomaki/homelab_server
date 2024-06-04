@@ -1,4 +1,4 @@
-- name: Set up common directories and their permissions
+- name: Set up common directories or mounts and their permissions
   hosts: homelab
 
   vars_files:
@@ -20,3 +20,20 @@
             owner: root
             group: root
             mode: a=rwx
+
+      - name: Container log directory
+        ansible.builtin.file:
+            path: "{{ filesystem.container_logs }}"
+            state: directory
+            owner: root
+            group: root
+            mode: a=rwx
+
+      # 4TB media disk
+      - name: Mount hdd4tb in fstab
+        ansible.posix.mount:
+            state: mounted
+            src: UUID=ae693b30-85d3-4f0e-b78b-7220989d30d1
+            path: "{{ filesystem.mounts.hdd4tb }}"
+            fstype: ext4
+            opts: defaults

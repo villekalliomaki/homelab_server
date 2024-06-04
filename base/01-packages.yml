@@ -95,3 +95,9 @@
         ansible.builtin.file:
             path: /etc/sudoers.d/11-install-aur_builder
             state: absent
+
+      - name: Enable cron
+        ansible.builtin.systemd_service:
+            name: cronie
+            enabled: true
+            state: started

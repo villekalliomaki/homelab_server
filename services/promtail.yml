@@ -45,9 +45,11 @@
                 path: "{{ container_log_directory_output.path }}/{{ podman.container_log_file }}"
             restart_policy: "{{ podman.restart_policy | regex_replace('[^A-Za-z0-9-:]', '') }}"
             network: "{{ podman.network }}"
-            user: "{{ ansible_user_id }}"
+            # Required to allow reads permitted by groups on the service user
+            groups:
+                - keep-groups
             volumes:
                 - "{{ volume_directory_output.path }}:/data"
-                - "{{ filesystem.container_logs }}:/container_logs:ro"
+                - "{{ filesystem.container_logs }}:/var/log/containers:ro"
                 - "/var/log/journal/:/var/log/journal/:ro"
             command: -config.file=/data/config.yml

@@ -90,11 +90,12 @@ filesystem:
     media:
         # Should probably be somewhere else
         music: /var/media/music
-        movies: "???"
-        series: "???"
+        movies: /mnt/hdd4tb/media/movies
+        series: /mnt/hdd4tb/media/tv
         downloads: "???"
     mounts:
         storagebox: /mnt/storagebox
+        hdd4tb: /mnt/hdd4tb
 
 ssh:
     storagebox:
