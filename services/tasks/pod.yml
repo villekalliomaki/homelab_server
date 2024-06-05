@@ -1,11 +1,24 @@
 # Create a pod with consistent settings and naming.
 
-- name: "Service pod for {{ service.name }}"
+- name: "Service pod (regular) for {{ service.name }}"
   become: true
   become_user: "{{ service.user }}"
+  when: service.user_ns_keep_id is not defined
   containers.podman.podman_pod:
       name: "{{ service.name }}"
       state: "{{ container_state | default('started') }}"
       infra_name: "{{ service.name }}_pod"
       network: "{{ podman.network }}"
       publish: "{{ service.publish }}"
+
+- name: "Service pod (rootless keep-id user ns) for {{ service.name }}"
+  become: true
+  become_user: "{{ service.user }}"
+  when: service.user_ns_keep_id is defined and service.user_ns_keep_id
+  containers.podman.podman_pod:
+      name: "{{ service.name }}"
+      state: "{{ container_state | default('started') }}"
+      infra_name: "{{ service.name }}_pod"
+      network: "{{ podman.network }}"
+      publish: "{{ service.publish }}"
+      userns: keep-id

@@ -11,7 +11,7 @@
           user: paperless_ngx
           publish:
               - "{{ network.internal_ip }}:{{ network.service_ports.paperless_ngx }}:8000"
-          userns: keep-id:uid=0,gid=0
+          # user_ns_keep_id: true
       volumes:
           subdirectories:
               - postgresql
@@ -86,6 +86,22 @@
       - name: Redis
         ansible.builtin.include_tasks: tasks/redis.yml
 
+      - name: Calculate actual uid inside container
+        ansible.builtin.set_fact:
+            # service_user_subuid is from service_user.yml
+            # From here: https://github.com/paperless-ngx/paperless-ngx/pull/1212#issuecomment-1224932160
+            actual_subuid: "{{ service_user_subuid | int + service_user_output.uid | int }}"
+
+      - name: More permissions to container volume
+        ansible.builtin.file:
+            path: "{{ volume_subdirectory_output.results[1].path }}"
+            state: directory
+            recurse: true
+            owner: "{{ service.user }}"
+            group: "{{ service.user }}"
+            # Not good, very bad
+            mode: a=rwx
+
       - name: Paperless-ngx container
         become: true
         become_user: "{{ service.user }}"
@@ -101,10 +117,10 @@
             restart_policy: "{{ podman.restart_policy | regex_replace('[^A-Za-z0-9-:]', '') }}"
             volumes:
                 - "{{ volume_subdirectory_output.results[1].path }}:/data:U"
-            # user: "0:0"
+            # user: "{{ actual_subuid }}"
             env:
-                USERMAP_UID: "{{ service_user_output.uid }}"
-                USERMAP_GID: "{{ service_user_output.uid }}"
+                # USERMAP_UID: "{{ service_user_output.uid }}"
+                # USERMAP_GID: "{{ service_user_output.uid }}"
 
                 # General settings
                 PAPERLESS_DATA_DIR: /data/data

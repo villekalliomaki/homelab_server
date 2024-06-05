@@ -40,6 +40,10 @@
       - /etc/subuid
       - /etc/subgid
 
+- name: Register subuid/subgid start
+  ansible.builtin.set_fact:
+      service_user_subuid: "{{ service_user_output.uid | bitwise_shift_left(16) }}"
+
 - name: Podman migrate to apply subgid and subuid # noqa no-changed-when
   ansible.builtin.command: podman system migrate
 
