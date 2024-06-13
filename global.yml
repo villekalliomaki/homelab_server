@@ -80,6 +80,10 @@ filesystem:
     container_volumes: /var/container_volumes
     # For sharing logs between containers or to the host
     container_logs: /var/log/containers
+    # The actual VM disks
+    vm_disks: /var/vm_disks
+    # Passthrough directories to VMs
+    vm_directories: /var/vm_directories
     lets_encrypt_certs:
         # Live certs are symlinks to the archive, to both have to be mounted
         base_directory: /etc/letsencrypt

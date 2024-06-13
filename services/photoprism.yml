@@ -44,6 +44,8 @@
             env:
                 PHOTOPRISM_ADMIN_PASSWORD: "{{ admin_password }}"
                 PHOTOPRISM_RESOLUTION_LIMIT: 900
+                # MB
+                PHOTOPRISM_ORIGINALS_LIMIT: 5000
                 PHOTOPRISM_IMPORT_PATH: /photoprism/import
             publish:
                 - "{{ network.internal_ip }}:{{ network.service_ports.photoprism }}:2342"

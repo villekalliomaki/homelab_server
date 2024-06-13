@@ -1,0 +1,13 @@
+---
+# tasks file for image
+- name: ISO download direcory
+  ansible.builtin.file:
+      path: "{{ image_iso_location }}"
+      state: directory
+      mode: a=,u=rwx
+
+- name: Download preset installation disk image
+  ansible.builtin.get_url:
+      url: "{{ image_url }}"
+      dest: "{{ image_iso_location }}/{{ image_file_name }}"
+      mode: a=r,u=rwx

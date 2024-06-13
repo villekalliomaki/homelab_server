@@ -1,0 +1,10 @@
+- name: Debian test VM
+  hosts: marion
+
+  vars_files:
+      - ../global.yml
+
+  tasks:
+      - name: ISO image
+        ansible.builtin.import_role:
+            name: image

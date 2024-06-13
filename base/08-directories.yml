@@ -37,3 +37,14 @@
             path: "{{ filesystem.mounts.hdd4tb }}"
             fstype: ext4
             opts: defaults
+
+      - name: Virtual machine directories
+        ansible.builtin.file:
+            path: "{{ item }}"
+            state: directory
+            owner: root
+            group: root
+            mode: a=,u=rwx
+        loop:
+            - "{{ filesystem.vm_disks }}"
+            - "{{ filesystem.vm_directories }}"
