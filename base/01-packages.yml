@@ -36,6 +36,7 @@
                 - sshpass
                 - nvidia-container-toolkit
                 - qemu-base
+                - qemu-img
 
       #
       # AUR

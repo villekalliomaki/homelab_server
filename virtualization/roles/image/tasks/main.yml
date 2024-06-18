@@ -6,8 +6,14 @@
       state: directory
       mode: a=,u=rwx
 
+- name: Check if ISO exists
+  ansible.builtin.stat:
+      path: "{{ image_iso_location }}/{{ image_file_name }}"
+  register: iso_file
+
 - name: Download preset installation disk image
   ansible.builtin.get_url:
       url: "{{ image_url }}"
       dest: "{{ image_iso_location }}/{{ image_file_name }}"
       mode: a=r,u=rwx
+  when: not iso_file.stat.exists

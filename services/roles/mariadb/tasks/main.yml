@@ -1,0 +1,9 @@
+---
+# tasks file for mariadb
+
+- name: Check required variables
+  ansible.builtin.assert:
+    that:
+      - mariadb_service_name
+      - mariadb_service_user
+      - mariadb_restart_policy

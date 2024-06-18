@@ -1,4 +1,24 @@
 ---
 # tasks file for disk
 
-- name: Create disk
+- name: Check agruments
+  ansible.builtin.assert:
+      that:
+          - disk_image_path is defined
+          - disk_image_type is defined and (disk_image_type == "raw" or disk_image_type == "qcow2")
+
+- name: Get disk image file state
+  ansible.builtin.stat:
+      path: "{{ disk_image_path }}"
+  register: disk_image_file_state
+
+- name: Create disk image file if doesn't exist
+  ansible.builtin.command:
+      cmd: "qemu-img create -f {{ disk_image_type }} {{ disk_image_path }} {{ disk_size }}"
+  when: not disk_image_file_state.stat.exists
+  register: create_qemu_disk_cmd
+  changed_when: create_qemu_disk_cmd.rc == 0 and not disk_image_file_state.stat.exists
+
+- name: Reigister complete image path
+  ansible.builtin.set_fact:
+      disk_full_image_path: "{{ disk_image_path }}"

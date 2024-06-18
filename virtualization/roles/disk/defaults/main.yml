@@ -1,2 +1,4 @@
 ---
 # defaults file for disk
+
+disk_size: 20G

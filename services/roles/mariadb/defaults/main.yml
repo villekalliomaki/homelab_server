@@ -1,0 +1,5 @@
+---
+# defaults file for mariadb
+
+mariadb_image: docker.io/library/mariadb:11.3
+mariadb_restart_policy: 

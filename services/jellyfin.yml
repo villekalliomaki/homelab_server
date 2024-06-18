@@ -44,7 +44,7 @@
                 - nvidia.com/gpu=all
             volumes:
                 - "{{ volume_directory_output.path }}:/config"
-                # - "{{ cache_directories_output.results[0].path }}:/cache"
+                - "{{ cache_directories_output.results[0].path }}:/cache"
                 - "{{ filesystem.media.movies }}:/media/movies"
                 - "{{ filesystem.media.series }}:/media/series"
                 - "{{ filesystem.media.music }}:/media/music"

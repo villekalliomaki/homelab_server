@@ -4,7 +4,18 @@
   vars_files:
       - ../global.yml
 
+  vars:
+      vm:
+          name: debian_test
+
   tasks:
       - name: ISO image
         ansible.builtin.import_role:
             name: image
+
+      - name: Disk
+        ansible.builtin.import_role:
+            name: disk
+        vars:
+            disk_image_path: "{{ filesystem.vm_disks }}/{{ vm.name }}.cow"
+            disk_image_type: qcow2

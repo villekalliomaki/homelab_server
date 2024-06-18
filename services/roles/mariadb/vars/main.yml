@@ -1,0 +1,4 @@
+---
+# vars file for mariadb
+
+mariadb_restart_policy: "podman.restart_policy | regex_replace('[^A-Za-z0-9-:]', '')"

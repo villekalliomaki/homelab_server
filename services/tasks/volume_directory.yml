@@ -43,7 +43,7 @@
   loop: "{{ volumes.logs }}"
 
 - name: Create cache directory if requested
-  when: volume.cache_directories is defined
+  when: volumes.cache_directories is defined
   register: cache_directories_output
   ansible.builtin.file:
       path: "{{ filesystem.cache }}/{{ service.name }}/{{ item }}"
