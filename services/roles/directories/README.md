@@ -1,38 +1,60 @@
-Role Name
-=========
+# Directories role
 
-A brief description of the role goes here.
+## Ouputs
 
-Requirements
-------------
+-   Volume
+    -   `directories_output_volume`
+    -   `directories_output_volume_subdirectories`
+-   Container logs
+    -   `directories_output_container_logs`
+    -   `directories_output_container_logs_subdirectories`
+-   Cache
+    -   `directories_output_cache`
+    -   `directories_output_cache_subdirectories`
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+## Minimal required arguments
 
-Role Variables
---------------
+Creates the volume and container logs directories named after the user. Subdirectories or cache is not created.
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+```yaml
+directories_permissions:
+    user: owner_username
+```
 
-Dependencies
-------------
+## All arguments (with defaults):
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+```yaml
+directories_base_paths:
+    volume: /var/container_volumes
+    container_logs: /var/log/containers
+    cache: /mnt/cache
 
-Example Playbook
-----------------
+directories_permissions:
+    user: null
+    # Defaults to same as user
+    group: null
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
+directories_volume:
+    create: true
+    # Defaults to username
+    name: service_name
+    subdirectories: []
+    mode: a=,u=rwx,g=rwx
+    recurse: true
 
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
+directories_container_logs:
+    create: true
+    # Defaults to username
+    name: service_name
+    subdirectories: []
+    mode: u=rwx,g=rwx
+    recurse: true
 
-License
--------
-
-BSD
-
-Author Information
-------------------
-
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+directories_cache:
+    create: user
+    # Defaults to username
+    name: service_name
+    subdirectories: []
+    mode: u=rwx,g=rwx
+    recurse: true
+```

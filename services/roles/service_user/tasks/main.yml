@@ -1,2 +1,45 @@
 ---
 # tasks file for service_user
+
+- name: Check that user's name exists
+  ansible.builtin.assert:
+      that: service_user_name is not undefined or service_user_name != None
+      fail_msg: Service user's name has to be defined
+
+- name: Create or remove groups
+  ansible.builtin.user:
+      name: "{{ service_user_name }}"
+      # Removes all but primary
+      groups: ""
+      create_home: true
+      system: true
+  register: service_user_output
+
+- name: Add groups
+  ansible.builtin.user:
+      name: "{{ service_user_name }}"
+      groups: "{{ service_user_groups }}"
+      append: true
+  when: service_user_groups | length > 0
+
+# Generate non-overlapping subuid and subgid ranges from the user's uid
+# Source: https://eengstrom.github.io/musings/generate-non-contiguous-subuid-subgid-maps-for-rootless-podman
+- name: Generate subuids and subgids
+  ansible.builtin.lineinfile:
+      path: "{{ item }}"
+      mode: u=rw,o=r
+      regexp: "^{{ service_user_output.uid }}:"
+      line: "{{ service_user_output.uid }}:{{ service_user_output.uid | bitwise_shift_left(16) }}:65536"
+  loop:
+      - /etc/subuid
+      - /etc/subgid
+
+- name: Register subuid/subgid start
+  ansible.builtin.set_fact:
+      service_user_subuid_start: "{{ service_user_output.uid | bitwise_shift_left(16) }}"
+
+- name: Podman migrate to apply subgid and subuid # noqa no-changed-when
+  ansible.builtin.command: podman system migrate
+
+- name: Enable lingering for the user to get rid of systemd user session warning # noqa no-changed-when
+  ansible.builtin.command: "loginctl enable-linger {{ service_user_output.uid }}"

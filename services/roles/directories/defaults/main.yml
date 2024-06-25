@@ -1,2 +1,8 @@
 ---
 # defaults file for directories
+
+# Used to validate that service name is included in base paths
+directories_base_paths:
+    volume: /var/container_volumes
+    container_logs: /var/log/containers
+    cache: /mnt/cache

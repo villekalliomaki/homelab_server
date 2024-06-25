@@ -1,2 +1,82 @@
 ---
 # tasks file for directories
+
+- name: Check permission arguments exist
+  ansible.builtin.assert:
+      that: directories_permissions.user is not undefined or directories_permissions.user != None
+      fail_msg: Directory owner user missing
+
+#
+# Volume directory and subdirectories
+#
+- name: Volume directory
+  ansible.builtin.file:
+      path: "{{ directories_base_paths.volume }}/{{ directories_volume.name | default(directories_permissions.user) }}"
+      state: directory
+      recurse: "{{ directories_volume.recurse | default(true) }}"
+      owner: "{{ directories_permissions.user }}"
+      group: "{{ directories_permissions.group | default(directories_permissions.user) }}"
+      mode: "{{ directories_volume.mode | default('a=,u=rwx,g=rwx') }}"
+  register: directories_output_volume
+  when: directories_volume.create | default(true)
+
+- name: Volume subdirectories
+  ansible.builtin.file:
+      path: "{{ directories_base_paths.volume }}/{{ directories_volume.name | default(directories_permissions.user) }}/{{ item }}"
+      recurse: "{{ directories_volume.recurse | default(true) }}"
+      owner: "{{ directories_permissions.user }}"
+      group: "{{ directories_permissions.group | default(directories_permissions.user) }}"
+      mode: "{{ directories_volume.mode | default('a=,u=rwx,g=rwx') }}"
+  when: directories_volume.create | default(true) and directories_volume.subdirectories  is not undefined
+  register: directories_output_volume_subdirectories
+  loop: "{{ directories_volume.subdirectories }}"
+
+#
+# Container logs
+#
+- name: Container logs directory
+  ansible.builtin.file:
+      path: "{{ directories_base_paths.container_logs }}/{{ directories_container_logs.name | default(directories_permissions.user) }}"
+      state: directory
+      recurse: "{{ directories_container_logs.recurse | default(true) }}"
+      owner: "{{ directories_permissions.user }}"
+      group: "{{ directories_permissions.group | default(directories_permissions.user) }}"
+      mode: "{{ directories_container_logs.mode | default('a=,u=rwx,g=rwx') }}"
+  register: directories_output_container_logs
+  when: directories_container_logs.create | default(true)
+
+- name: Container log subdirectories
+  ansible.builtin.file:
+      path: "{{ directories_base_paths.container_logs }}/{{ directories_container_logs.name | default(directories_permissions.user) }}/{{ item }}"
+      recurse: "{{ directories_container_logs.recurse | default(true) }}"
+      owner: "{{ directories_permissions.user }}"
+      group: "{{ directories_permissions.group | default(directories_permissions.user) }}"
+      mode: "{{ directories_container_logs.mode | default('a=,u=rwx,g=rwx') | default('a=,u=rwx,g=rwx') }}"
+  when: directories_container_logs.create | default(true) and directories_container_logs.subdirectories is not undefined
+  register: directories_output_container_logs_subdirectories
+  loop: "{{ directories_container_logs.subdirectories }}"
+
+#
+# Cache
+#
+- name: Cache directory
+  ansible.builtin.file:
+      path: "{{ directories_base_paths.cache }}/{{ directories_cache.name | default(directories_permissions.user) }}"
+      state: directory
+      recurse: "{{ directories_cache.recurse | default(true) }}"
+      owner: "{{ directories_permissions.user }}"
+      group: "{{ directories_permissions.group | default(directories_permissions.user) }}"
+      mode: "{{ directories_cache.mode | default('a=,u=rwx,g=rwx') }}"
+  register: directories_output_cache
+  when: directories_cache.create | default(false)
+
+- name: Cache subdirectories
+  ansible.builtin.file:
+      path: "{{ directories_base_paths.cache }}/{{ directories_cache.name | default(directories_permissions.user) }}/{{ item }}"
+      recurse: "{{ directories_cache.recurse | default(true) }}"
+      owner: "{{ directories_permissions.user }}"
+      group: "{{ directories_permissions.group | default(directories_permissions.user) }}"
+      mode: "{{ directories_cache.mode | default('a=,u=rwx,g=rwx') }}"
+  when: directories_cache.create | default(false) and directories_cache.subdirectories is not undefined
+  register: directories_output_cache_subdirectories
+  loop: "{{ directories_cache.subdirectories }}"
