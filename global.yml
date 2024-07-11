@@ -45,12 +45,14 @@ network:
 
 # Locked versions for services if required. If not set will default to latest.
 versions:
+    # https://hub.docker.com/r/villekalliomaki/nginx/tags
+    nginx: "1.26.1"
     # https://hub.docker.com/r/authelia/authelia/tags
     # https://github.com/authelia/authelia/releases
-    authelia: "4.38.6"
+    authelia: "4.38.9"
     # https://github.com/gethomepage/homepage/pkgs/container/homepage
     # https://github.com/gethomepage/homepage/releases
-    homepage: "v0.8.10"
+    homepage: "v0.9.3"
     # https://hub.docker.com/r/nitnelave/lldap/tags
     # https://github.com/lldap/lldap/releases
     # Should be changes to a version number when new is released
@@ -60,18 +62,18 @@ versions:
     paperless_ngx: "2.6.3"
     # https://hub.docker.com/r/pihole/pihole/tags
     # https://github.com/pi-hole/pi-hole/releases
-    pihole: "2024.03.1"
+    pihole: "2024.07.0"
     # https://hub.docker.com/r/zadam/trilium/tags
     # https://github.com/zadam/trilium/releases
     trilium: "0.63.7"
     # https://hub.docker.com/r/jellyfin/jellyfin/tags
     # https://github.com/jellyfin/jellyfin/releases
-    jellyfin: "10.8.13"
+    jellyfin: "10.9.7"
     # https://hub.docker.com/r/seafileltd/seafile-mc/tags
     seafile: "11.0.6"
     # https://hub.docker.com/r/prom/prometheus/tags
     # https://github.com/prometheus/prometheus/releases
-    prometheus: "v2.51.2"
+    prometheus: "v2.53.1"
 
 filesystem:
     systemd_units: /etc/systemd/system

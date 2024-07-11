@@ -3,80 +3,85 @@
 
 - name: Check permission arguments exist
   ansible.builtin.assert:
-      that: directories_permissions.user is not undefined or directories_permissions.user != None
-      fail_msg: Directory owner user missing
+      that:
+          - service.name
+          - service.user
+      fail_msg: Service name and user missing
 
 #
-# Volume directory and subdirectories
+# Container volume and subdirectories
 #
-- name: Volume directory
+- name: Container volume
   ansible.builtin.file:
-      path: "{{ directories_base_paths.volume }}/{{ directories_volume.name | default(directories_permissions.user) }}"
+      path: "{{ filesystem.container_volumes }}/{{ service.name }}"
       state: directory
-      recurse: "{{ directories_volume.recurse | default(true) }}"
-      owner: "{{ directories_permissions.user }}"
-      group: "{{ directories_permissions.group | default(directories_permissions.user) }}"
-      mode: "{{ directories_volume.mode | default('a=,u=rwx,g=rwx') }}"
-  register: directories_output_volume
-  when: directories_volume.create | default(true)
+      recurse: "{{ directories_container_volume.recurse | default(true) }}"
+      owner: "{{ service.user }}"
+      group: "{{ directories_container_volume.group | default(service.user) }}"
+      mode: "{{ directories_container_volume.mode | default(directories_default_mode) }}"
+  when: directories_container_volume is not undefined and directories_container_volume.create
+  register: dirs_container_volume
 
-- name: Volume subdirectories
+- name: Container volume subdirectories
   ansible.builtin.file:
-      path: "{{ directories_base_paths.volume }}/{{ directories_volume.name | default(directories_permissions.user) }}/{{ item }}"
-      recurse: "{{ directories_volume.recurse | default(true) }}"
-      owner: "{{ directories_permissions.user }}"
-      group: "{{ directories_permissions.group | default(directories_permissions.user) }}"
-      mode: "{{ directories_volume.mode | default('a=,u=rwx,g=rwx') }}"
-  when: directories_volume.create | default(true) and directories_volume.subdirectories  is not undefined
-  register: directories_output_volume_subdirectories
-  loop: "{{ directories_volume.subdirectories }}"
+      path: "{{ filesystem.container_volumes }}/{{ service.name }}/{{ item }}"
+      state: directory
+      recurse: "{{ directories_container_volume.recurse | default(true) }}"
+      owner: "{{ service.user }}"
+      group: "{{ directories_container_volume.group | default(service.user) }}"
+      mode: "{{ directories_container_volume.mode | default(directories_default_mode) }}"
+  when: directories_container_volume is not undefined and directories_container_volume.create
+  loop: "{{ directories_container_volume.subdirectories }}"
+  register: dirs_container_volume_subdirectories
 
 #
 # Container logs
 #
-- name: Container logs directory
+- name: Container logs
   ansible.builtin.file:
-      path: "{{ directories_base_paths.container_logs }}/{{ directories_container_logs.name | default(directories_permissions.user) }}"
+      path: "{{ filesystem.container_logs }}/{{ service.name }}"
       state: directory
       recurse: "{{ directories_container_logs.recurse | default(true) }}"
-      owner: "{{ directories_permissions.user }}"
-      group: "{{ directories_permissions.group | default(directories_permissions.user) }}"
-      mode: "{{ directories_container_logs.mode | default('a=,u=rwx,g=rwx') }}"
-  register: directories_output_container_logs
-  when: directories_container_logs.create | default(true)
+      owner: "{{ service.user }}"
+      group: "{{ directories_container_logs.group | default(service.user) }}"
+      mode: "{{ directories_container_logs.mode | default(directories_default_mode) }}"
+  when: directories_container_logs is not undefined and directories_container_logs.create
+  register: dirs_container_logs
 
-- name: Container log subdirectories
+- name: Container logs subdirectories
   ansible.builtin.file:
-      path: "{{ directories_base_paths.container_logs }}/{{ directories_container_logs.name | default(directories_permissions.user) }}/{{ item }}"
+      path: "{{ filesystem.container_logs }}/{{ service.name }}/{{ item }}"
+      state: directory
       recurse: "{{ directories_container_logs.recurse | default(true) }}"
-      owner: "{{ directories_permissions.user }}"
-      group: "{{ directories_permissions.group | default(directories_permissions.user) }}"
-      mode: "{{ directories_container_logs.mode | default('a=,u=rwx,g=rwx') | default('a=,u=rwx,g=rwx') }}"
-  when: directories_container_logs.create | default(true) and directories_container_logs.subdirectories is not undefined
-  register: directories_output_container_logs_subdirectories
+      owner: "{{ service.user }}"
+      group: "{{ directories_container_logs.group | default(service.user) }}"
+      mode: "{{ directories_container_logs.mode | default(directories_default_mode) }}"
+  when: directories_container_logs is not undefined and directories_container_logs.create
   loop: "{{ directories_container_logs.subdirectories }}"
+  register: dirs_container_logs_subdirectories
 
 #
-# Cache
+# Container cache
 #
-- name: Cache directory
+- name: Container cache
   ansible.builtin.file:
-      path: "{{ directories_base_paths.cache }}/{{ directories_cache.name | default(directories_permissions.user) }}"
+      path: "{{ filesystem.cache }}/{{ service.name }}"
       state: directory
-      recurse: "{{ directories_cache.recurse | default(true) }}"
-      owner: "{{ directories_permissions.user }}"
-      group: "{{ directories_permissions.group | default(directories_permissions.user) }}"
-      mode: "{{ directories_cache.mode | default('a=,u=rwx,g=rwx') }}"
-  register: directories_output_cache
-  when: directories_cache.create | default(false)
+      recurse: "{{ directories_container_cache.recurse | default(true) }}"
+      owner: "{{ service.user }}"
+      group: "{{ directories_container_cache.group | default(service.user) }}"
+      mode: "{{ directories_container_cache.mode | default(directories_default_mode) }}"
+  when: directories_container_cache is not undefined and directories_container_cache.create
+  register: dirs_container_cache
 
-- name: Cache subdirectories
+- name: Container cache subdirectories
   ansible.builtin.file:
-      path: "{{ directories_base_paths.cache }}/{{ directories_cache.name | default(directories_permissions.user) }}/{{ item }}"
-      recurse: "{{ directories_cache.recurse | default(true) }}"
-      owner: "{{ directories_permissions.user }}"
-      group: "{{ directories_permissions.group | default(directories_permissions.user) }}"
-      mode: "{{ directories_cache.mode | default('a=,u=rwx,g=rwx') }}"
-  when: directories_cache.create | default(false) and directories_cache.subdirectories is not undefined
-  register: directories_output_cache_subdirectories
-  loop: "{{ directories_cache.subdirectories }}"
+      path: "{{ filesystem.cache }}/{{ service.name }}/{{ item }}"
+      state: directory
+      recurse: "{{ directories_container_cache.recurse | default(true) }}"
+      owner: "{{ service.user }}"
+      group: "{{ directories_container_cache.group | default(service.user) }}"
+      mode: "{{ directories_container_cache.mode | default(directories_default_mode) }}"
+  when: directories_container_cache is not undefined and directories_container_cache.create
+  loop: "{{ directories_container_cache.subdirectories }}"
+  register: dirs_container_cache_subdirectories

@@ -14,14 +14,30 @@
       - name: User
         ansible.builtin.import_role:
             name: service_user
-        vars:
-            service_user_name: "{{ service.user }}"
 
       - name: Directories
         ansible.builtin.import_role:
             name: directories
         vars:
-            directories_permissions:
-                user: "{{ service.user }}"
-            directories_volume:
+            directories_container_volume:
                 create: true
+                subdirectories:
+                    - one
+                    - two
+                    - three
+            directories_container_logs:
+                create: true
+                subdirectories:
+                    - one
+                    - two
+                    - three
+            directories_container_cache:
+                create: true
+                subdirectories:
+                    - one
+                    - two
+                    - three
+
+      - name: Service test pod
+        ansible.builtin.import_role:
+            name: pod

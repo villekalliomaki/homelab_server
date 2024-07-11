@@ -1,2 +1,21 @@
 ---
 # tasks file for pod
+
+- name: Check required variables exist
+  ansible.builtin.assert:
+      that:
+          - service.name
+          - service.user
+      fail_msg: Some required variables missing
+
+- name: Create pod
+  become_user: "{{ service.user }}"
+  become: true
+  register: create_pod_output
+  containers.podman.podman_pod:
+      name: "{{ service.name }}"
+      infra_name: "{{ service.name }}_pod"
+      state: "{{ container_state | default('started') }}"
+      network: "{{ pod_network }}"
+      publish: "{{ pod_publish }}"
+      userns: "{{ pod_user_namespace }}"

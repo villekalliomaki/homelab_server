@@ -1,7 +1,5 @@
 ---
 # vars file for service_user
 
-# Always required
-service_user_name: null
 # User if removed from all but primry group by default
 service_user_groups: []

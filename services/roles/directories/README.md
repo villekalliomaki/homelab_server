@@ -1,60 +1,73 @@
 # Directories role
 
-## Ouputs
-
--   Volume
-    -   `directories_output_volume`
-    -   `directories_output_volume_subdirectories`
--   Container logs
-    -   `directories_output_container_logs`
-    -   `directories_output_container_logs_subdirectories`
--   Cache
-    -   `directories_output_cache`
-    -   `directories_output_cache_subdirectories`
+**Depends on `global.yml`.**
 
 ## Minimal required arguments
 
-Creates the volume and container logs directories named after the user. Subdirectories or cache is not created.
+Does not create anything, but nothing else is required to make role as flexible as possible.
 
-```yaml
-directories_permissions:
-    user: owner_username
+```yml
+service:
+    name: service_name
+    user: username
 ```
 
-## All arguments (with defaults):
+## Container volume
 
-```yaml
-directories_base_paths:
-    volume: /var/container_volumes
-    container_logs: /var/log/containers
-    cache: /mnt/cache
+Volume directory is named after service. With just `create: true` the base container volume will be created using the default settings. If `create` is not set to true, nothing is done even if other settings are defined. Group will default to the user's primary group if not defined, which is just the username.
 
-directories_permissions:
-    user: null
-    # Defaults to same as user
-    group: null
-
-directories_volume:
+```yml
+directories_container_volume:
+    # Required to be created
     create: true
-    # Defaults to username
-    name: service_name
+    # Optional from here
     subdirectories: []
     mode: a=,u=rwx,g=rwx
     recurse: true
-
-directories_container_logs:
-    create: true
-    # Defaults to username
-    name: service_name
-    subdirectories: []
-    mode: u=rwx,g=rwx
-    recurse: true
-
-directories_cache:
-    create: user
-    # Defaults to username
-    name: service_name
-    subdirectories: []
-    mode: u=rwx,g=rwx
-    recurse: true
+    group: some_group
 ```
+
+Return values:
+
+-   `dirs_container_volume`
+-   `dirs_container_volume_subdirectories`
+
+## Container logs
+
+Identical to container volume, but the base path is for logs.
+
+```yml
+directories_container_logs:
+    # Required to be created
+    create: true
+    # Optional from here
+    subdirectories: []
+    mode: a=,u=rwx,g=rwx
+    recurse: true
+    group: some_group
+```
+
+Return values:
+
+-   `dirs_container_logs`
+-   `dirs_container_logs_subdirectories`
+
+## Container cache
+
+Also the same.
+
+```yml
+directories_container_cache:
+    # Required to be created
+    create: true
+    # Optional from here
+    subdirectories: []
+    mode: a=,u=rwx,g=rwx
+    recurse: true
+    group: some_group
+```
+
+Return values:
+
+-   `dirs_container_cache`
+-   `dirs_container_cache_subdirectories`

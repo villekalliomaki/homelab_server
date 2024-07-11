@@ -1,7 +1,7 @@
 # Versions: https://nginx.org/en/download.html
-ARG NGINX_VERSION=1.25.4
+ARG NGINX_VERSION=1.26.1
 
-# Image search: https://hub.docker.com/_/nginx/tags?page=1&name=1.25.4-bookworm
+# Image search: https://hub.docker.com/_/nginx/tags?page=1&name=1.26.1-bookworm
 FROM nginx:$NGINX_VERSION-bookworm as build
 
 # Releases: https://github.com/leev/ngx_http_geoip2_module/releases
@@ -9,7 +9,7 @@ ARG GEOIP2_VERSION=3.4
 
 RUN mkdir -p /var/lib/GeoIP/
 
-RUN apt-get update &&
+RUN apt-get update && \
     apt-get install -y \
         build-essential \
         libpcre3-dev \
@@ -19,20 +19,20 @@ RUN apt-get update &&
         wget \
         git
 
-RUN cd /opt &&
-    git clone --depth 1 -b $GEOIP2_VERSION --single-branch https://github.com/leev/ngx_http_geoip2_module.git &&
-    wget -O - http://nginx.org/download/nginx-$NGINX_VERSION.tar.gz | tar zxfv - &&
-    mv /opt/nginx-$NGINX_VERSION /opt/nginx &&
-    cd /opt/nginx &&
-    ./configure --with-compat --add-dynamic-module=/opt/ngx_http_geoip2_module &&
+RUN cd /opt && \
+    git clone --depth 1 -b $GEOIP2_VERSION --single-branch https://github.com/leev/ngx_http_geoip2_module.git && \
+    wget -O - http://nginx.org/download/nginx-$NGINX_VERSION.tar.gz | tar zxfv - && \
+    mv /opt/nginx-$NGINX_VERSION /opt/nginx && \
+    cd /opt/nginx && \
+    ./configure --with-compat --add-dynamic-module=/opt/ngx_http_geoip2_module && \
     make modules
 
 FROM nginx:$NGINX_VERSION-bookworm
 
 COPY --from=build /opt/nginx/objs/ngx_http_geoip2_module.so /usr/lib/nginx/modules
 
-RUN apt-get update &&
-    apt-get install -y --no-install-recommends --no-install-suggests libmaxminddb0 &&
-    apt-get clean &&
-    rm -rf /var/lib/apt/lists/* &&
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends --no-install-suggests libmaxminddb0 && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* && \
     chmod -R 644 /usr/lib/nginx/modules/ngx_http_geoip2_module.so
