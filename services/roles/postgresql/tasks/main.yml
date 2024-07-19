@@ -4,7 +4,14 @@
 - name: Check required variables exist
   ansible.builtin.assert:
       that:
+          - service.name
+          - service.user
           - postgresql_volume_path
+          - postgresql_log_path
+          - postgresql_user.username
+          - postgresql_user.password
+          - postgresql_user.database
+      fail_msg: Some required variable(s) missing
 
 - name: Create container
   become: true
@@ -14,19 +21,19 @@
       name: "{{ service.name }}_postgresql"
       state: "{{ container_state | default('started') }}"
       pod: "{{ postgresql_pod_name | default(service.name) }}"
-      image: docker.io/library/postgres:16.2
-      # Has to be recreated to avoid permission errors with uid mapping
-      # But commented out because breaks something else (???)
-      # recreate: true
+      image: "{{ postgresql_container_image }}"
+      # Sometimes has to be recreated to avoid permission errors with uid mapping
+      # But can break something else if true
+      recreate: "{{ postgresql_recreate }}"
       restart_policy: "{{ podman.restart_policy | regex_replace('[^A-Za-z0-9-:]', '') }}"
       volumes:
           # The :U at the end *should* chown the contents of the volume directory to
           # the user the container happends to be mapped to with subuid and subgid
           - "{{ postgresql_volume_path }}:/var/lib/postgresql/data:U"
       env:
-          POSTGRES_DB: "{{ postgresql.database }}"
-          POSTGRES_USER: "{{ postgresql.username }}"
-          POSTGRES_PASSWORD: "{{ postgresql.password }}"
+          POSTGRES_DB: "{{ postgresql_user.database }}"
+          POSTGRES_USER: "{{ postgresql_user.username }}"
+          POSTGRES_PASSWORD: "{{ postgresql_user.password }}"
       log_driver: "{{ podman.log_driver }}"
       log_options:
-          path: "{{ container_log_directory_output.path }}/postgresql_log"
+          path: "{{ postgresql_log_path }}/postgresql_container_log"

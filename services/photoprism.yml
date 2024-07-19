@@ -44,9 +44,11 @@
             env:
                 PHOTOPRISM_ADMIN_PASSWORD: "{{ admin_password }}"
                 PHOTOPRISM_RESOLUTION_LIMIT: 900
-                # MB
-                PHOTOPRISM_ORIGINALS_LIMIT: 5000
+                PHOTOPRISM_ORIGINALS_LIMIT: 5000 # MB
                 PHOTOPRISM_IMPORT_PATH: /photoprism/import
+                PHOTOPRISM_SITE_URL: "https://gallery.{{ base_domain }}/"
+                PHOTOPRISM_SITE_TITLE: "gallery.{{ base_domain }}"
+                PHOTOPRISM_SITE_CAPTION: "gallery.{{ base_domain }}"
             publish:
                 - "{{ network.internal_ip }}:{{ network.service_ports.photoprism }}:2342"
             volumes:

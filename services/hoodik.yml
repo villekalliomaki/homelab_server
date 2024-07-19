@@ -22,22 +22,20 @@
             directories_container_volume:
                 create: true
                 subdirectories:
-                    - one
-                    - two
-                    - three
-            directories_container_logs:
-                create: true
-                subdirectories:
-                    - one
-                    - two
-                    - three
-            directories_container_cache:
-                create: true
-                subdirectories:
-                    - one
-                    - two
-                    - three
+                    - data
+                    - postgresql_data
 
       - name: Service test pod
         ansible.builtin.import_role:
             name: pod
+
+      - name: DB
+        ansible.builtin.import_role:
+            name: postgresql
+        vars:
+            postgresql_user:
+                username: "{{ service.name }}"
+                password: password
+                database: "{{ service.name }}"
+            postgresql_volume_path: "{{ dirs_container_volume_subdirectories.results[1].path }}"
+            postgresql_log_path: "{{ dirs_container_logs }}"

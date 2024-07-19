@@ -34,12 +34,10 @@ Return values:
 
 ## Container logs
 
-Identical to container volume, but the base path is for logs.
+Identical to container volume, but can't be disabled. Subdirectories are optional.
 
 ```yml
 directories_container_logs:
-    # Required to be created
-    create: true
     # Optional from here
     subdirectories: []
     mode: a=,u=rwx,g=rwx

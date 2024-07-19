@@ -13,4 +13,9 @@ service:
 
 pod_publish:
     - "127.0.0.1:80:80"
+
+pod_network:
+    - pasta
+
+pod_user_namespace: ""
 ```

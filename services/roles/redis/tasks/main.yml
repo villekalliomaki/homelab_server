@@ -1,2 +1,44 @@
 ---
 # tasks file for redis
+
+- name: Check required variables exist
+  ansible.builtin.assert:
+      that:
+          - service.name
+          - service.user
+          - redis_log_path
+          - redis_user.username
+          - redis_user.password
+      fail_msg: Some required variable(s) missing
+
+- name: Register volume if data path is defined
+  ansible.builtin.set_fact:
+      # Default is in defaults/main.yml
+      redis_volumes_internal: "{{ redis_data_path }}:/data"
+  when: redis_data_path is not undefined
+
+- name: Create container
+  become: true
+  become_user: "{{ service.user }}"
+  register: redis_container_output
+  containers.podman.podman_container:
+      name: "{{ service.name }}_redis"
+      state: "{{ container_state | default('started') }}"
+      pod: "{{ redis_pod_name | default(service.name) }}"
+      image: "{{ redis_container_image }}"
+      # Sometimes has to be recreated to avoid permission errors with uid mapping
+      # But can break something else if true
+      recreate: "{{ redis_recreate }}"
+      restart_policy: "{{ podman.restart_policy | regex_replace('[^A-Za-z0-9-:]', '') }}"
+      volumes: "{{ redis_volumes_internal }}"
+      # Binding to 0.0.0.0 doesn't expose Redis to outside pod because the port is not published
+      command: >
+          redis-server
+          --maxmemory 200mb
+          --user "{{ redis_user.username }}"
+          --requirepass {{ redis_user.password }}
+          --protected-mode no
+          --bind 0.0.0.0
+      log_driver: "{{ podman.log_driver }}"
+      log_options:
+          path: "{{ postgresql_log_path }}/redis_log"

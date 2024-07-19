@@ -33,9 +33,6 @@
               - name: deemix
                 domain: "deemix.{{ base_domain }}"
                 endpoint: "{{ ansible_wg0.ipv4.address }}:{{ network.service_ports.deemix }}"
-              - name: photoprism
-                domain: "gallery.{{ base_domain }}"
-                endpoint: "{{ ansible_wg0.ipv4.address }}:{{ network.service_ports.photoprism }}"
           external:
               - name: homepage
                 domain: "start.{{ base_domain }}"
@@ -50,6 +47,9 @@
               - name: media
                 domain: "media.{{ base_domain }}"
                 endpoint: "{{ ansible_wg0.ipv4.address }}:{{ network.service_ports.jellyfin }}"
+              - name: photoprism
+                domain: "gallery.{{ base_domain }}"
+                endpoint: "{{ ansible_wg0.ipv4.address }}:{{ network.service_ports.photoprism }}"
 
   tasks:
       - name: Service user

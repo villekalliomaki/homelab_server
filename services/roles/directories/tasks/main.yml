@@ -45,7 +45,6 @@
       owner: "{{ service.user }}"
       group: "{{ directories_container_logs.group | default(service.user) }}"
       mode: "{{ directories_container_logs.mode | default(directories_default_mode) }}"
-  when: directories_container_logs is not undefined and directories_container_logs.create
   register: dirs_container_logs
 
 - name: Container logs subdirectories
