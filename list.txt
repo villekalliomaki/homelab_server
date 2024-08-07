@@ -1,0 +1,14 @@
+lldap
+loki
+homepage
+deemix
+promtail
+photoprism
+nginx
+grafana
+authelia
+pihole
+prometheus
+trilium
+jellyfin
+hoodik

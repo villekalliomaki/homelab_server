@@ -33,6 +33,9 @@
               - name: deemix
                 domain: "deemix.{{ base_domain }}"
                 endpoint: "{{ ansible_wg0.ipv4.address }}:{{ network.service_ports.deemix }}"
+              - name: hoodik
+                domain: "storage.{{ base_domain }}"
+                endpoint: "{{ network.internal_ip }}:{{ network.service_ports.hoodik }}"
           external:
               - name: homepage
                 domain: "start.{{ base_domain }}"

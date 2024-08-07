@@ -158,7 +158,7 @@ access_control:
               - "pihole.{{ base_domain }}"
               - "notes.{{ base_domain }}"
               - "archivebox.{{ base_domain }}"
-              - "guacamole.{{ base_domain }}"
+              - "storage.{{ base_domain }}"
           policy: two_factor
           subject:
               - ["group:lldap_admin"]

@@ -9,6 +9,13 @@
       service:
           name: hoodik
           user: hoodik
+      postgresql_password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          34663835346365303562643130643036333537346430386666656239356434666562313862666531
+          6664383166356635623839366632306538353661373065360a376532663931623233636134636363
+          32313963366237663764353332373164343330333839623136613766653862313331616632646634
+          3038373466326365310a643937396364643230653138393834646261623734636161306430356535
+          63396231613630623634393232623839316439333266343833373666636339353961
 
   tasks:
       - name: User
@@ -25,7 +32,7 @@
                     - data
                     - postgresql_data
 
-      - name: Service test pod
+      - name: Service pod
         ansible.builtin.import_role:
             name: pod
 
@@ -35,7 +42,34 @@
         vars:
             postgresql_user:
                 username: "{{ service.name }}"
-                password: password
+                password: "{{ postgresql_password }}"
                 database: "{{ service.name }}"
             postgresql_volume_path: "{{ dirs_container_volume_subdirectories.results[1].path }}"
-            postgresql_log_path: "{{ dirs_container_logs }}"
+            postgresql_log_path: "{{ dirs_container_logs.path }}"
+
+      - name: Hoodik container
+        become: true
+        become_user: "{{ service.user }}"
+        containers.podman.podman_container:
+            name: "{{ service.name }}_server"
+            state: "{{ container_state | default('started') }}"
+            image: "docker.io/hudik/hoodik:{{ versions.hoodik }}"
+            volumes:
+                - "{{ dirs_container_volume_subdirectories.results[0].path }}:/data"
+            publish:
+                - "{{ network.internal_ip }}:{{ network.service_ports.hoodik }}:5443"
+            env:
+                DATA_DIR: /data
+                APP_URL: "https://storage.{{ base_domain }}"
+                MAILER_TYPE: smtp
+                SMTP_ADDRESS: "{{ email.host }}"
+                SMTP_PORT: "{{ email.port }}"
+                SMTP_USERNAME: "{{ email.username }}"
+                SMTP_PASSWORD: "{{ email.password }}"
+                SMTP_DEFAULT_FROM: "storage.{{ base_domain }} <{{ email.username }}>"
+                SSL_DISABLED: "true"
+            log_driver: "{{ podman.log_driver }}"
+            log_options:
+                path: "{{ dirs_container_logs.path }}/{{ podman.container_log_file }}"
+            restart_policy: "{{ podman.restart_policy | regex_replace('[^A-Za-z0-9-:]', '') }}"
+            network: "{{ podman.network }}"

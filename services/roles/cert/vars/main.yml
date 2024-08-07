@@ -1,0 +1,5 @@
+---
+# vars file for cert
+
+cert_ownca_path: "../secrets/ca/{{ base_domain }}.crt"
+cert_ownca_privatekey_path: "../secrets/ca/{{ base_domain }}.key"
