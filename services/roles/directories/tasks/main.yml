@@ -30,7 +30,7 @@
       owner: "{{ service.user }}"
       group: "{{ directories_container_volume.group | default(service.user) }}"
       mode: "{{ directories_container_volume.mode | default(directories_default_mode) }}"
-  when: directories_container_volume is not undefined and directories_container_volume.create
+  when: directories_container_volume.subdirectories is not undefined and directories_container_volume.create
   loop: "{{ directories_container_volume.subdirectories }}"
   register: dirs_container_volume_subdirectories
 
@@ -55,7 +55,7 @@
       owner: "{{ service.user }}"
       group: "{{ directories_container_logs.group | default(service.user) }}"
       mode: "{{ directories_container_logs.mode | default(directories_default_mode) }}"
-  when: directories_container_logs is not undefined and directories_container_logs.create
+  when: directories_container_logs.subdirectories is not undefined
   loop: "{{ directories_container_logs.subdirectories }}"
   register: dirs_container_logs_subdirectories
 
@@ -81,6 +81,6 @@
       owner: "{{ service.user }}"
       group: "{{ directories_container_cache.group | default(service.user) }}"
       mode: "{{ directories_container_cache.mode | default(directories_default_mode) }}"
-  when: directories_container_cache is not undefined and directories_container_cache.create
+  when: directories_container_cache.subdirectories is not undefined and directories_container_cache.create
   loop: "{{ directories_container_cache.subdirectories }}"
   register: dirs_container_cache_subdirectories

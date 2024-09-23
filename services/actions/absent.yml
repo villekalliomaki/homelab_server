@@ -4,65 +4,70 @@
 # Regenerate using: ansible-playbook services/actions/generate_actions.yml.
 #
 
-- name: "Container state change to absent, for ../lldap.yml"
+- name: "Container state change to absent, for ../deemix.yml"
   vars:
       container_state: "absent"
-  ansible.builtin.import_playbook: "../lldap.yml"
-
-- name: "Container state change to absent, for ../loki.yml"
-  vars:
-      container_state: "absent"
-  ansible.builtin.import_playbook: "../loki.yml"
+  ansible.builtin.import_playbook: "../deemix.yml"
 
 - name: "Container state change to absent, for ../homepage.yml"
   vars:
       container_state: "absent"
   ansible.builtin.import_playbook: "../homepage.yml"
 
-- name: "Container state change to absent, for ../deemix.yml"
+- name: "Container state change to absent, for ../pihole.yml"
   vars:
       container_state: "absent"
-  ansible.builtin.import_playbook: "../deemix.yml"
+  ansible.builtin.import_playbook: "../pihole.yml"
 
-- name: "Container state change to absent, for ../promtail.yml"
+- name: "Container state change to absent, for ../hoodik.yml"
   vars:
       container_state: "absent"
-  ansible.builtin.import_playbook: "../promtail.yml"
+  ansible.builtin.import_playbook: "../hoodik.yml"
 
-- name: "Container state change to absent, for ../photoprism.yml"
+- name: "Container state change to absent, for ../loki.yml"
   vars:
       container_state: "absent"
-  ansible.builtin.import_playbook: "../photoprism.yml"
-
-- name: "Container state change to absent, for ../nginx.yml"
-  vars:
-      container_state: "absent"
-  ansible.builtin.import_playbook: "../nginx.yml"
-
-- name: "Container state change to absent, for ../paperless_ngx.yml"
-  vars:
-      container_state: "absent"
-  ansible.builtin.import_playbook: "../paperless_ngx.yml"
-
-- name: "Container state change to absent, for ../grafana.yml"
-  vars:
-      container_state: "absent"
-  ansible.builtin.import_playbook: "../grafana.yml"
-
-- name: "Container state change to absent, for ../radarr.yml"
-  vars:
-      container_state: "absent"
-  ansible.builtin.import_playbook: "../radarr.yml"
+  ansible.builtin.import_playbook: "../loki.yml"
 
 - name: "Container state change to absent, for ../authelia.yml"
   vars:
       container_state: "absent"
   ansible.builtin.import_playbook: "../authelia.yml"
 
-- name: "Container state change to absent, for ../pihole.yml"
+- name: "Container state change to absent, for ../minecraft.yml"
   vars:
       container_state: "absent"
-  ansible.builtin.import_playbook: "../pihole.yml"
+  ansible.builtin.import_playbook: "../minecraft.yml"
+
+- name: "Container state change to absent, for ../nginx.yml"
+  vars:
+      container_state: "absent"
+  ansible.builtin.import_playbook: "../nginx.yml"
+
+- name: "Container state change to absent, for ../lldap.yml"
+  vars:
+      container_state: "absent"
+  ansible.builtin.import_playbook: "../lldap.yml"
+
+- name: "Container state change to absent, for ../radarr.yml"
+  vars:
+      container_state: "absent"
+  ansible.builtin.import_playbook: "../radarr.yml"
+
+- name: "Container state change to absent, for ../prometheus.yml"
+  vars:
+      container_state: "absent"
+  ansible.builtin.import_playbook: "../prometheus.yml"
+
+- name: "Container state change to absent, for ../jupyter_notebook.yml"
+  vars:
+      container_state: "absent"
+  ansible.builtin.import_playbook: "../jupyter_notebook.yml"
+
+- name: "Container state change to absent, for ../photoprism.yml"
+  vars:
+      container_state: "absent"
+  ansible.builtin.import_playbook: "../photoprism.yml"
 
 - name: "Container state change to absent, for ../prowlarr.yml"
   vars:
@@ -74,18 +79,33 @@
       container_state: "absent"
   ansible.builtin.import_playbook: "../sonarr.yml"
 
-- name: "Container state change to absent, for ../prometheus.yml"
+- name: "Container state change to absent, for ../grafana.yml"
   vars:
       container_state: "absent"
-  ansible.builtin.import_playbook: "../prometheus.yml"
+  ansible.builtin.import_playbook: "../grafana.yml"
+
+- name: "Container state change to absent, for ../filebrowser_documents.yml"
+  vars:
+      container_state: "absent"
+  ansible.builtin.import_playbook: "../filebrowser_documents.yml"
 
 - name: "Container state change to absent, for ../seafile.yml"
   vars:
       container_state: "absent"
   ansible.builtin.import_playbook: "../seafile.yml"
 
+- name: "Container state change to absent, for ../promtail.yml"
+  vars:
+      container_state: "absent"
+  ansible.builtin.import_playbook: "../promtail.yml"
+
 - name: "Container state change to absent, for ../trilium.yml"
   vars:
       container_state: "absent"
   ansible.builtin.import_playbook: "../trilium.yml"
+
+- name: "Container state change to absent, for ../jellyfin.yml"
+  vars:
+      container_state: "absent"
+  ansible.builtin.import_playbook: "../jellyfin.yml"
 

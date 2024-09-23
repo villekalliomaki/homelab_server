@@ -9,12 +9,6 @@
       service:
           name: lldap
           user: lldap
-          publish:
-              - "{{ network.internal_ip }}:{{ network.service_ports.lldap_ldap }}:3890"
-              - "{{ network.internal_ip }}:{{ network.service_ports.lldap_admin }}:17170"
-      volumes:
-          subdirectories:
-              - postgresql
       postgresql:
           database: lldap
           username: lldap
@@ -52,20 +46,37 @@
               636266626533363137346636323231383834
 
   tasks:
-      - name: Service user
-        ansible.builtin.include_tasks: tasks/service_user.yml
+      - name: User
+        ansible.builtin.import_role:
+            name: service_user
 
-      - name: Volume directories
-        ansible.builtin.include_tasks: tasks/volume_directory.yml
+      - name: Directories
+        ansible.builtin.import_role:
+            name: directories
+        vars:
+            directories_container_volume:
+                create: true
+                subdirectories:
+                    - postgresql
 
-      - name: Service pod
-        ansible.builtin.include_tasks: tasks/pod.yml
+      - name: Pod
+        ansible.builtin.import_role:
+            name: pod
+        vars:
+            pod_publish:
+                - "{{ network.internal_ip }}:{{ network.service_ports.lldap_ldap }}:3890"
+                - "{{ network.internal_ip }}:{{ network.service_ports.lldap_admin }}:17170"
 
       - name: Database
+        ansible.builtin.import_role:
+            name: postgresql
         vars:
-            # Defined here and not above because volume_subdirectory_output doesn't exist there
-            postgresql_volume: "{{ volume_subdirectory_output.results[0].path }}"
-        ansible.builtin.include_tasks: tasks/postgresql.yml
+            postgresql_user:
+                username: "{{ postgresql.username }}"
+                password: "{{ postgresql.password }}"
+                database: "{{ postgresql.database }}"
+            postgresql_volume_path: "{{ dirs_container_volume_subdirectories.results[0].path }}"
+            postgresql_log_path: "{{ dirs_container_logs.path }}"
 
       - name: LLDAP container
         become: true
@@ -75,9 +86,6 @@
             state: "{{ container_state | default('started') }}"
             pod: "{{ service.name }}"
             image: "docker.io/nitnelave/lldap:{{ versions.lldap }}"
-            log_driver: "{{ podman.log_driver }}"
-            log_options:
-                path: "{{ container_log_directory_output.path }}/{{ podman.container_log_file }}"
             restart_policy: "{{ podman.restart_policy | regex_replace('[^A-Za-z0-9-:]', '') }}"
             env:
                 TZ: Europe/Helsinki
@@ -90,3 +98,6 @@
                 LLDAP_DATABASE_URL: "postgresql://{{ postgresql.username }}:{{ postgresql.password }}@127.0.0.1/{{ postgresql.database }}"
             requires:
                 - "{{ postgresql_container_output.container.Name }}"
+            log_driver: "{{ podman.log_driver }}"
+            log_options:
+                path: "{{ dirs_container_logs.path }}/{{ podman.container_log_file }}"

@@ -11,11 +11,16 @@
           user: grafana
 
   tasks:
-      - name: Service user
-        ansible.builtin.include_tasks: tasks/service_user.yml
+      - name: User
+        ansible.builtin.import_role:
+            name: service_user
 
-      - name: Volume directories
-        ansible.builtin.include_tasks: tasks/volume_directory.yml
+      - name: Directories
+        ansible.builtin.import_role:
+            name: directories
+        vars:
+            directories_container_volume:
+                create: true
 
       - name: Grafana container
         become: true
@@ -24,13 +29,13 @@
             name: "{{ service.name }}"
             state: "{{ container_state | default('started') }}"
             image: docker.io/grafana/grafana-oss
-            log_driver: "{{ podman.log_driver }}"
-            log_options:
-                path: "{{ container_log_directory_output.path }}/{{ podman.container_log_file }}"
-            restart_policy: "{{ podman.restart_policy | regex_replace('[^A-Za-z0-9-:]', '') }}"
             network: "{{ podman.network }}"
             user: "{{ ansible_user_id }}"
             publish:
                 - "{{ network.internal_ip }}:{{ network.service_ports.grafana }}:3000"
             volumes:
-                - "{{ volume_directory_output.path }}:/var/lib/grafana"
+                - "{{ dirs_container_volume.path }}:/var/lib/grafana"
+            log_driver: "{{ podman.log_driver }}"
+            log_options:
+                path: "{{ dirs_container_logs.path }}/{{ podman.container_log_file }}"
+            restart_policy: "{{ podman.restart_policy | regex_replace('[^A-Za-z0-9-:]', '') }}"

@@ -1,4 +1,4 @@
-- name: Centralized log storage
+- name: Minecraft server
   hosts: homelab
   remote_user: root
 
@@ -7,8 +7,8 @@
 
   vars:
       service:
-          name: loki
-          user: loki
+          name: minecraft
+          user: minecraft
 
   tasks:
       - name: User
@@ -22,29 +22,26 @@
             directories_container_volume:
                 create: true
 
-      - name: Copy config template
-        ansible.builtin.template:
-            src: configs/loki.yml
-            dest: "{{ dirs_container_volume.path }}/config.yml"
-            owner: "{{ service.user }}"
-            group: "{{ service.user }}"
-            mode: u=rw
-
-      - name: Loki container
+      - name: Server container
         become: true
         become_user: "{{ service.user }}"
         containers.podman.podman_container:
             name: "{{ service.name }}"
             state: "{{ container_state | default('started') }}"
-            image: docker.io/grafana/loki
+            image: docker.io/itzg/minecraft-server
             log_driver: "{{ podman.log_driver }}"
             log_options:
                 path: "{{ dirs_container_logs.path }}/{{ podman.container_log_file }}"
             restart_policy: "{{ podman.restart_policy | regex_replace('[^A-Za-z0-9-:]', '') }}"
             network: "{{ podman.network }}"
-            user: "{{ ansible_user_id }}"
             publish:
-                - "{{ network.internal_ip }}:{{ network.service_ports.loki }}:3100"
+                - "{{ network.external_ip }}:{{ network.service_ports.minecraft }}:25565"
             volumes:
-                - "{{ dirs_container_volume.path }}:/loki"
-            command: -config.file=/loki/config.yml
+                - "{{ dirs_container_volume.path }}:/data"
+            env:
+                EULA: "TRUE"
+                VERSION: "1.21.1"
+                MEMORY: "8G"
+            dns_servers:
+                - "1.1.1.1"
+                - "8.8.8.8"

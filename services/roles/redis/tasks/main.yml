@@ -7,7 +7,6 @@
           - service.name
           - service.user
           - redis_log_path
-          - redis_user.username
           - redis_user.password
       fail_msg: Some required variable(s) missing
 
@@ -35,10 +34,9 @@
       command: >
           redis-server
           --maxmemory 200mb
-          --user "{{ redis_user.username }}"
           --requirepass {{ redis_user.password }}
           --protected-mode no
           --bind 0.0.0.0
       log_driver: "{{ podman.log_driver }}"
       log_options:
-          path: "{{ postgresql_log_path }}/redis_log"
+          path: "{{ redis_log_path }}/redis_log"

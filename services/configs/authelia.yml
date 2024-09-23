@@ -113,13 +113,13 @@ access_control:
               - "jellyseerr.{{ base_domain }}"
               - "dynmap.{{ base_domain }}"
               - "gallery.{{ base_domain }}"
+              - "jupyter.{{ base_domain}}"
           policy: one_factor
 
         ##
         ## Internal access without SSO
         ##
         - domain:
-              - "archive.{{ base_domain }}"
               - "media.{{ base_domain }}"
               - "git.{{ base_domain }}"
               - "seafile.{{ base_domain }}"
@@ -159,6 +159,7 @@ access_control:
               - "notes.{{ base_domain }}"
               - "archivebox.{{ base_domain }}"
               - "storage.{{ base_domain }}"
+              - "documents.{{ base_domain }}"
           policy: two_factor
           subject:
               - ["group:lldap_admin"]

@@ -9,13 +9,6 @@
       service:
           name: nginx
           user: nginx
-      volumes:
-          subdirectories:
-              # Order matters for output
-              - config
-              - certificates
-          logs:
-              - access_log
 
       # The static config is generated from these. Endpoint is not generated from global variables
       # to allow proxying to services not managed here.
@@ -36,6 +29,12 @@
               - name: hoodik
                 domain: "storage.{{ base_domain }}"
                 endpoint: "{{ network.internal_ip }}:{{ network.service_ports.hoodik }}"
+              - name: filebrowser_documents
+                domain: "documents.{{ base_domain }}"
+                endpoint: "{{ network.internal_ip }}:{{ network.service_ports.filebrowser_documents }}"
+              - name: jupyter
+                domain: "jupyter.{{ base_domain}}"
+                endpoint: "{{ network.internal_ip }}:{{ network.service_ports.jupyter_notebook }}"
           external:
               - name: homepage
                 domain: "start.{{ base_domain }}"
@@ -55,59 +54,49 @@
                 endpoint: "{{ ansible_wg0.ipv4.address }}:{{ network.service_ports.photoprism }}"
 
   tasks:
-      - name: Service user
-        ansible.builtin.include_tasks: tasks/service_user.yml
+      - name: User
+        ansible.builtin.import_role:
+            name: service_user
 
-      - name: Volume directories
-        ansible.builtin.include_tasks: tasks/volume_directory.yml
+      - name: Directories
+        ansible.builtin.import_role:
+            name: directories
+        vars:
+            directories_container_volume:
+                create: true
+                subdirectories:
+                    - config
+                    - certificates
+            directories_container_logs:
+                subdirectories:
+                    - access_log
 
-      # Internal certificate:
-      - name: Create a private key
-        community.crypto.openssl_privatekey:
-            path: "{{ volume_subdirectory_output.results[1].path }}/internal.key"
-            owner: "{{ service.user }}"
-            group: "{{ service.user }}"
-            mode: u=rw
-
-      - name: Create a CSR
-        register: internal_csr_output
-        community.crypto.openssl_csr:
-            path: "{{ volume_subdirectory_output.results[1].path }}/internal.csr"
-            privatekey_path: "{{ volume_subdirectory_output.results[1].path }}/internal.key"
-            common_name: "{{ base_domain }}"
-            subject_alt_name:
-                - "DNS:{{ base_domain }}"
-                - "DNS:*.{{ base_domain }}"
-            return_content: true
-
-      - name: Sign a new certificate locally
-        delegate_to: 127.0.0.1
-        register: cert_output
-        community.crypto.x509_certificate_pipe:
-            csr_content: "{{ internal_csr_output.csr }}"
-            provider: ownca
-            ownca_path: "../secrets/ca/{{ base_domain }}.crt"
-            ownca_privatekey_path: "../secrets/ca/{{ base_domain }}.key"
-            ownca_not_after: +90d
-            ownca_not_before: -1d
-
-      - name: Write certificate
-        ansible.builtin.copy:
-            content: "{{ cert_output.certificate }}"
-            dest: "{{ volume_subdirectory_output.results[1].path }}/internal.crt"
-            owner: "{{ service.user }}"
-            group: "{{ service.user }}"
-            mode: u=rw
+      - name: Internal certificate
+        ansible.builtin.import_role:
+            name: cert
+        vars:
+            cert_key_options:
+                output: "{{ dirs_container_volume_subdirectories.results[1].path }}/internal.key"
+            cert_csr_options:
+                output: "{{ dirs_container_volume_subdirectories.results[1].path }}/internal.csr"
+                common_name: "{{ base_domain }}"
+                subject_alt_names:
+                    - "DNS:{{ base_domain }}"
+                    - "DNS:*.{{ base_domain }}"
+            cert_crt_options:
+                output: "{{ dirs_container_volume_subdirectories.results[1].path }}/internal.crt"
+                not_after: +90d
+                not_before: -1d
 
       - name: Check if internal dhparams exist
         register: internal_dhparams
         ansible.builtin.stat:
-            path: "{{ volume_subdirectory_output.results[1].path }}/internal_dhparams.pem"
+            path: "{{ dirs_container_volume_subdirectories.results[1].path }}/internal_dhparams.pem"
 
       - name: Generate internal dhparams
         when: not internal_dhparams.stat.exists
         community.crypto.openssl_dhparam:
-            path: "{{ volume_subdirectory_output.results[1].path }}/internal_dhparams.pem"
+            path: "{{ dirs_container_volume_subdirectories.results[1].path }}/internal_dhparams.pem"
             owner: "{{ service.user }}"
             group: "{{ service.user }}"
             size: 4096
@@ -120,12 +109,12 @@
       - name: Check if external dhparams exist
         register: external_dhparams
         ansible.builtin.stat:
-            path: "{{ volume_subdirectory_output.results[1].path }}/external_dhparams.pem"
+            path: "{{ dirs_container_volume_subdirectories.results[1].path }}/external_dhparams.pem"
 
       - name: Generate external dhparams
         when: not external_dhparams.stat.exists
         community.crypto.openssl_dhparam:
-            path: "{{ volume_subdirectory_output.results[1].path }}/external_dhparams.pem"
+            path: "{{ dirs_container_volume_subdirectories.results[1].path }}/external_dhparams.pem"
             owner: "{{ service.user }}"
             group: "{{ service.user }}"
             size: 4096
@@ -134,7 +123,7 @@
       - name: Copy Let's Encrypt files to container volume
         ansible.builtin.copy:
             src: "{{ filesystem.lets_encrypt_certs.base_domain.live }}/{{ item }}"
-            dest: "{{ volume_subdirectory_output.results[1].path }}/external_{{ item }}"
+            dest: "{{ dirs_container_volume_subdirectories.results[1].path }}/external_{{ item }}"
             remote_src: true
             owner: "{{ service.user }}"
             group: "{{ service.user }}"
@@ -148,7 +137,7 @@
         with_community.general.filetree: configs/nginx
         when: item.state == 'directory'
         ansible.builtin.file:
-            path: "{{ volume_subdirectory_output.results[0].path }}/{{ item.path }}"
+            path: "{{ dirs_container_volume_subdirectories.results[0].path }}/{{ item.path }}"
             owner: "{{ service.user }}"
             group: "{{ service.user }}"
             state: directory
@@ -159,7 +148,7 @@
         when: item.state == 'file'
         ansible.builtin.template:
             src: "{{ item.src }}"
-            dest: "{{ volume_subdirectory_output.results[0].path }}/{{ item.path }}"
+            dest: "{{ dirs_container_volume_subdirectories.results[0].path }}/{{ item.path }}"
             owner: "{{ service.user }}"
             group: "{{ service.user }}"
             mode: a=,u=rwx
@@ -173,18 +162,18 @@
             image: "docker.io/villekalliomaki/nginx:{{ versions.nginx }}"
             log_driver: "{{ podman.log_driver }}"
             log_options:
-                path: "{{ container_log_directory_output.path }}/{{ podman.container_log_file }}"
+                path: "{{ dirs_container_logs.path }}/{{ podman.container_log_file }}"
             recreate: true
             restart_policy: "{{ podman.restart_policy | regex_replace('[^A-Za-z0-9-:]', '') }}"
             network:
                 # Allow this container to reach the host
                 - pasta:--map-gw
             volumes:
-                - "{{ volume_subdirectory_output.results[0].path }}:/etc/nginx:ro"
-                - "{{ volume_subdirectory_output.results[1].path }}:/etc/certificates:ro"
+                - "{{ dirs_container_volume_subdirectories.results[0].path }}:/etc/nginx:ro"
+                - "{{ dirs_container_volume_subdirectories.results[1].path }}:/etc/certificates:ro"
                 - "{{ filesystem.lets_encrypt_certs.base_directory }}:{{ filesystem.lets_encrypt_certs.base_directory }}:ro"
                 - "{{ filesystem.geoip_databases }}:/usr/share/GeoIP:ro"
-                - "{{ custom_log_directories_output.results[0].path }}:/var/access_log"
+                - "{{ dirs_container_logs_subdirectories.results[0].path }}:/var/access_log"
             publish:
                 - "{{ network.external_ip }}:{{ network.exposed_ports.nginx_http }}:{{ network.exposed_ports.nginx_http }}"
                 - "{{ network.external_ip }}:{{ network.exposed_ports.nginx_https_internal }}:{{ network.exposed_ports.nginx_https_internal }}"

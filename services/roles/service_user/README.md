@@ -16,4 +16,4 @@ service_user_groups:
 
 ## Return values
 
-The start of the subuid/subgid range is returned with `service_user_subuid_start` (not tested to actually be correct).
+The start of the subuid/subgid range is returned with `service_user_subuid_start` (not tested to actually be correct). The service user task output is stored to `service_user_output`, the UID being `service_user_output.uid`. 

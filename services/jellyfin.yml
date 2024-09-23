@@ -9,16 +9,28 @@
       service:
           name: jellyfin
           user: jellyfin
-      volumes:
-          cache_directories:
-              - transcodes
 
   tasks:
-      - name: Service user
-        ansible.builtin.include_tasks: tasks/service_user.yml
+      - name: User
+        ansible.builtin.import_role:
+            name: service_user
+        vars:
+            service_user_groups:
+                - media
 
-      - name: Volume directories
-        ansible.builtin.include_tasks: tasks/volume_directory.yml
+      - name: Directories
+        ansible.builtin.import_role:
+            name: directories
+        vars:
+            directories_container_volume:
+                create: true
+            directories_container_cache:
+                create: true
+
+      - name: Regenerate CDI spec
+        register: cdi_spec_output
+        changed_when: '"Generated CDI spec" in cdi_spec_output.stdout'
+        ansible.builtin.command: /usr/bin/nvidia-ctk cdi generate --output=/etc/cdi/nvidia.yaml
 
       - name: Jellyfin container
         become: true
@@ -29,7 +41,7 @@
             image: "docker.io/jellyfin/jellyfin:{{ versions.jellyfin }}"
             log_driver: "{{ podman.log_driver }}"
             log_options:
-                path: "{{ container_log_directory_output.path }}/{{ podman.container_log_file }}"
+                path: "{{ dirs_container_logs.path }}/{{ podman.container_log_file }}"
             restart_policy: "{{ podman.restart_policy | regex_replace('[^A-Za-z0-9-:]', '') }}"
             network: "{{ podman.network }}"
             publish:
@@ -43,8 +55,8 @@
             device:
                 - nvidia.com/gpu=all
             volumes:
-                - "{{ volume_directory_output.path }}:/config"
-                - "{{ cache_directories_output.results[0].path }}:/cache"
+                - "{{ dirs_container_volume.path }}:/config"
+                - "{{ dirs_container_cache.path }}:/cache"
                 - "{{ filesystem.media.movies }}:/media/movies"
                 - "{{ filesystem.media.series }}:/media/series"
                 - "{{ filesystem.media.music }}:/media/music"

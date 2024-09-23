@@ -1,0 +1,62 @@
+- name: Web file browser UI for document storage
+  hosts: homelab
+  remote_user: root
+
+  vars_files:
+      - ../global.yml
+
+  vars:
+      service:
+          name: filebrowser_documents
+          user: filebrowser_documents
+
+  tasks:
+      - name: User
+        ansible.builtin.import_role:
+            name: service_user
+
+      - name: Directories
+        ansible.builtin.import_role:
+            name: directories
+        vars:
+            directories_container_volume:
+                create: true
+                subdirectories:
+                    - config
+                    - data
+
+      - name: Create database file if it doesn't exist
+        ansible.builtin.file:
+            path: "{{ dirs_container_volume_subdirectories.results[0].path }}/database.db"
+            state: touch
+            owner: "{{ service.user }}"
+            group: "{{ service.user }}"
+            mode: u=rwx
+
+      - name: Copy config file
+        ansible.builtin.copy:
+            src: ./configs/filebrowser_documents.json
+            dest: "{{ dirs_container_volume_subdirectories.results[0].path }}/.filebrowser.json"
+            owner: "{{ service.user }}"
+            group: "{{ service.user }}"
+            mode: u=rwx
+
+      - name: Filebrowser container (documents)
+        become: true
+        become_user: "{{ service.user }}"
+        containers.podman.podman_container:
+            name: "{{ service.name }}"
+            state: "{{ container_state | default('started') }}"
+            image: "docker.io/filebrowser/filebrowser:{{ versions.filebrowser }}"
+            log_driver: "{{ podman.log_driver }}"
+            log_options:
+                path: "{{ dirs_container_logs.path }}/{{ podman.container_log_file }}"
+            restart_policy: "{{ podman.restart_policy | regex_replace('[^A-Za-z0-9-:]', '') }}"
+            network: "{{ podman.network }}"
+            publish:
+                - "{{ network.internal_ip }}:{{ network.service_ports.filebrowser_documents }}:80"
+            volumes:
+                # Can't change config or database paths...
+                - "{{ dirs_container_volume_subdirectories.results[0].path }}/database.db:/database.db"
+                - "{{ dirs_container_volume_subdirectories.results[0].path }}/.filebrowser.json:/.filebrowser.json"
+                - "{{ dirs_container_volume_subdirectories.results[1].path }}:/data"

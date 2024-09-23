@@ -11,7 +11,7 @@
 - name: Create CSR
   register: cert_csr_output
   community.crypto.openssl_csr:
-      path: "{{ cert_key_options.output }}"
+      path: "{{ cert_csr_options.output }}"
       privatekey_path: "{{  cert_key_options.output  }}"
       common_name: "{{ cert_csr_options.common_name }}"
       subject_alt_name: "{{ cert_csr_options.subject_alt_names | default([]) }}"

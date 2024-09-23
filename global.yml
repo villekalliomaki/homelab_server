@@ -42,6 +42,9 @@ network:
         grafana: 3017
         jellyfin: 3018
         hoodik: 3019
+        filebrowser_documents: 3020
+        minecraft: 3021
+        jupyter_notebook: 3022
     podman_exporter_range_start: 5000
 
 # Locked versions for services if required. If not set will default to latest.
@@ -50,10 +53,10 @@ versions:
     nginx: "1.26.1"
     # https://hub.docker.com/r/authelia/authelia/tags
     # https://github.com/authelia/authelia/releases
-    authelia: "4.38.9"
+    authelia: "4.38.12"
     # https://github.com/gethomepage/homepage/pkgs/container/homepage
     # https://github.com/gethomepage/homepage/releases
-    homepage: "v0.9.5"
+    homepage: "v0.9.9"
     # https://hub.docker.com/r/nitnelave/lldap/tags
     # https://github.com/lldap/lldap/releases
     # Should be changes to a version number when new is released
@@ -69,15 +72,21 @@ versions:
     trilium: "0.63.7"
     # https://hub.docker.com/r/jellyfin/jellyfin/tags
     # https://github.com/jellyfin/jellyfin/releases
-    jellyfin: "10.9.8"
+    jellyfin: "10.9.11"
     # https://hub.docker.com/r/seafileltd/seafile-mc/tags
     seafile: "11.0.6"
     # https://hub.docker.com/r/prom/prometheus/tags
     # https://github.com/prometheus/prometheus/releases
-    prometheus: "v2.53.1"
+    prometheus: "v2.54.1"
     # https://hub.docker.com/r/hudik/hoodik/tags
     # https://github.com/hudikhq/hoodik/releases
-    hoodik: "v1.2.1"
+    hoodik: "v1.3.1"
+    # https://hub.docker.com/r/filebrowser/filebrowser/tags
+    # https://github.com/filebrowser/filebrowser/releases
+    filebrowser: "v2.30.0"
+    # https://quay.io/repository/jupyter/datascience-notebook?tab=tags
+    # https://github.com/jupyter/docker-stacks/tree/main/images/datascience-notebook
+    jupyter_notebook_datascience: "notebook-7.2.2"
 
 filesystem:
     systemd_units: /etc/systemd/system

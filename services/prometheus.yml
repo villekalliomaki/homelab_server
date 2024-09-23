@@ -11,18 +11,23 @@
           user: prometheus
 
   tasks:
-      - name: Service user
-        ansible.builtin.include_tasks: tasks/service_user.yml
+      - name: User
+        ansible.builtin.import_role:
+            name: service_user
 
-      - name: Volume directories
-        ansible.builtin.include_tasks: tasks/volume_directory.yml
+      - name: Directories
+        ansible.builtin.import_role:
+            name: directories
+        vars:
+            directories_container_volume:
+                create: true
 
       - name: Generate config files
         with_community.general.filetree: configs/prometheus
         when: item.state == 'file'
         ansible.builtin.template:
             src: "{{ item.src }}"
-            dest: "{{ volume_directory_output.path }}/{{ item.path }}"
+            dest: "{{ dirs_container_volume.path }}/{{ item.path }}"
             owner: "{{ service.user }}"
             group: "{{ service.user }}"
             mode: a=,u=rw
@@ -45,7 +50,7 @@
             image: "docker.io/prom/prometheus:{{ versions.prometheus }}"
             log_driver: "{{ podman.log_driver }}"
             log_options:
-                path: "{{ container_log_directory_output.path }}/{{ podman.container_log_file }}"
+                path: "{{ dirs_container_logs.path }}/{{ podman.container_log_file }}"
             restart_policy: "{{ podman.restart_policy | regex_replace('[^A-Za-z0-9-:]', '') }}"
             network: "{{ podman.network }}"
             # Map real to to nobody inside container
@@ -53,5 +58,5 @@
             publish:
                 - "{{ network.internal_ip }}:{{ network.service_ports.prometheus }}:9090"
             volumes:
-                - "{{ volume_directory_output.path }}:/prometheus"
+                - "{{ dirs_container_volume.path }}:/prometheus"
             command: --config.file=/prometheus/general_config.yml

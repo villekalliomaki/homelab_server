@@ -9,16 +9,6 @@
       service:
           name: authelia
           user: authelia
-          publish:
-              - "{{ network.internal_ip }}:{{ network.service_ports.authelia }}:80"
-              - "{{ network.internal_ip }}:{{ network.service_ports.authelia_metrics }}:9959"
-              # TEMP for migration
-              # gnitVaygH32hfphXx6VrHxHZCiyMQGLg5543ZMEaTdhSFf8sWM
-              - "{{ network.external_ip }}:5432:5432"
-      volumes:
-          subdirectories:
-              - postgresql
-              - config
       postgresql:
           database: authelia
           username: authelia
@@ -32,6 +22,7 @@
               65656539346537373962653532356633643662396261313137663762653361373264613232636635
               353963303436313764386132336534653463
       redis:
+          username: authelia
           password: !vault |
               $ANSIBLE_VAULT;1.1;AES256
               30326562373436306336306131633563323239366234386231646163656163313937353338376230
@@ -82,27 +73,53 @@
               6339336131383764636439343038616336306531633530393734
 
   tasks:
-      - name: Service user
-        ansible.builtin.include_tasks: tasks/service_user.yml
+      - name: User
+        ansible.builtin.import_role:
+            name: service_user
 
-      - name: Volume directories
-        ansible.builtin.include_tasks: tasks/volume_directory.yml
+      - name: Directories
+        ansible.builtin.import_role:
+            name: directories
+        vars:
+            directories_container_volume:
+                create: true
+                subdirectories:
+                    - postgresql
+                    - redis
+                    - config
 
-      - name: Service pod
-        ansible.builtin.include_tasks: tasks/pod.yml
+      - name: Pod
+        ansible.builtin.import_role:
+            name: pod
+        vars:
+            pod_publish:
+                - "{{ network.internal_ip }}:{{ network.service_ports.authelia }}:80"
+                - "{{ network.internal_ip }}:{{ network.service_ports.authelia_metrics }}:9959"
 
       - name: Database
+        ansible.builtin.import_role:
+            name: postgresql
         vars:
-            postgresql_volume: "{{ volume_subdirectory_output.results[0].path }}"
-        ansible.builtin.include_tasks: tasks/postgresql.yml
+            postgresql_user:
+                username: "{{ postgresql.username }}"
+                password: "{{ postgresql.password }}"
+                database: "{{ postgresql.database }}"
+            postgresql_volume_path: "{{ dirs_container_volume_subdirectories.results[0].path }}"
+            postgresql_log_path: "{{ dirs_container_logs.path }}"
 
       - name: Redis
-        ansible.builtin.include_tasks: tasks/redis.yml
+        ansible.builtin.import_role:
+            name: redis
+        vars:
+            redis_user:
+                password: "{{ redis.password }}"
+            redis_log_path: "{{ dirs_container_logs.path }}"
+            redis_data_path: "{{ dirs_container_volume_subdirectories.results[1].path }}"
 
       - name: Copy config template
         ansible.builtin.template:
             src: configs/authelia.yml
-            dest: "{{ volume_subdirectory_output.results[1].path }}/configuration.yml"
+            dest: "{{ dirs_container_volume_subdirectories.results[2].path }}/configuration.yml"
             owner: "{{ service.user }}"
             group: "{{ service.user }}"
             mode: a=,u=rw
@@ -117,10 +134,10 @@
             image: "docker.io/authelia/authelia:{{ versions.authelia }}"
             log_driver: "{{ podman.log_driver }}"
             log_options:
-                path: "{{ container_log_directory_output.path }}/{{ podman.container_log_file }}"
+                path: "{{ dirs_container_logs.path }}/{{ podman.container_log_file }}"
             restart_policy: "{{ podman.restart_policy | regex_replace('[^A-Za-z0-9-:]', '') }}"
             volume:
-                - "{{ volume_subdirectory_output.results[1].path }}:/config:ro"
+                - "{{ dirs_container_volume_subdirectories.results[2].path }}:/config:ro"
             requires:
                 - "{{ redis_container_output.container.Name }}"
                 - "{{ postgresql_container_output.container.Name }}"
