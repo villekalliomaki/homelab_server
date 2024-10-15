@@ -50,3 +50,4 @@
                 jupyter notebook
                 --allow-root
                 --no-browser
+                --PasswordIdentityProvider.hashed_password='argon2:$argon2id$v=19$m=10240,t=10,p=8$tSQwLZHSn8/y9z8DGzwRkg$/0w3xzaYXRxkA/zkZShGIW4NMCEsYDSa+NPCph2UlSM'

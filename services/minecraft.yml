@@ -21,7 +21,9 @@
         vars:
             directories_container_volume:
                 create: true
-
+      #
+      # DIRECTORY STRUCTURE CHANGED
+      #
       - name: Server container
         become: true
         become_user: "{{ service.user }}"

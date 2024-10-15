@@ -1,4 +1,4 @@
-- name: Movie download manager
+- name: Cloudflare CAPTCHA solver/proxy
   hosts: homelab
   remote_user: root
 
@@ -7,8 +7,8 @@
 
   vars:
       service:
-          name: radarr
-          user: radarr
+          name: flaresolverr
+          user: flaresolverr
 
   tasks:
       - name: User
@@ -18,29 +18,18 @@
       - name: Directories
         ansible.builtin.import_role:
             name: directories
-        vars:
-            directories_container_volume:
-                create: true
 
-      - name: Radarr container
+      - name: FlareSolverr container
         become: true
         become_user: "{{ service.user }}"
         containers.podman.podman_container:
             name: "{{ service.name }}"
-            image: lscr.io/linuxserver/radarr
             state: "{{ container_state | default('started') }}"
+            image: "docker.io/flaresolverr/flaresolverr:{{ versions.flaresolverr }}"
             log_driver: "{{ podman.log_driver }}"
             log_options:
                 path: "{{ dirs_container_logs.path }}/{{ podman.container_log_file }}"
             restart_policy: "{{ podman.restart_policy | regex_replace('[^A-Za-z0-9-:]', '') }}"
             network: "{{ podman.network }}"
-            volumes:
-                - "{{ dirs_container_volume.path }}:/config"
-                # - "{{ filesystem.media.movies }}:/media/movies"
-                # - "{{ filesystem.media.downloads }}:/media/downloads"
             publish:
-                - "{{ network.internal_ip }}:{{ network.service_ports.radarr }}:7878"
-            env:
-                PUID: "{{ ansible_user_id }}"
-                PGID: "{{ ansible_user_id }}"
-                TZ: Europe/Helsinki
+                - "{{ network.internal_ip }}:{{ network.service_ports.flaresolverr }}:8191"

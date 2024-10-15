@@ -14,6 +14,11 @@
       container_state: "started"
   ansible.builtin.import_playbook: "../homepage.yml"
 
+- name: "Container state change to started, for ../flaresolverr.yml"
+  vars:
+      container_state: "started"
+  ansible.builtin.import_playbook: "../flaresolverr.yml"
+
 - name: "Container state change to started, for ../pihole.yml"
   vars:
       container_state: "started"
@@ -88,11 +93,6 @@
   vars:
       container_state: "started"
   ansible.builtin.import_playbook: "../filebrowser_documents.yml"
-
-- name: "Container state change to started, for ../seafile.yml"
-  vars:
-      container_state: "started"
-  ansible.builtin.import_playbook: "../seafile.yml"
 
 - name: "Container state change to started, for ../promtail.yml"
   vars:

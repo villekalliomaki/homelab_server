@@ -140,7 +140,7 @@ access_control:
         - domain:
               - "radarr.{{ base_domain }}"
               - "sonarr.{{ base_domain }}"
-              - "jackett.{{ base_domain }}"
+              - "prowlarr.{{ base_domain }}"
               - "deluge.{{ base_domain }}"
               - "bazarr.{{ base_domain }}"
               - "deemix.{{ base_domain }}"

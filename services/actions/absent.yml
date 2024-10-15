@@ -14,6 +14,11 @@
       container_state: "absent"
   ansible.builtin.import_playbook: "../homepage.yml"
 
+- name: "Container state change to absent, for ../flaresolverr.yml"
+  vars:
+      container_state: "absent"
+  ansible.builtin.import_playbook: "../flaresolverr.yml"
+
 - name: "Container state change to absent, for ../pihole.yml"
   vars:
       container_state: "absent"
@@ -88,11 +93,6 @@
   vars:
       container_state: "absent"
   ansible.builtin.import_playbook: "../filebrowser_documents.yml"
-
-- name: "Container state change to absent, for ../seafile.yml"
-  vars:
-      container_state: "absent"
-  ansible.builtin.import_playbook: "../seafile.yml"
 
 - name: "Container state change to absent, for ../promtail.yml"
   vars:

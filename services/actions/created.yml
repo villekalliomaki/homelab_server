@@ -14,6 +14,11 @@
       container_state: "created"
   ansible.builtin.import_playbook: "../homepage.yml"
 
+- name: "Container state change to created, for ../flaresolverr.yml"
+  vars:
+      container_state: "created"
+  ansible.builtin.import_playbook: "../flaresolverr.yml"
+
 - name: "Container state change to created, for ../pihole.yml"
   vars:
       container_state: "created"
@@ -88,11 +93,6 @@
   vars:
       container_state: "created"
   ansible.builtin.import_playbook: "../filebrowser_documents.yml"
-
-- name: "Container state change to created, for ../seafile.yml"
-  vars:
-      container_state: "created"
-  ansible.builtin.import_playbook: "../seafile.yml"
 
 - name: "Container state change to created, for ../promtail.yml"
   vars:

@@ -45,6 +45,7 @@ network:
         filebrowser_documents: 3020
         minecraft: 3021
         jupyter_notebook: 3022
+        flaresolverr: 3023
     podman_exporter_range_start: 5000
 
 # Locked versions for services if required. If not set will default to latest.
@@ -87,6 +88,9 @@ versions:
     # https://quay.io/repository/jupyter/datascience-notebook?tab=tags
     # https://github.com/jupyter/docker-stacks/tree/main/images/datascience-notebook
     jupyter_notebook_datascience: "notebook-7.2.2"
+    # https://hub.docker.com/r/flaresolverr/flaresolverr/tags
+    # https://github.com/FlareSolverr/FlareSolverr/releases
+    flaresolverr: "v3.3.21"
 
 filesystem:
     systemd_units: /etc/systemd/system

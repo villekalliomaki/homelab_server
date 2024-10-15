@@ -35,6 +35,15 @@
               - name: jupyter
                 domain: "jupyter.{{ base_domain}}"
                 endpoint: "{{ network.internal_ip }}:{{ network.service_ports.jupyter_notebook }}"
+              - name: prowlarr
+                domain: "prowlarr.{{ base_domain }}"
+                endpoint: "{{ ansible_wg0.ipv4.address }}:{{ network.service_ports.prowlarr }}"
+              - name: radarr
+                domain: "radarr.{{ base_domain }}"
+                endpoint: "{{ ansible_wg0.ipv4.address }}:{{ network.service_ports.radarr }}"
+              - name: sonarr
+                domain: "sonarr.{{ base_domain }}"
+                endpoint: "{{ ansible_wg0.ipv4.address }}:{{ network.service_ports.sonarr }}"
           external:
               - name: homepage
                 domain: "start.{{ base_domain }}"
@@ -105,6 +114,8 @@
       # External certificate:
       # Issue is that nginx is not running as root, and changing permissions in certbot managed
       # directory makes no sense. So just copying the certs to the container volume...
+      #
+      # Symlink could work? Or just have rerun this every 90 days.
 
       - name: Check if external dhparams exist
         register: external_dhparams
