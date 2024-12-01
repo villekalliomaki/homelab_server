@@ -9,6 +9,15 @@
       service:
           name: minecraft
           user: minecraft
+      cf_api_key: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          37366637313931653564363066313438343963623965376661316664646466336334663961626431
+          3363386137656535323139393339633566383763346661300a326239626536373236343933626666
+          64386530353263356537366662636630353064643265316261663361363264343062663432636366
+          6636656365326561640a396637346538336539303264333933656463383263666530666130393339
+          35333332666539343233616565346135353563306562316236303631626564303431616337636166
+          36663266353333376632636562363934623234363938666130643332373131343635323564326337
+          363061386436653936396535373536333932
 
   tasks:
       - name: User
@@ -21,14 +30,17 @@
         vars:
             directories_container_volume:
                 create: true
-      #
-      # DIRECTORY STRUCTURE CHANGED
-      #
-      - name: Server container
+                subdirectories:
+                    - survival_2024
+                    - star_technology
+
+      - name: Server container (survival 2024)
+        # Toggle
+        when: false
         become: true
         become_user: "{{ service.user }}"
         containers.podman.podman_container:
-            name: "{{ service.name }}"
+            name: "{{ service.name }}_survival_2024"
             state: "{{ container_state | default('started') }}"
             image: docker.io/itzg/minecraft-server
             log_driver: "{{ podman.log_driver }}"
@@ -39,11 +51,41 @@
             publish:
                 - "{{ network.external_ip }}:{{ network.service_ports.minecraft }}:25565"
             volumes:
-                - "{{ dirs_container_volume.path }}:/data"
+                - "{{ dirs_container_volume_subdirectories.results[0].path }}:/data"
             env:
                 EULA: "TRUE"
                 VERSION: "1.21.1"
                 MEMORY: "8G"
+            dns_servers:
+                - "1.1.1.1"
+                - "8.8.8.8"
+
+      - name: Server container (Star Technology)
+        # Toggle
+        when: true
+        become: true
+        become_user: "{{ service.user }}"
+        containers.podman.podman_container:
+            name: "{{ service.name }}_star_technology"
+            state: "{{ container_state | default('started') }}"
+            image: docker.io/itzg/minecraft-server
+            log_driver: "{{ podman.log_driver }}"
+            log_options:
+                path: "{{ dirs_container_logs.path }}/{{ podman.container_log_file }}"
+            restart_policy: "{{ podman.restart_policy | regex_replace('[^A-Za-z0-9-:]', '') }}"
+            network: "{{ podman.network }}"
+            publish:
+                - "{{ network.external_ip }}:{{ network.service_ports.minecraft_star_technology }}:25565"
+            volumes:
+                - "{{ dirs_container_volume_subdirectories.results[1].path }}:/data"
+            env:
+                EULA: "TRUE"
+                TYPE: AUTO_CURSEFORGE
+                # VERSION: "1.21.1"
+                MEMORY: "12G"
+                CF_API_KEY: "{{ cf_api_key }}"
+                CF_PAGE_URL: https://www.curseforge.com/minecraft/modpacks/star-technology
+                CF_FILENAME_MATCHER: "1.20.1-GAMMA-HOTFIX-3"
             dns_servers:
                 - "1.1.1.1"
                 - "8.8.8.8"

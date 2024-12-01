@@ -12,3 +12,9 @@ prometheus
 trilium
 jellyfin
 hoodik
+prowlarr
+sonarr
+radarr
+jupyter_notebook
+flaresolverr
+filebrowser_documents
