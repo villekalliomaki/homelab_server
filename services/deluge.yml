@@ -1,0 +1,96 @@
+- name: Deluge torrent download client
+  hosts: homelab
+  remote_user: root
+
+  vars_files:
+      - ../global.yml
+
+  vars:
+      service:
+          name: deluge
+          user: deluge
+      mullvad_config:
+          private_key: !vault |
+              $ANSIBLE_VAULT;1.1;AES256
+              30643339333531613839376266333939626236383536643738316464313431653261346435636139
+              3064646261613030623937373238353035636262646666340a323339393864396362616266313935
+              32663531306364313964346137323830356264346232613133653732353230313336346466336233
+              3238643932666263320a626565383034616366663335343732343262393561363666653738363061
+              37613261366331633231333461306531323639346233313664313034383762663133383265613966
+              3535666138386534653738326664616665633839643934316663
+          addresses: !vault |
+              $ANSIBLE_VAULT;1.1;AES256
+              32383361306564326331623033626534626138306166616134633434353731623032306637376431
+              3532346466303361636561646665333637343664613031310a663166343166336632316233663236
+              35343130663631623539353031646231386464663861323537653634373165303333373836633335
+              6135613534623063380a616539636636653066306432373161336638656138353931643637643762
+              38366363613962386366343732356263626236623038373136643666373266373430
+          cities: !vault |
+              $ANSIBLE_VAULT;1.1;AES256
+              31643766326431353961366364626138376363333030626162646631383232353362373263313537
+              3562376334616133356230646437386639656461326666340a353532303638653032376663303166
+              65356139313436363865373638633934366539616135653737313064326530363965353334343665
+              3038336662356231330a613166653735346536326330336666313065366263623465633034376436
+              3830
+
+  tasks:
+      - name: User
+        ansible.builtin.import_role:
+            name: service_user
+
+      - name: Directories
+        ansible.builtin.import_role:
+            name: directories
+        vars:
+            directories_container_volume:
+                create: true
+
+      - name: Pod
+        ansible.builtin.import_role:
+            name: pod
+        vars:
+            pod_publish:
+                - "{{ network.internal_ip }}:{{ network.service_ports.deluge_web_ui }}:8112"
+
+      - name: Gluetun container
+        become: true
+        become_user: "{{ service.user }}"
+        containers.podman.podman_container:
+            name: "{{ service.name }}_gluetun"
+            state: "{{ container_state | default('started') }}"
+            pod: "{{ service.name }}"
+            image: "docker.io/qmcgaw/gluetun:{{ versions.gluetun }}"
+            log_driver: "{{ podman.log_driver }}"
+            log_options:
+                path: "{{ dirs_container_logs.path }}/{{ podman.container_log_file }}_gluetun"
+            restart_policy: "{{ podman.restart_policy | regex_replace('[^A-Za-z0-9-:]', '') }}"
+            env:
+                VPN_SERVICE_PROVIDER: mullvad
+                VPN_TYPE: wireguard
+                WIREGUARD_PRIVATE_KEY: "{{ mullvad_config.private_key }}"
+                WIREGUARD_ADDRESSES: "{{ mullvad_config.addresses }}"
+                SERVER_CITIES: "{{ mullvad_config.cities }}"
+            cap_add:
+                - NET_ADMIN
+            device:
+                - /dev/net/tun:/dev/net/tun
+
+      - name: Deluge container
+        become: true
+        become_user: "{{ service.user }}"
+        containers.podman.podman_container:
+            name: "{{ service.name }}"
+            state: "{{ container_state | default('started') }}"
+            pod: "{{ service.name }}"
+            image: "docker.io/linuxserver/deluge:{{ versions.deluge }}"
+            log_driver: "{{ podman.log_driver }}"
+            log_options:
+                path: "{{ dirs_container_logs.path }}/{{ podman.container_log_file }}"
+            restart_policy: "{{ podman.restart_policy | regex_replace('[^A-Za-z0-9-:]', '') }}"
+            volumes:
+                - "{{ filesystem.media.downloads }}:/downloads"
+                - "{{ dirs_container_volume.path }}:/config"
+            env:
+                PUID: "{{ ansible_user_id }}"
+                PGID: "{{ ansible_user_id }}"
+                TZ: Europe/Helsinki

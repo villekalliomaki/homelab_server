@@ -27,7 +27,7 @@
         become_user: "{{ service.user }}"
         containers.podman.podman_container:
             name: "{{ service.name }}"
-            image: lscr.io/linuxserver/radarr
+            image: "lscr.io/linuxserver/radarr:{{ versions.radarr }}"
             state: "{{ container_state | default('started') }}"
             log_driver: "{{ podman.log_driver }}"
             log_options:
@@ -36,8 +36,8 @@
             network: "{{ podman.network }}"
             volumes:
                 - "{{ dirs_container_volume.path }}:/config"
-                # - "{{ filesystem.media.movies }}:/media/movies"
-                # - "{{ filesystem.media.downloads }}:/media/downloads"
+                - "{{ filesystem.media.movies }}:/media/movies"
+                - "{{ filesystem.media.downloads }}:/media/downloads"
             publish:
                 - "{{ network.internal_ip }}:{{ network.service_ports.radarr }}:7878"
             env:

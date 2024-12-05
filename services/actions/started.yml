@@ -4,6 +4,11 @@
 # Regenerate using: ansible-playbook services/actions/generate_actions.yml.
 #
 
+- name: "Container state change to started, for ../deluge.yml"
+  vars:
+      container_state: "started"
+  ansible.builtin.import_playbook: "../deluge.yml"
+
 - name: "Container state change to started, for ../deemix.yml"
   vars:
       container_state: "started"

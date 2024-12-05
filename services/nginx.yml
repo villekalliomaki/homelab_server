@@ -44,6 +44,9 @@
               - name: sonarr
                 domain: "sonarr.{{ base_domain }}"
                 endpoint: "{{ ansible_wg0.ipv4.address }}:{{ network.service_ports.sonarr }}"
+              - name: deluge
+                domain: "deluge.{{ base_domain }}"
+                endpoint: "{{ ansible_wg0.ipv4.address }}:{{ network.service_ports.deluge_web_ui }}"
           external:
               - name: homepage
                 domain: "start.{{ base_domain }}"

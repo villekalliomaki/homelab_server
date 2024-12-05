@@ -48,3 +48,11 @@
         loop:
             - "{{ filesystem.vm_disks }}"
             - "{{ filesystem.vm_directories }}"
+
+      - name: Deluge download directory
+        ansible.builtin.file:
+            path: "{{ filesystem.media.downloads }}"
+            state: directory
+            owner: root
+            group: root
+            mode: a=rwx

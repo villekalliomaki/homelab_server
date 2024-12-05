@@ -37,6 +37,7 @@
                 - nvidia-container-toolkit
                 - qemu-base
                 - qemu-img
+                - wireshark-cli
 
       #
       # AUR
