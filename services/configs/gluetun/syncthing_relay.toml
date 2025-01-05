@@ -1,0 +1,5 @@
+[[roles]]
+name = "syncthing_relay"
+routes = ["GET /v1/openvpn/portforwarded", "GET /v1/publicip/ip"]
+auth = "apikey"
+apikey = "{{ gluetun.api_key }}"

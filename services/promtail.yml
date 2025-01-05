@@ -11,24 +11,26 @@
           user: promtail
 
   tasks:
-      - name: Service user
-        ansible.builtin.include_tasks: tasks/service_user.yml
-
-      # Required to access system journal
-      - name: Add user to systemd-journal
-        ansible.builtin.user:
-            user: "{{ service.user }}"
-            append: true
-            groups:
+      - name: User
+        ansible.builtin.import_role:
+            name: service_user
+        vars:
+            service_user_groups:
+                # Required to access system journal
                 - systemd-journal
+                - podman-logs
 
-      - name: Volume directories
-        ansible.builtin.include_tasks: tasks/volume_directory.yml
+      - name: Directories
+        ansible.builtin.import_role:
+            name: directories
+        vars:
+            directories_container_volume:
+                create: true
 
       - name: Copy config template
         ansible.builtin.template:
             src: configs/promtail.yml
-            dest: "{{ volume_directory_output.path }}/config.yml"
+            dest: "{{ dirs_container_volume.path }}/config.yml"
             owner: "{{ service.user }}"
             group: "{{ service.user }}"
             mode: u=rw
@@ -42,14 +44,14 @@
             image: docker.io/grafana/promtail
             log_driver: "{{ podman.log_driver }}"
             log_options:
-                path: "{{ container_log_directory_output.path }}/{{ podman.container_log_file }}"
+                path: "{{ dirs_container_logs.path }}/{{ podman.container_log_file }}"
             restart_policy: "{{ podman.restart_policy | regex_replace('[^A-Za-z0-9-:]', '') }}"
             network: "{{ podman.network }}"
             # Required to allow reads permitted by groups on the service user
             groups:
                 - keep-groups
             volumes:
-                - "{{ volume_directory_output.path }}:/data"
+                - "{{ dirs_container_volume.path }}:/data"
                 - "{{ filesystem.container_logs }}:/var/log/containers:ro"
                 - "/var/log/journal/:/var/log/journal/:ro"
             command: -config.file=/data/config.yml

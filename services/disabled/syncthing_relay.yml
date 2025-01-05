@@ -1,0 +1,42 @@
+- name: Syncthing relay
+  hosts: homelab
+  remote_user: root
+
+  vars_files:
+      - ../global.yml
+
+  vars:
+      service:
+          name: syncthing_relay
+          user: syncthing_relay
+
+  tasks:
+      - name: User
+        ansible.builtin.import_role:
+            name: service_user
+
+    #   - name: Get public IP
+    #     ansible.builtin.uri:
+    #         url: https://speed.cloudflare.com/meta
+    #         return_content: true
+    #     register: public_ip_response
+
+    #   - name: Set public IP
+    #     ansible.builtin.set_fact:
+    #         public_ip: "{{ (public_ip_response.content | from_json)['clientIp'] }}"
+
+      - name: Syncthing relay server
+        become: true
+        become_user: "{{ service.user }}"
+        containers.podman.podman_container:
+            name: "{{ service.name }}"
+            state: "{{ container_state | default('started') }}"
+            pod: "{{ service.name }}"
+            image: "docker.io/syncthing/relaysrv:{{ versions.syncthing_relay }}"
+            log_driver: "{{ podman.log_driver }}"
+            log_options:
+                path: "{{ dirs_container_logs.path }}/{{ podman.container_log_file }}"
+            restart_policy: "{{ podman.restart_policy | regex_replace('[^A-Za-z0-9-:]', '') }}"
+            publish:
+                - "{{ network.external_ip }}:{{ network.exposed_ports.synthing_data }}:22067"
+                - "{{ network.external_ip }}:{{ network.exposed_ports.synthing_stats }}:22070"

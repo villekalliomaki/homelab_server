@@ -32,6 +32,22 @@
               65356139313436363865373638633934366539616135653737313064326530363965353334343665
               3038336662356231330a613166653735346536326330336666313065366263623465633034376436
               3830
+      protonvpn_config:
+          private_key: !vault |
+              $ANSIBLE_VAULT;1.1;AES256
+              62366533373131323931396337623366623939333764316536336335356564626165353963373331
+              6263353262653233653937353161343332313863376265350a386436353335366634386664333332
+              36626261333035343762353638636431316533656262313431303531643436323232366637646234
+              3566656433623865620a373830333666636163316462626136396665323266633666666536653030
+              63623730363832663037613730333465616633323161343865643035663738353133356332636462
+              3630306462646665616263636263653838666463333933643439
+          countries: !vault |
+              $ANSIBLE_VAULT;1.1;AES256
+              38313133393361333238303533666563353761333765663232373835363264663561646265636336
+              6664353364323931663763393434666233636236343230320a333936613239343832356534623561
+              31316233336239663934323261623765316131623766323039333039313166613130313830376235
+              6565666436363231350a616664373239336235323935336632383332333835303230306262666232
+              6230
 
   tasks:
       - name: User
@@ -44,6 +60,9 @@
         vars:
             directories_container_volume:
                 create: true
+                subdirectories:
+                    - deluge
+                    - flood
 
       - name: Pod
         ansible.builtin.import_role:
@@ -51,6 +70,8 @@
         vars:
             pod_publish:
                 - "{{ network.internal_ip }}:{{ network.service_ports.deluge_web_ui }}:8112"
+                - "{{ network.internal_ip }}:{{ network.service_ports.gluetun_control_panel }}:8000"
+                - "{{ network.internal_ip }}:{{ network.service_ports.flood }}:3000"
 
       - name: Gluetun container
         become: true
@@ -65,11 +86,13 @@
                 path: "{{ dirs_container_logs.path }}/{{ podman.container_log_file }}_gluetun"
             restart_policy: "{{ podman.restart_policy | regex_replace('[^A-Za-z0-9-:]', '') }}"
             env:
-                VPN_SERVICE_PROVIDER: mullvad
+                VPN_SERVICE_PROVIDER: protonvpn
                 VPN_TYPE: wireguard
-                WIREGUARD_PRIVATE_KEY: "{{ mullvad_config.private_key }}"
-                WIREGUARD_ADDRESSES: "{{ mullvad_config.addresses }}"
-                SERVER_CITIES: "{{ mullvad_config.cities }}"
+                VPN_PORT_FORWARDING: "on"
+                PORT_FORWARD_ONLY: "on"
+                SERVER_COUNTRIES: "{{ protonvpn_config.countries }}"
+                WIREGUARD_PRIVATE_KEY: "{{ protonvpn_config.private_key }}"
+                VPN_PORT_FORWARDING_UP_COMMAND: '/bin/sh -c "echo \{\{PORTS}}"' # noqa jinja[spacing]
             cap_add:
                 - NET_ADMIN
             device:
@@ -89,8 +112,27 @@
             restart_policy: "{{ podman.restart_policy | regex_replace('[^A-Za-z0-9-:]', '') }}"
             volumes:
                 - "{{ filesystem.media.downloads }}:/downloads"
-                - "{{ dirs_container_volume.path }}:/config"
+                - "{{ dirs_container_volume_subdirectories.results[0].path }}:/config"
             env:
                 PUID: "{{ ansible_user_id }}"
                 PGID: "{{ ansible_user_id }}"
                 TZ: Europe/Helsinki
+
+      - name: Flood UI for Deluge
+        become: true
+        become_user: "{{ service.user }}"
+        containers.podman.podman_container:
+            name: "{{ service.name }}_flood"
+            state: "{{ container_state | default('started') }}"
+            pod: "{{ service.name }}"
+            image: "docker.io/jesec/flood:{{ versions.flood }}"
+            log_driver: "{{ podman.log_driver }}"
+            log_options:
+                path: "{{ dirs_container_logs.path }}/{{ podman.container_log_file }}_flood"
+            restart_policy: "{{ podman.restart_policy | regex_replace('[^A-Za-z0-9-:]', '') }}"
+            user: "{{ ansible_user_id }}"
+            volumes:
+                - "{{ dirs_container_volume_subdirectories.results[1].path }}:/config"
+            env:
+                HOME: /config
+            command: --port 3000 --allowedpath /config

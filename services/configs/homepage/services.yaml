@@ -1,96 +1,77 @@
 - Media:
       - Jellyfin:
-            icon: jellyfin.png
             href: "https://media.{{ base_domain }}"
+            icon: jellyfin.png
             widget:
-                type: jellyfin
-                # Update url when ready
-                key: "{{ api_keys.jellyfin }}"
                 enableBlocks: true # optional, defaults to false
                 enableNowPlaying: false # optional, defaults to true
-      - Jellyseerr:
-            icon: jellyseerr.png
-            href: "https://jellyseerr.{{ base_domain }}"
-            widget:
-                type: jellyseerr
-                # Update url when ready
-                key: "{{ api_keys.jellyseerr }}"
+                key: "{{ api_keys.jellyfin }}"
+                type: jellyfin
+                url: "http://{{ ansible_wg0.ipv4.address }}:{{ network.service_ports.jellyfin }}"
       - Deemix:
-            icon: mdi-folder-music
             href: "https://deemix.{{ base_domain }}"
-      - Deluge:
-            icon: deluge.png
-            href: "https://deluge.{{ base_domain }}"
+            icon: mdi-folder-music
+      - QBittorrent:
+            href: "https://qbit.{{ base_domain }}"
+            icon: qbittorrent.png
             widget:
-                type: deluge
-                # Update url when ready
-                password: "{{ api_keys.deluge }}"
+                password: "{{ api_keys.qbittorrent }}"
+                type: qbittorrent
+                url: "http://{{ ansible_wg0.ipv4.address }}:{{ network.service_ports.qbittorrent_web_ui }}"
+                username: admin
       - Radarr:
-            icon: radarr.png
             href: "https://radarr.{{ base_domain }}"
+            icon: radarr.png
             widget:
+                enableQueue: true
+                key: "{{api_keys.radarr }}"
                 type: radarr
-                # Update url when ready
-                key: " {{api_keys.radarr }}"
-                enableQueue: true
+                url: "http://{{ ansible_wg0.ipv4.address }}:{{ network.service_ports.radarr }}"
       - Sonarr:
-            icon: sonarr.png
             href: "https://sonarr.{{ base_domain }}"
+            icon: sonarr.png
             widget:
-                type: sonarr
-                # Update url when ready
-                key: "{{ api_keys.sonarr }}"
                 enableQueue: true
+                key: "{{ api_keys.sonarr }}"
+                type: sonarr
+                url: "http://{{ ansible_wg0.ipv4.address }}:{{ network.service_ports.sonarr }}"
       - Jackett:
-            icon: jackett.png
             href: "https://jackett.{{ base_domain }}"
+            icon: jackett.png
 
 - Services:
       - Photoprism:
-            icon: photoprism.png
             href: "https://gallery.{{ base_domain }}/"
-      - Paperless-ngx:
-            icon: paperless-ngx.svg
-            href: "https://archive.{{ base_domain }}/"
+            icon: photoprism.png
       - Trilium:
-            icon: trilium.png
             href: "https://notes.{{ base_domain }}/"
-      - ArchiveBox:
-            icon: archivebox.png
-            href: "https://archivebox.{{ base_domain }}/"
-      - VS code:
-            icon: code-server.png
-            href: "https://code.{{ base_domain }}/"
-      - Ollama Web UI:
-            icon: mdi-expansion-card
-            href: "https://ollama.{{ base_domain }}/"
-      - Seafile:
-            icon: seafile.svg
-            href: "https://seafile.{{ base_domain }}/"
+            icon: trilium.png
+      - Documents:
+            href: "https://documents.{{ base_domain }}/"
+            icon: file-browser.svg
+      - Storage:
+            href: "https://storage.{{ base_domain }}/"
+            icon: hoodik.svg
+      - Jupyter Notebooks:
+            href: "https://jupyter.{{ base_domain }}/"
+            icon: jupyter.png
 
 - Management:
-      - PiHole:
-            icon: pi-hole.png
-            href: "https://pihole.{{ base_domain }}/admin/"
-            widget:
-                type: pihole
-                url: "http://{{ ansible_wg0.ipv4.address }}:{{ network.service_ports.pihole_admin }}"
-                key: "{{ api_keys.pihole }}"
-      - Router:
-            icon: edgeos.png
+      - Unifi:
             href: https://10.1.1.1/
-      - Access point:
-            icon: tp-link.png
-            href: http://10.1.2.39/
+            icon: unifi.png
+            widget:
+                password: "{{ api_keys.unifi.password }}"
+                type: unifi
+                url: https://10.1.1.1
+                username: "{{ api_keys.unifi.username }}"
+
+      - PiHole:
+            href: "https://pihole.{{ base_domain }}/admin/"
+            icon: pi-hole.png
       - LLDAP:
-            icon: mdi-account-box-multiple
             href: "https://ldap.{{ base_domain }}"
-      - Prometheus:
-            icon: prometheus.png
-            href: http://10.1.1.2:8007/targets?search=
+            icon: mdi-account-box-multiple
       - Grafana:
-            icon: grafana.png
             href: "https://grafana.{{ base_domain }}"
-      - Guacamole:
-            icon: guacamole.png
-            href: "https://guacamole.{{ base_domain }}"
+            icon: grafana.png

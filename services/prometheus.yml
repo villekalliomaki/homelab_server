@@ -22,6 +22,16 @@
             directories_container_volume:
                 create: true
 
+      - name: Generate config directories
+        with_community.general.filetree: configs/prometheus
+        when: item.state == 'directory'
+        ansible.builtin.file:
+            path: "{{ dirs_container_volume.path }}/{{ item.path }}"
+            owner: "{{ service.user }}"
+            group: "{{ service.user }}"
+            state: directory
+            mode: a=,u=rw
+
       - name: Generate config files
         with_community.general.filetree: configs/prometheus
         when: item.state == 'file'
@@ -32,14 +42,14 @@
             group: "{{ service.user }}"
             mode: a=,u=rw
 
-      - name: Find playbooks
-        register: playbook_files_output
-        delegate_to: 127.0.0.1
-        ansible.builtin.find:
-            paths: ../
-            patterns: "*.yml"
-            recurse: false
-            file_type: file
+      # - name: Find playbooks
+      #   register: playbook_files_output
+      #   delegate_to: 127.0.0.1
+      #   ansible.builtin.find:
+      #       paths: ../
+      #       patterns: "*.yml"
+      #       recurse: false
+      #       file_type: file
 
       - name: Prometheus container
         become: true

@@ -47,6 +47,12 @@
               - name: deluge
                 domain: "deluge.{{ base_domain }}"
                 endpoint: "{{ ansible_wg0.ipv4.address }}:{{ network.service_ports.deluge_web_ui }}"
+              - name: flood
+                domain: "flood.{{ base_domain }}"
+                endpoint: "{{ ansible_wg0.ipv4.address }}:{{ network.service_ports.flood }}"
+              - name: qbit
+                domain: "qbit.{{ base_domain }}"
+                endpoint: "{{ ansible_wg0.ipv4.address }}:{{ network.service_ports.qbittorrent_web_ui }}"
           external:
               - name: homepage
                 domain: "start.{{ base_domain }}"

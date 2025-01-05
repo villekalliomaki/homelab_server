@@ -4,11 +4,6 @@
 # Regenerate using: ansible-playbook services/actions/generate_actions.yml.
 #
 
-- name: "Container state change to stopped, for ../deluge.yml"
-  vars:
-      container_state: "stopped"
-  ansible.builtin.import_playbook: "../deluge.yml"
-
 - name: "Container state change to stopped, for ../deemix.yml"
   vars:
       container_state: "stopped"
@@ -43,11 +38,6 @@
   vars:
       container_state: "stopped"
   ansible.builtin.import_playbook: "../authelia.yml"
-
-- name: "Container state change to stopped, for ../minecraft.yml"
-  vars:
-      container_state: "stopped"
-  ansible.builtin.import_playbook: "../minecraft.yml"
 
 - name: "Container state change to stopped, for ../nginx.yml"
   vars:
@@ -98,6 +88,11 @@
   vars:
       container_state: "stopped"
   ansible.builtin.import_playbook: "../filebrowser_documents.yml"
+
+- name: "Container state change to stopped, for ../qbittorrent.yml"
+  vars:
+      container_state: "stopped"
+  ansible.builtin.import_playbook: "../qbittorrent.yml"
 
 - name: "Container state change to stopped, for ../promtail.yml"
   vars:

@@ -48,6 +48,12 @@ network:
         flaresolverr: 3023
         minecraft_star_technology: 3024
         deluge_web_ui: 3025
+        qbittorrent_gluetun: 3026
+        flood: 3027
+        qbittorrent_web_ui: 3028
+        qbittorrent_exporter: 3029
+        synthing_data: 3030
+        synthing_stats: 3031
     podman_exporter_range_start: 5000
 
 # Locked versions for services if required. If not set will default to latest.
@@ -59,7 +65,7 @@ versions:
     authelia: "4.38.17"
     # https://github.com/gethomepage/homepage/pkgs/container/homepage
     # https://github.com/gethomepage/homepage/releases
-    homepage: "v0.9.13"
+    homepage: "v0.10.5"
     # https://hub.docker.com/r/nitnelave/lldap/tags
     # https://github.com/lldap/lldap/releases
     lldap: "v0.6"
@@ -104,6 +110,15 @@ versions:
     # https://hub.docker.com/r/linuxserver/deluge/tags
     # https://github.com/linuxserver/docker-deluge/releases
     deluge: "2.1.1"
+    # https://hub.docker.com/r/jesec/flood/tags
+    # https://github.com/jesec/flood/releases
+    flood: "4.8.5"
+    # https://hub.docker.com/r/linuxserver/qbittorrent/tags
+    # https://github.com/linuxserver/docker-qbittorrent/releases
+    qbittorrent: "5.0.3"
+    # https://hub.docker.com/r/syncthing/relaysrv/tags
+    # https://github.com/syncthing/relaysrv/releases/tag/v1.28.0
+    syncthing_relay: "1.28"
 
 filesystem:
     systemd_units: /etc/systemd/system

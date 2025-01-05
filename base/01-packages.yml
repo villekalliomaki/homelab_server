@@ -38,6 +38,7 @@
                 - qemu-base
                 - qemu-img
                 - wireshark-cli
+                - jq
 
       #
       # AUR

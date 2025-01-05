@@ -144,6 +144,8 @@ access_control:
               - "deluge.{{ base_domain }}"
               - "bazarr.{{ base_domain }}"
               - "deemix.{{ base_domain }}"
+              - "flood.{{ base_domain }}"
+              - "qbit.{{ base_domain}}"
           policy: two_factor
           subject:
               - ["group:lldap_admin"]

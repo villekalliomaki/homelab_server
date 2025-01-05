@@ -1,0 +1,200 @@
+- name: QBittorrent torrent download client
+  hosts: homelab
+  remote_user: root
+
+  vars_files:
+      - ../global.yml
+
+  vars:
+      service:
+          name: qbittorrent
+          user: qbittorrent
+      protonvpn_config:
+          private_key: !vault |
+              $ANSIBLE_VAULT;1.1;AES256
+              62366533373131323931396337623366623939333764316536336335356564626165353963373331
+              6263353262653233653937353161343332313863376265350a386436353335366634386664333332
+              36626261333035343762353638636431316533656262313431303531643436323232366637646234
+              3566656433623865620a373830333666636163316462626136396665323266633666666536653030
+              63623730363832663037613730333465616633323161343865643035663738353133356332636462
+              3630306462646665616263636263653838666463333933643439
+          countries: !vault |
+              $ANSIBLE_VAULT;1.1;AES256
+              38313133393361333238303533666563353761333765663232373835363264663561646265636336
+              6664353364323931663763393434666233636236343230320a333936613239343832356534623561
+              31316233336239663934323261623765316131623766323039333039313166613130313830376235
+              6565666436363231350a616664373239336235323935336632383332333835303230306262666232
+              6230
+      qbittorrent:
+          username: admin
+          password: !vault |
+              $ANSIBLE_VAULT;1.1;AES256
+              61306635343164316365313965633033613630616438633631333830346331343635383061326237
+              6566386535613536386532666435323863626330656237660a653935323537653764376661313361
+              37643437623339366366363266653464316334616562386563623935303364336338333134653163
+              3838396234343330350a363638626437373536653837313363653266323639316230656664313265
+              36333833643463626135333237376537633530386665396566353836336132653035
+      gluetun:
+          api_key: !vault |
+              $ANSIBLE_VAULT;1.1;AES256
+              64613061626434666562386435393131386366643933616163643463313331363031303262613261
+              6238633032373636663330373439613731353134663665640a386666363539336139346137373830
+              64653937623266366433333864313239626533636638303765636561393465663739656134396531
+              3438663731313961320a313834396538666461383461613337366163373938616532333131633237
+              39663165316233366133633563323063346566383563646637616231323436653139
+
+  tasks:
+      - name: User
+        ansible.builtin.import_role:
+            name: service_user
+
+      - name: Directories
+        ansible.builtin.import_role:
+            name: directories
+        vars:
+            directories_container_volume:
+                create: true
+                subdirectories:
+                    - client
+                    - flood
+                    - vuetorrent
+                    - gluetun
+                    - scripts
+
+      - name: Pod
+        ansible.builtin.import_role:
+            name: pod
+        vars:
+            pod_publish:
+                - "{{ network.internal_ip }}:{{ network.service_ports.qbittorrent_web_ui }}:8111"
+                - "{{ network.internal_ip }}:{{ network.service_ports.qbittorrent_gluetun }}:8000"
+                - "{{ network.internal_ip }}:{{ network.service_ports.qbittorrent_exporter }}:8090"
+                # - "{{ network.internal_ip }}:{{ network.service_ports.flood }}:3000"
+
+      - name: Generate forwarded port update script
+        ansible.builtin.template:
+            src: configs/gluetun/qbittorrent_update.sh
+            dest: "{{ dirs_container_volume_subdirectories.results[4].path }}/qbittorrent_update.sh"
+            owner: "{{ service.user }}"
+            group: "{{ service.user }}"
+            mode: u=rwx,g=rwx
+
+      - name: Generate gluetun config
+        ansible.builtin.template:
+            src: configs/gluetun/qbittorrent.toml
+            dest: "{{ dirs_container_volume_subdirectories.results[3].path }}/config.toml"
+            owner: "{{ service.user }}"
+            group: "{{ service.user }}"
+            mode: u=rw,g=rw
+
+      - name: Gluetun container
+        become: true
+        become_user: "{{ service.user }}"
+        containers.podman.podman_container:
+            name: "{{ service.name }}_gluetun"
+            state: "{{ container_state | default('started') }}"
+            pod: "{{ service.name }}"
+            image: "docker.io/qmcgaw/gluetun:{{ versions.gluetun }}"
+            log_driver: "{{ podman.log_driver }}"
+            log_options:
+                path: "{{ dirs_container_logs.path }}/{{ podman.container_log_file }}_gluetun"
+            restart_policy: "{{ podman.restart_policy | regex_replace('[^A-Za-z0-9-:]', '') }}"
+            env:
+                VPN_SERVICE_PROVIDER: protonvpn
+                VPN_TYPE: wireguard
+                VPN_PORT_FORWARDING: "on"
+                PORT_FORWARD_ONLY: "on"
+                SERVER_COUNTRIES: "{{ protonvpn_config.countries }}"
+                WIREGUARD_PRIVATE_KEY: "{{ protonvpn_config.private_key }}"
+                VPN_PORT_FORWARDING_UP_COMMAND: '/bin/sh -c "echo \{\{PORTS}}"' # noqa jinja[spacing]
+            cap_add:
+                - NET_ADMIN
+            device:
+                - /dev/net/tun:/dev/net/tun
+            volumes:
+                - "{{ dirs_container_volume_subdirectories.results[3].path }}:/gluetun/auth"
+
+      - name: Wait for gluetun to start
+        ansible.builtin.wait_for:
+            timeout: 20
+
+      - name: Get forwarded port
+        ansible.builtin.uri:
+            url: "http://{{ network.internal_ip }}:{{ network.service_ports.qbittorrent_gluetun }}/v1/openvpn/portforwarded"
+            headers:
+                X-API-Key: "{{ gluetun.api_key }}"
+            return_content: true
+        register: gluetun_forwarded_port_response
+
+      - name: Set forwarded port
+        ansible.builtin.set_fact:
+            gluetun_forwarded_port: "{{ (gluetun_forwarded_port_response.content | from_json)['port'] }}"
+
+      - name: Get public IP
+        # Disabled, qBittorrent doesn't have an option for public IP
+        when: false
+        ansible.builtin.uri:
+            url: "http://{{ network.internal_ip }}:{{ network.service_ports.qbittorrent_gluetun }}/v1/publicip/ip"
+            headers:
+                X-API-Key: "{{ gluetun.api_key }}"
+            return_content: true
+        register: gluetun_public_ip_response
+
+      - name: Set public IP
+        # Disabled, qBittorrent doesn't have an option for public IP
+        when: false
+        ansible.builtin.set_fact:
+            gluetun_public_ip: "{{ (gluetun_public_ip_response.content | from_json)['public_ip'] }}"
+
+      - name: Write forwarded port to config
+        ansible.builtin.lineinfile:
+            path: "{{ dirs_container_volume_subdirectories.results[0].path }}/qBittorrent/qBittorrent.conf"
+            regexp: '^(.*)Session\\Port=(.*)$'
+            line: "Session\Port={{ gluetun_forwarded_port }}"
+            backrefs: true
+
+      - name: QBittorrent container
+        become: true
+        become_user: "{{ service.user }}"
+        containers.podman.podman_container:
+            name: "{{ service.name }}"
+            state: "{{ container_state | default('started') }}"
+            pod: "{{ service.name }}"
+            image: "docker.io/linuxserver/qbittorrent:{{ versions.qbittorrent }}"
+            log_driver: "{{ podman.log_driver }}"
+            log_options:
+                path: "{{ dirs_container_logs.path }}/{{ podman.container_log_file }}"
+            restart_policy: "{{ podman.restart_policy | regex_replace('[^A-Za-z0-9-:]', '') }}"
+            volumes:
+                - "{{ filesystem.media.downloads }}:/downloads"
+                - "{{ dirs_container_volume_subdirectories.results[0].path }}:/config"
+            env:
+                PUID: "{{ ansible_user_id }}"
+                PGID: "{{ ansible_user_id }}"
+                TZ: Europe/Helsinki
+                WEBUI_PORT: 8111
+
+      - name: QBittorrent exporter
+        become: true
+        become_user: "{{ service.user }}"
+        containers.podman.podman_container:
+            name: "{{ service.name }}_exporter"
+            state: "{{ container_state | default('started') }}"
+            pod: "{{ service.name }}"
+            image: ghcr.io/martabal/qbittorrent-exporter
+            log_driver: "{{ podman.log_driver }}"
+            log_options:
+                path: "{{ dirs_container_logs.path }}/{{ podman.container_log_file }}_exporter"
+            env:
+                QBITTORRENT_BASE_URL: http://127.0.0.1:8111
+                QBITTORRENT_PASSWORD: "{{ qbittorrent.password }}"
+                QBITTORRENT_USERNAME: admin
+
+      - name: Cronjob for updating forwarded port
+        become: true
+        become_user: "{{ service.user }}"
+        ansible.builtin.cron:
+            name: qbittorrent_update_gluetun_port
+            job: "{{ dirs_container_volume_subdirectories.results[4].path }}/qbittorrent_update.sh"
+            # Every 5 minutes
+            minute: "*/5"

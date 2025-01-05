@@ -11,11 +11,16 @@
           user: trilium
 
   tasks:
-      - name: Service user
-        ansible.builtin.include_tasks: tasks/service_user.yml
+      - name: User
+        ansible.builtin.import_role:
+            name: service_user
 
-      - name: Volume directories
-        ansible.builtin.include_tasks: tasks/volume_directory.yml
+      - name: Directories
+        ansible.builtin.import_role:
+            name: directories
+        vars:
+            directories_container_volume:
+                create: true
 
       - name: Trilium container
         become: true
@@ -26,10 +31,10 @@
             image: "docker.io/zadam/trilium:{{ versions.trilium }}"
             log_driver: "{{ podman.log_driver }}"
             log_options:
-                path: "{{ container_log_directory_output.path }}/{{ podman.container_log_file }}"
+                path: "{{ dirs_container_logs.path }}/{{ podman.container_log_file }}"
             restart_policy: "{{ podman.restart_policy | regex_replace('[^A-Za-z0-9-:]', '') }}"
             network: "{{ podman.network }}"
             publish:
                 - "{{ network.internal_ip }}:{{ network.service_ports.trilium }}:8080"
             volumes:
-                - "{{ volume_directory_output.path }}:/home/node/trilium-data"
+                - "{{ dirs_container_volume.path }}:/home/node/trilium-data"

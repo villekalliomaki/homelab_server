@@ -1,11 +1,27 @@
 global:
+    evaluation_interval: 1m
     scrape_interval: 1m
     scrape_timeout: 10s
-    evaluation_interval: 1m
 scrape_configs:
     - job_name: "prometheus"
       static_configs:
           - targets: ["127.0.0.1:9090"]
+    - job_name: "authelia"
+      scrape_interval: "30s"
+      scheme: "http"
+      static_configs:
+          - targets:
+                [
+                    "{{ network.internal_ip }}:{{ network.service_ports.authelia_metrics }}",
+                ]
+    - job_name: "qbittorrent"
+      scrape_interval: "30s"
+      scheme: "http"
+      static_configs:
+          - targets:
+                [
+                    "{{ network.internal_ip }}:{{ network.service_ports.qbittorrent_exporter }}",
+                ]
 # Podman exporter scrape configs are generated automatically
-scrape_config_files:
-    - /prometheus/scrape_podman_exporter.yml
+#scrape_config_files:
+#    - /prometheus/scrape_configs/authelia.yml

@@ -1,17 +1,16 @@
 - datetime:
-      text_size: xl
-      locale: fi
       format:
           timeStyle: short
-
+      locale: fi
+      text_size: xl
 - openmeteo:
+      cache: 5
       label: Turku
       latitude: 60.4517531
       longitude: 22.2670522
       timezone: Europe/Helsinki
       units: metric
-      cache: 5
 
 - search:
-      provider: duckduckgo
+      provider: google
       target: _self
