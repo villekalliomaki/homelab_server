@@ -39,6 +39,11 @@
       container_state: "created"
   ansible.builtin.import_playbook: "../authelia.yml"
 
+- name: "Container state change to created, for ../minecraft.yml"
+  vars:
+      container_state: "created"
+  ansible.builtin.import_playbook: "../minecraft.yml"
+
 - name: "Container state change to created, for ../nginx.yml"
   vars:
       container_state: "created"

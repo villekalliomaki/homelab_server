@@ -9,6 +9,14 @@
       service:
           name: jupyter_notebook
           user: jupyter_notebook
+      jupyter_user:
+          password: !vault |
+              $ANSIBLE_VAULT;1.1;AES256
+              35663130303563356465623865316432373836333637326236373836636332346532316263653962
+              3830623038343331646633633565656439313033623438390a363834633437316236643466346266
+              33376533356431386661373961356539303961393965313834356362323834333866613238623934
+              3331353037333862620a336133356233383965396461643165653633666462666533326365616666
+              30343833613239316364383135623161623138346135353734363963333636376261
 
   tasks:
       - name: User
@@ -23,23 +31,25 @@
                 create: true
                 subdirectories:
                     - utu
+                    - test
 
-      - name: Jupyter notebook container (this can take a while)
+      - name: Jupyter datascience notebook container (this can take a while)
         become: true
         become_user: "{{ service.user }}"
         containers.podman.podman_container:
-            name: "{{ service.name }}"
+            name: "{{ service.name }}_datascience"
             state: "{{ container_state | default('started') }}"
-            image: quay.io/jupyter/datascience-notebook
+            image: "quay.io/jupyter/datascience-notebook:{{ versions.jupyter_notebook_datascience }}"
             log_driver: "{{ podman.log_driver }}"
             log_options:
-                path: "{{ dirs_container_logs.path }}/{{ podman.container_log_file }}"
+                path: "{{ dirs_container_logs.path }}/{{ podman.container_log_file }}_datascience"
             restart_policy: "{{ podman.restart_policy | regex_replace('[^A-Za-z0-9-:]', '') }}"
             network: "{{ podman.network }}"
             publish:
-                - "{{ network.internal_ip }}:{{ network.service_ports.jupyter_notebook }}:8888"
+                - "{{ network.internal_ip }}:{{ network.service_ports.jupyter_datascience }}:8888"
             volumes:
                 - "{{ dirs_container_volume_subdirectories.results[0].path }}:/home/root/utu"
+                - "{{ dirs_container_volume_subdirectories.results[1].path }}:/home/root/test"
             env:
                 NB_USER: root
                 NB_UID: 0
@@ -51,3 +61,66 @@
                 --allow-root
                 --no-browser
                 --PasswordIdentityProvider.hashed_password='argon2:$argon2id$v=19$m=10240,t=10,p=8$tSQwLZHSn8/y9z8DGzwRkg$/0w3xzaYXRxkA/zkZShGIW4NMCEsYDSa+NPCph2UlSM'
+
+      - name: Jupyter TensorFlow notebook container (this can take a while)
+        become: true
+        become_user: "{{ service.user }}"
+        containers.podman.podman_container:
+            name: "{{ service.name }}_tensorflow"
+            state: "{{ container_state | default('started') }}"
+            image: "quay.io/jupyter/tensorflow-notebook:{{ versions.jupyter_notebook_tensorflow }}"
+            log_driver: "{{ podman.log_driver }}"
+            log_options:
+                path: "{{ dirs_container_logs.path }}/{{ podman.container_log_file }}_tensorflow"
+            restart_policy: "{{ podman.restart_policy | regex_replace('[^A-Za-z0-9-:]', '') }}"
+            network: "{{ podman.network }}"
+            publish:
+                - "{{ network.internal_ip }}:{{ network.service_ports.jupyter_tensorflow }}:8888"
+            volumes:
+                - "{{ dirs_container_volume_subdirectories.results[0].path }}:/home/root/utu"
+                - "{{ dirs_container_volume_subdirectories.results[1].path }}:/home/root/test"
+            env:
+                NB_USER: root
+                NB_UID: 0
+                NB_GID: 0
+                # TF_GPU_ALLOCATOR: cuda_malloc_async
+                # Not sure if these even do anything
+                # NVIDIA_DRIVER_CAPABILITIES: all
+                # NVIDIA_VISIBLE_DEVICES: all
+            # device:
+            #     - nvidia.com/gpu=all
+            user: "0:0"
+            # Not actually running as root, podman rootless translates service user to root inside container
+            command: |
+                jupyter notebook
+                --allow-root
+                --no-browser
+                --PasswordIdentityProvider.hashed_password='argon2:$argon2id$v=19$m=10240,t=10,p=8$tSQwLZHSn8/y9z8DGzwRkg$/0w3xzaYXRxkA/zkZShGIW4NMCEsYDSa+NPCph2UlSM'
+
+      #   - name: Jupyter GPU notebook container (this can take a while)
+      #     become: true
+      #     become_user: "{{ service.user }}"
+      #     containers.podman.podman_container:
+      #         name: "{{ service.name }}_gpu"
+      #         state: "{{ container_state | default('started') }}"
+      #         image: "docker.io/cschranz/gpu-jupyter:{{ versions.jupyter_notebook_gpu }}"
+      #         log_driver: "{{ podman.log_driver }}"
+      #         log_options:
+      #             path: "{{ dirs_container_logs.path }}/{{ podman.container_log_file }}_gpu"
+      #         restart_policy: "{{ podman.restart_policy | regex_replace('[^A-Za-z0-9-:]', '') }}"
+      #         network: "{{ podman.network }}"
+      #         publish:
+      #             - "{{ network.internal_ip }}:{{ network.service_ports.jupyter_gpu }}:8888"
+      #         volumes:
+      #             - "{{ dirs_container_volume_subdirectories.results[0].path }}:/home/root/utu"
+      #             - "{{ dirs_container_volume_subdirectories.results[1].path }}:/home/root/test"
+      #         env:
+      #             JUPYTER_ENABLE_LAB: "yes"
+      #             JUPYTER_TOKEN: "{{ jupyter_user.password }}"
+      #             GRANT_SUDO: "yes"
+      #             # Not sure if these even do anything
+      #             NVIDIA_DRIVER_CAPABILITIES: all
+      #             NVIDIA_VISIBLE_DEVICES: all
+      #         user: "0:0"
+      #         device:
+      #             - nvidia.com/gpu=all

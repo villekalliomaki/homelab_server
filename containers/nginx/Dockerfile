@@ -1,5 +1,5 @@
 # Versions: https://nginx.org/en/download.html
-ARG NGINX_VERSION=1.26.1
+ARG NGINX_VERSION=1.26.2
 
 # Image search: https://hub.docker.com/_/nginx/tags?page=1&name=1.26.1-bookworm
 FROM nginx:$NGINX_VERSION-bookworm as build

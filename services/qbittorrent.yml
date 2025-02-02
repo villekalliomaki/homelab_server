@@ -107,6 +107,8 @@
                 SERVER_COUNTRIES: "{{ protonvpn_config.countries }}"
                 WIREGUARD_PRIVATE_KEY: "{{ protonvpn_config.private_key }}"
                 VPN_PORT_FORWARDING_UP_COMMAND: '/bin/sh -c "echo \{\{PORTS}}"' # noqa jinja[spacing]
+                # Health check timeout
+                HEALTH_VPN_DURATION_INITIAL: 30s
             cap_add:
                 - NET_ADMIN
             device:

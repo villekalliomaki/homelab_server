@@ -32,9 +32,15 @@
               - name: filebrowser_documents
                 domain: "documents.{{ base_domain }}"
                 endpoint: "{{ network.internal_ip }}:{{ network.service_ports.filebrowser_documents }}"
-              - name: jupyter
-                domain: "jupyter.{{ base_domain}}"
-                endpoint: "{{ network.internal_ip }}:{{ network.service_ports.jupyter_notebook }}"
+              - name: jupyter-datascience
+                domain: "jupyter-datascience.{{ base_domain}}"
+                endpoint: "{{ network.internal_ip }}:{{ network.service_ports.jupyter_datascience }}"
+              - name: jupyter-tensorflow
+                domain: "jupyter-tensorflow.{{ base_domain}}"
+                endpoint: "{{ network.internal_ip }}:{{ network.service_ports.jupyter_tensorflow }}"
+              - name: jupyter-gpu
+                domain: "jupyter-gpu.{{ base_domain}}"
+                endpoint: "{{ network.internal_ip }}:{{ network.service_ports.jupyter_gpu }}"
               - name: prowlarr
                 domain: "prowlarr.{{ base_domain }}"
                 endpoint: "{{ ansible_wg0.ipv4.address }}:{{ network.service_ports.prowlarr }}"
@@ -53,6 +59,9 @@
               - name: qbit
                 domain: "qbit.{{ base_domain }}"
                 endpoint: "{{ ansible_wg0.ipv4.address }}:{{ network.service_ports.qbittorrent_web_ui }}"
+              - name: ldap
+                domain: "ldap.{{ base_domain }}"
+                endpoint: "{{ ansible_wg0.ipv4.address }}:{{ network.service_ports.lldap_admin }}"
           external:
               - name: homepage
                 domain: "start.{{ base_domain }}"

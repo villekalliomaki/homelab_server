@@ -39,6 +39,11 @@
       container_state: "started"
   ansible.builtin.import_playbook: "../authelia.yml"
 
+- name: "Container state change to started, for ../minecraft.yml"
+  vars:
+      container_state: "started"
+  ansible.builtin.import_playbook: "../minecraft.yml"
+
 - name: "Container state change to started, for ../nginx.yml"
   vars:
       container_state: "started"

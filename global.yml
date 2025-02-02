@@ -44,7 +44,6 @@ network:
         hoodik: 3019
         filebrowser_documents: 3020
         minecraft: 3021
-        jupyter_notebook: 3022
         flaresolverr: 3023
         minecraft_star_technology: 3024
         deluge_web_ui: 3025
@@ -52,8 +51,11 @@ network:
         flood: 3027
         qbittorrent_web_ui: 3028
         qbittorrent_exporter: 3029
-        synthing_data: 3030
-        synthing_stats: 3031
+        syncthing_data: 3030
+        syncthing_stats: 3031
+        jupyter_datascience: 3032
+        jupyter_tensorflow: 3033
+        jupyter_gpu: 3034
     podman_exporter_range_start: 5000
 
 # Locked versions for services if required. If not set will default to latest.
@@ -62,10 +64,10 @@ versions:
     nginx: "1.26.1"
     # https://hub.docker.com/r/authelia/authelia/tags
     # https://github.com/authelia/authelia/releases
-    authelia: "4.38.17"
+    authelia: "4.38.18"
     # https://github.com/gethomepage/homepage/pkgs/container/homepage
     # https://github.com/gethomepage/homepage/releases
-    homepage: "v0.10.5"
+    homepage: "v0.10.9"
     # https://hub.docker.com/r/nitnelave/lldap/tags
     # https://github.com/lldap/lldap/releases
     lldap: "v0.6"
@@ -77,48 +79,48 @@ versions:
     trilium: "0.63.7"
     # https://hub.docker.com/r/jellyfin/jellyfin/tags
     # https://github.com/jellyfin/jellyfin/releases
-    jellyfin: "10.10.3"
+    jellyfin: "10.10.5"
     # https://hub.docker.com/r/seafileltd/seafile-mc/tags
     seafile: "11.0.6"
     # https://hub.docker.com/r/prom/prometheus/tags
     # https://github.com/prometheus/prometheus/releases
-    prometheus: "v3.0.1"
+    prometheus: "v3.1.0"
     # https://hub.docker.com/r/hudik/hoodik/tags
     # https://github.com/hudikhq/hoodik/releases
     hoodik: "v1.4.0"
     # https://hub.docker.com/r/filebrowser/filebrowser/tags
     # https://github.com/filebrowser/filebrowser/releases
-    filebrowser: "v2.31.2"
+    filebrowser: "v2.32.0"
     # https://quay.io/repository/jupyter/datascience-notebook?tab=tags
     # https://github.com/jupyter/docker-stacks/tree/main/images/datascience-notebook
-    jupyter_notebook_datascience: "notebook-7.2.2"
+    jupyter_notebook_datascience: "notebook-7.3.2"
+    # https://quay.io/repository/jupyter/cuda-tensorflow-notebook?tab=tags
+    # https://github.com/jupyter/docker-stacks/tree/main/images/cuda-tensorflow-notebook
+    jupyter_notebook_tensorflow: "notebook-7.3.2"
+    # https://hub.docker.com/r/cschranz/gpu-jupyter/tags
+    # https://github.com/iot-salzburg/gpu-jupyter/releases
+    jupyter_notebook_gpu: "v1.8_cuda-12.5_ubuntu-22.04"
     # https://hub.docker.com/r/flaresolverr/flaresolverr/tags
     # https://github.com/FlareSolverr/FlareSolverr/releases
     flaresolverr: "v3.3.21"
     # https://hub.docker.com/r/linuxserver/radarr/tags
     # https://github.com/linuxserver/docker-radarr/releases
-    radarr: 5.15.1.9463-ls247
+    radarr: "5.17.2"
     # https://hub.docker.com/r/linuxserver/sonarr/tags
     # https://github.com/linuxserver/docker-sonarr/releases
-    sonarr: 4.0.11.2680-ls260
+    sonarr: "4.0.12"
     # https://hub.docker.com/r/linuxserver/prowlarr/tags
     # https://github.com/linuxserver/docker-prowlarr/releases
-    prowlarr: "1.27.0"
+    prowlarr: "1.30.2"
     # https://hub.docker.com/r/qmcgaw/gluetun/tags
     # https://github.com/qdm12/gluetun/releases
-    gluetun: "v3.39.1"
-    # https://hub.docker.com/r/linuxserver/deluge/tags
-    # https://github.com/linuxserver/docker-deluge/releases
-    deluge: "2.1.1"
-    # https://hub.docker.com/r/jesec/flood/tags
-    # https://github.com/jesec/flood/releases
-    flood: "4.8.5"
+    gluetun: "v3.40.0"
     # https://hub.docker.com/r/linuxserver/qbittorrent/tags
     # https://github.com/linuxserver/docker-qbittorrent/releases
     qbittorrent: "5.0.3"
     # https://hub.docker.com/r/syncthing/relaysrv/tags
-    # https://github.com/syncthing/relaysrv/releases/tag/v1.28.0
-    syncthing_relay: "1.28"
+    # https://github.com/syncthing/relaysrv/releases
+    syncthing_relay: "1.29.2"
 
 filesystem:
     systemd_units: /etc/systemd/system

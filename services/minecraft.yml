@@ -35,13 +35,13 @@
                     - star_technology
 
       - name: Server container (survival 2024)
-        # Toggle
-        when: false
         become: true
         become_user: "{{ service.user }}"
         containers.podman.podman_container:
             name: "{{ service.name }}_survival_2024"
-            state: "{{ container_state | default('started') }}"
+            # state: "{{ container_state | default('started') }}"
+            # Start manually
+            state: created
             image: docker.io/itzg/minecraft-server
             log_driver: "{{ podman.log_driver }}"
             log_options:
@@ -61,13 +61,13 @@
                 - "8.8.8.8"
 
       - name: Server container (Star Technology)
-        # Toggle
-        when: true
         become: true
         become_user: "{{ service.user }}"
         containers.podman.podman_container:
             name: "{{ service.name }}_star_technology"
-            state: "{{ container_state | default('started') }}"
+            # state: "{{ container_state | default('started') }}"
+            # Start manually
+            state: created
             image: docker.io/itzg/minecraft-server
             log_driver: "{{ podman.log_driver }}"
             log_options:
@@ -82,7 +82,7 @@
                 EULA: "TRUE"
                 TYPE: AUTO_CURSEFORGE
                 # VERSION: "1.21.1"
-                MEMORY: "12G"
+                MEMORY: "8G"
                 CF_API_KEY: "{{ cf_api_key }}"
                 CF_PAGE_URL: https://www.curseforge.com/minecraft/modpacks/star-technology
                 CF_FILENAME_MATCHER: "1.20.1-GAMMA-HOTFIX-3"

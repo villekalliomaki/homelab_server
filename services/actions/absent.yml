@@ -39,6 +39,11 @@
       container_state: "absent"
   ansible.builtin.import_playbook: "../authelia.yml"
 
+- name: "Container state change to absent, for ../minecraft.yml"
+  vars:
+      container_state: "absent"
+  ansible.builtin.import_playbook: "../minecraft.yml"
+
 - name: "Container state change to absent, for ../nginx.yml"
   vars:
       container_state: "absent"

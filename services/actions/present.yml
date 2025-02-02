@@ -39,6 +39,11 @@
       container_state: "present"
   ansible.builtin.import_playbook: "../authelia.yml"
 
+- name: "Container state change to present, for ../minecraft.yml"
+  vars:
+      container_state: "present"
+  ansible.builtin.import_playbook: "../minecraft.yml"
+
 - name: "Container state change to present, for ../nginx.yml"
   vars:
       container_state: "present"
