@@ -68,7 +68,7 @@
         containers.podman.podman_container:
             name: "{{ service.name }}_tensorflow"
             state: "{{ container_state | default('started') }}"
-            image: "quay.io/jupyter/tensorflow-notebook:{{ versions.jupyter_notebook_tensorflow }}"
+            image: "quay.io/jupyter/tensorflow-notebook:cuda-{{ versions.jupyter_notebook_tensorflow }}"
             log_driver: "{{ podman.log_driver }}"
             log_options:
                 path: "{{ dirs_container_logs.path }}/{{ podman.container_log_file }}_tensorflow"
@@ -85,10 +85,10 @@
                 NB_GID: 0
                 # TF_GPU_ALLOCATOR: cuda_malloc_async
                 # Not sure if these even do anything
-                # NVIDIA_DRIVER_CAPABILITIES: all
-                # NVIDIA_VISIBLE_DEVICES: all
-            # device:
-            #     - nvidia.com/gpu=all
+                NVIDIA_DRIVER_CAPABILITIES: all
+                NVIDIA_VISIBLE_DEVICES: all
+            device:
+                - nvidia.com/gpu=all
             user: "0:0"
             # Not actually running as root, podman rootless translates service user to root inside container
             command: |
