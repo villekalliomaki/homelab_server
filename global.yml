@@ -64,7 +64,7 @@ versions:
     nginx: "1.26.1"
     # https://hub.docker.com/r/authelia/authelia/tags
     # https://github.com/authelia/authelia/releases
-    authelia: "4.38.18"
+    authelia: "4.38.19"
     # https://github.com/gethomepage/homepage/pkgs/container/homepage
     # https://github.com/gethomepage/homepage/releases
     homepage: "v0.10.9"
@@ -73,18 +73,18 @@ versions:
     lldap: "v0.6"
     # https://hub.docker.com/r/pihole/pihole/tags
     # https://github.com/pi-hole/pi-hole/releases
-    pihole: "2024.07.0"
+    pihole: "2025.02.7"
     # https://hub.docker.com/r/zadam/trilium/tags
     # https://github.com/zadam/trilium/releases
     trilium: "0.63.7"
     # https://hub.docker.com/r/jellyfin/jellyfin/tags
     # https://github.com/jellyfin/jellyfin/releases
-    jellyfin: "10.10.5"
+    jellyfin: "10.10.6"
     # https://hub.docker.com/r/seafileltd/seafile-mc/tags
     seafile: "11.0.6"
     # https://hub.docker.com/r/prom/prometheus/tags
     # https://github.com/prometheus/prometheus/releases
-    prometheus: "v3.1.0"
+    prometheus: "v3.2.1"
     # https://hub.docker.com/r/hudik/hoodik/tags
     # https://github.com/hudikhq/hoodik/releases
     hoodik: "v1.4.0"
@@ -117,7 +117,7 @@ versions:
     gluetun: "v3.40.0"
     # https://hub.docker.com/r/linuxserver/qbittorrent/tags
     # https://github.com/linuxserver/docker-qbittorrent/releases
-    qbittorrent: "5.0.3"
+    qbittorrent: "5.0.4"
     # https://hub.docker.com/r/syncthing/relaysrv/tags
     # https://github.com/syncthing/relaysrv/releases
     syncthing_relay: "1.29.2"

@@ -69,7 +69,7 @@
           both:
               - name: root_redirect
                 domain: "{{ base_domain }}"
-                redirect: "start.{{ base_domain }}"
+                redirect: "https://start.{{ base_domain }}"
               - name: grafana
                 domain: "grafana.{{ base_domain }}"
                 endpoint: "{{ ansible_wg0.ipv4.address }}:{{ network.service_ports.grafana }}"
