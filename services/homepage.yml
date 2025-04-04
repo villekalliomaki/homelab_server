@@ -89,3 +89,5 @@
                 - "{{ network.internal_ip }}:{{ network.service_ports.homepage }}:3000"
             volumes:
                 - "{{ dirs_container_volume.path }}:/app/config"
+            env:
+                HOMEPAGE_ALLOWED_HOSTS: "start.{{ base_domain }}"

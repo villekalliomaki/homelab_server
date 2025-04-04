@@ -64,30 +64,28 @@ versions:
     nginx: "1.26.1"
     # https://hub.docker.com/r/authelia/authelia/tags
     # https://github.com/authelia/authelia/releases
-    authelia: "4.38.19"
+    authelia: "4.39.1"
     # https://github.com/gethomepage/homepage/pkgs/container/homepage
     # https://github.com/gethomepage/homepage/releases
-    homepage: "v0.10.9"
+    homepage: "v1.1.1"
     # https://hub.docker.com/r/nitnelave/lldap/tags
     # https://github.com/lldap/lldap/releases
     lldap: "v0.6"
     # https://hub.docker.com/r/pihole/pihole/tags
     # https://github.com/pi-hole/pi-hole/releases
-    pihole: "2025.02.7"
+    pihole: "2025.03.1"
     # https://hub.docker.com/r/zadam/trilium/tags
     # https://github.com/zadam/trilium/releases
     trilium: "0.63.7"
     # https://hub.docker.com/r/jellyfin/jellyfin/tags
     # https://github.com/jellyfin/jellyfin/releases
     jellyfin: "10.10.6"
-    # https://hub.docker.com/r/seafileltd/seafile-mc/tags
-    seafile: "11.0.6"
     # https://hub.docker.com/r/prom/prometheus/tags
     # https://github.com/prometheus/prometheus/releases
     prometheus: "v3.2.1"
     # https://hub.docker.com/r/hudik/hoodik/tags
     # https://github.com/hudikhq/hoodik/releases
-    hoodik: "v1.4.0"
+    hoodik: "v1.5.1"
     # https://hub.docker.com/r/filebrowser/filebrowser/tags
     # https://github.com/filebrowser/filebrowser/releases
     filebrowser: "v2.32.0"
@@ -105,22 +103,19 @@ versions:
     flaresolverr: "v3.3.21"
     # https://hub.docker.com/r/linuxserver/radarr/tags
     # https://github.com/linuxserver/docker-radarr/releases
-    radarr: "5.17.2"
+    radarr: "5.21.1"
     # https://hub.docker.com/r/linuxserver/sonarr/tags
     # https://github.com/linuxserver/docker-sonarr/releases
     sonarr: "4.0.12"
     # https://hub.docker.com/r/linuxserver/prowlarr/tags
     # https://github.com/linuxserver/docker-prowlarr/releases
-    prowlarr: "1.30.2"
+    prowlarr: "1.32.2"
     # https://hub.docker.com/r/qmcgaw/gluetun/tags
     # https://github.com/qdm12/gluetun/releases
     gluetun: "v3.40.0"
     # https://hub.docker.com/r/linuxserver/qbittorrent/tags
     # https://github.com/linuxserver/docker-qbittorrent/releases
     qbittorrent: "5.0.4"
-    # https://hub.docker.com/r/syncthing/relaysrv/tags
-    # https://github.com/syncthing/relaysrv/releases
-    syncthing_relay: "1.29.2"
 
 filesystem:
     systemd_units: /etc/systemd/system
