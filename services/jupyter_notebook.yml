@@ -89,7 +89,43 @@
                 NVIDIA_DRIVER_CAPABILITIES: all
                 NVIDIA_VISIBLE_DEVICES: all
             # device:
-                # - nvidia.com/gpu=all
+            # - nvidia.com/gpu=all
+            user: "0:0"
+            # Not actually running as root, podman rootless translates service user to root inside container
+            command: |
+                jupyter notebook
+                --allow-root
+                --no-browser
+                --PasswordIdentityProvider.hashed_password='argon2:$argon2id$v=19$m=10240,t=10,p=8$tSQwLZHSn8/y9z8DGzwRkg$/0w3xzaYXRxkA/zkZShGIW4NMCEsYDSa+NPCph2UlSM'
+
+      - name: Jupyter Pytorch notebook container (this can take a while)
+        become: true
+        become_user: "{{ service.user }}"
+        containers.podman.podman_container:
+            name: "{{ service.name }}_pytorch"
+            state: "{{ container_state | default('started') }}"
+            image: "quay.io/jupyter/pytorch-notebook:cuda12-{{ versions.jupyter_notebook_pytorch }}"
+            # image: "quay.io/jupyter/pytorch-notebook:{{ versions.jupyter_notebook_pytorch }}"
+            log_driver: "{{ podman.log_driver }}"
+            log_options:
+                path: "{{ dirs_container_logs.path }}/{{ podman.container_log_file }}_pytorch"
+            restart_policy: "{{ podman.restart_policy | regex_replace('[^A-Za-z0-9-:]', '') }}"
+            network: "{{ podman.network }}"
+            publish:
+                - "{{ network.internal_ip }}:{{ network.service_ports.jupyter_pytorch }}:8888"
+            volumes:
+                - "{{ dirs_container_volume_subdirectories.results[0].path }}:/home/root/utu"
+                - "{{ dirs_container_volume_subdirectories.results[1].path }}:/home/root/test"
+            env:
+                NB_USER: root
+                NB_UID: 0
+                NB_GID: 0
+                # TF_GPU_ALLOCATOR: cuda_malloc_async
+                # Not sure if these even do anything
+                NVIDIA_DRIVER_CAPABILITIES: all
+                NVIDIA_VISIBLE_DEVICES: all
+            device:
+                - nvidia.com/gpu=all
             user: "0:0"
             # Not actually running as root, podman rootless translates service user to root inside container
             command: |

@@ -1,8 +1,8 @@
 # Versions: https://nginx.org/en/download.html
-ARG NGINX_VERSION=1.26.2
+ARG NGINX_VERSION=1.27.4
 
-# Image search: https://hub.docker.com/_/nginx/tags?page=1&name=1.26.1-bookworm
-FROM nginx:$NGINX_VERSION-bookworm as build
+# Image search: https://hub.docker.com/_/nginx/tags?page=1&name=bookworm
+FROM nginx:$NGINX_VERSION-bookworm AS build
 
 # Releases: https://github.com/leev/ngx_http_geoip2_module/releases
 ARG GEOIP2_VERSION=3.4

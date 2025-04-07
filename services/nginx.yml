@@ -38,6 +38,9 @@
               - name: jupyter-tensorflow
                 domain: "jupyter-tensorflow.{{ base_domain}}"
                 endpoint: "{{ network.internal_ip }}:{{ network.service_ports.jupyter_tensorflow }}"
+              - name: jupyter-pytorch
+                domain: "jupyter-pytorch.{{ base_domain}}"
+                endpoint: "{{ network.internal_ip }}:{{ network.service_ports.jupyter_pytorch }}"
               - name: jupyter-gpu
                 domain: "jupyter-gpu.{{ base_domain}}"
                 endpoint: "{{ network.internal_ip }}:{{ network.service_ports.jupyter_gpu }}"
