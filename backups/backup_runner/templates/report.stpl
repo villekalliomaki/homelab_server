@@ -1,17 +1,17 @@
 <% use readable::byte::*; %>
-<p>Backup runner report, completed at <%= chrono::Utc::now().format("%H:%M:%S, %d.%m.%Y").to_string() %> UTC on machine <%= gethostname::gethostname().into_string().unwrap() %>.</p>
+<p>Backup runner report, completed at <%= chrono::Utc::now().format("%H:%M:%S, %d.%m.%Y").to_string() %> (UTC) on machine <%= gethostname::gethostname().into_string().unwrap() %>.</p>
 
-<% if !errors.is_empty() { %>
+<% if !&self.errors.is_empty() { %>
     <h2>Errors:</h2>
-    <% for error in &errors { %>
+    <% for error in &self.errors { %>
         <p><b><%= error.0 %>:</b> <%= format!("{}", error.1) %></p>
     <% } %>
 <% } %>
 
 
-<% if !summaries.is_empty() { %>
+<% if !&self.summaries.is_empty() { %>
     <h2>Snapshots:</h2>
-    <% for summary in &summaries { %>
+    <% for summary in &self.summaries { %>
     <p><b><%= summary.0 %>:</b></p>
     <ul>
         <li>Files processed: <%= summary.1.total_files_processed %></li>
@@ -21,7 +21,7 @@
         <li>Data added (before compression): <%= format!("{}", Byte::from(summary.1.data_added)) %></li>
         <li>Data added (compressed): <%= format!("{}", Byte::from(summary.1.data_added_packed)) %></li>
         <li>Start time (UTC): <%= summary.1.backup_start.format("%H:%M:%S (%d.%m.%Y)").to_string() %></li>
-        <li>End time (UTC): <%= summary.1.backup_start.format("%H:%M:%S (%d.%m.%Y)").to_string() %></li>
+        <li>End time (UTC): <%= summary.1.backup_end.format("%H:%M:%S (%d.%m.%Y)").to_string() %></li>
         <li>Duration (seconds): <%= format!("{:.4}", summary.1.backup_duration) %>s</li>
     </ul>
     <% } %>

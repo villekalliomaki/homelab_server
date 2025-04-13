@@ -80,10 +80,11 @@ fn main() {
     let subject: String;
 
     if errors.is_empty() {
-        subject = format!("Backup runner report: {} ok, none failed", summaries.len());
+        subject = format!("Backup report: {} OK", summaries.len());
     } else {
         subject = format!(
-            "Backup runner report: {} FAILED, {} ok",
+            "({} FAILED!): Backup report: {} FAILED, {} ok",
+            errors.len(),
             errors.len(),
             summaries.len(),
         );

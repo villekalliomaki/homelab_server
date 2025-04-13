@@ -65,10 +65,16 @@
               - name: ldap
                 domain: "ldap.{{ base_domain }}"
                 endpoint: "{{ ansible_wg0.ipv4.address }}:{{ network.service_ports.lldap_admin }}"
+              - name: archive
+                domain: "archive.{{ base_domain }}"
+                endpoint: "{{ ansible_wg0.ipv4.address }}:{{ network.service_ports.sftpgo_web }}"
           external:
               - name: homepage
                 domain: "start.{{ base_domain }}"
                 endpoint: "{{ ansible_wg0.ipv4.address }}:{{ network.service_ports.homepage }}"
+              - name: status
+                domain: "status.{{ base_domain }}"
+                endpoint: "{{ ansible_wg0.ipv4.address }}:{{ network.service_ports.uptime_kuma }}"
           both:
               - name: root_redirect
                 domain: "{{ base_domain }}"

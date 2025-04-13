@@ -4,30 +4,10 @@
 # Regenerate using: ansible-playbook services/actions/generate_actions.yml.
 #
 
-- name: "Container state change to stopped, for ../deemix.yml"
+- name: "Container state change to stopped, for ../nginx.yml"
   vars:
       container_state: "stopped"
-  ansible.builtin.import_playbook: "../deemix.yml"
-
-- name: "Container state change to stopped, for ../homepage.yml"
-  vars:
-      container_state: "stopped"
-  ansible.builtin.import_playbook: "../homepage.yml"
-
-- name: "Container state change to stopped, for ../flaresolverr.yml"
-  vars:
-      container_state: "stopped"
-  ansible.builtin.import_playbook: "../flaresolverr.yml"
-
-- name: "Container state change to stopped, for ../pihole.yml"
-  vars:
-      container_state: "stopped"
-  ansible.builtin.import_playbook: "../pihole.yml"
-
-- name: "Container state change to stopped, for ../hoodik.yml"
-  vars:
-      container_state: "stopped"
-  ansible.builtin.import_playbook: "../hoodik.yml"
+  ansible.builtin.import_playbook: "../nginx.yml"
 
 - name: "Container state change to stopped, for ../loki.yml"
   vars:
@@ -39,65 +19,80 @@
       container_state: "stopped"
   ansible.builtin.import_playbook: "../authelia.yml"
 
-- name: "Container state change to stopped, for ../minecraft.yml"
+- name: "Container state change to stopped, for ../qbittorrent.yml"
   vars:
       container_state: "stopped"
-  ansible.builtin.import_playbook: "../minecraft.yml"
+  ansible.builtin.import_playbook: "../qbittorrent.yml"
 
-- name: "Container state change to stopped, for ../nginx.yml"
+- name: "Container state change to stopped, for ../hoodik.yml"
   vars:
       container_state: "stopped"
-  ansible.builtin.import_playbook: "../nginx.yml"
+  ansible.builtin.import_playbook: "../hoodik.yml"
+
+- name: "Container state change to stopped, for ../jellyfin.yml"
+  vars:
+      container_state: "stopped"
+  ansible.builtin.import_playbook: "../jellyfin.yml"
+
+- name: "Container state change to stopped, for ../flaresolverr.yml"
+  vars:
+      container_state: "stopped"
+  ansible.builtin.import_playbook: "../flaresolverr.yml"
 
 - name: "Container state change to stopped, for ../lldap.yml"
   vars:
       container_state: "stopped"
   ansible.builtin.import_playbook: "../lldap.yml"
 
-- name: "Container state change to stopped, for ../radarr.yml"
-  vars:
-      container_state: "stopped"
-  ansible.builtin.import_playbook: "../radarr.yml"
-
-- name: "Container state change to stopped, for ../prometheus.yml"
-  vars:
-      container_state: "stopped"
-  ansible.builtin.import_playbook: "../prometheus.yml"
-
 - name: "Container state change to stopped, for ../jupyter_notebook.yml"
   vars:
       container_state: "stopped"
   ansible.builtin.import_playbook: "../jupyter_notebook.yml"
-
-- name: "Container state change to stopped, for ../photoprism.yml"
-  vars:
-      container_state: "stopped"
-  ansible.builtin.import_playbook: "../photoprism.yml"
-
-- name: "Container state change to stopped, for ../prowlarr.yml"
-  vars:
-      container_state: "stopped"
-  ansible.builtin.import_playbook: "../prowlarr.yml"
-
-- name: "Container state change to stopped, for ../sonarr.yml"
-  vars:
-      container_state: "stopped"
-  ansible.builtin.import_playbook: "../sonarr.yml"
-
-- name: "Container state change to stopped, for ../grafana.yml"
-  vars:
-      container_state: "stopped"
-  ansible.builtin.import_playbook: "../grafana.yml"
 
 - name: "Container state change to stopped, for ../filebrowser_documents.yml"
   vars:
       container_state: "stopped"
   ansible.builtin.import_playbook: "../filebrowser_documents.yml"
 
-- name: "Container state change to stopped, for ../qbittorrent.yml"
+- name: "Container state change to stopped, for ../pihole.yml"
   vars:
       container_state: "stopped"
-  ansible.builtin.import_playbook: "../qbittorrent.yml"
+  ansible.builtin.import_playbook: "../pihole.yml"
+
+- name: "Container state change to stopped, for ../sonarr.yml"
+  vars:
+      container_state: "stopped"
+  ansible.builtin.import_playbook: "../sonarr.yml"
+
+- name: "Container state change to stopped, for ../radarr.yml"
+  vars:
+      container_state: "stopped"
+  ansible.builtin.import_playbook: "../radarr.yml"
+
+- name: "Container state change to stopped, for ../grafana.yml"
+  vars:
+      container_state: "stopped"
+  ansible.builtin.import_playbook: "../grafana.yml"
+
+- name: "Container state change to stopped, for ../homepage.yml"
+  vars:
+      container_state: "stopped"
+  ansible.builtin.import_playbook: "../homepage.yml"
+
+- name: "Container state change to stopped, for ../prowlarr.yml"
+  vars:
+      container_state: "stopped"
+  ansible.builtin.import_playbook: "../prowlarr.yml"
+
+- name: "Container state change to stopped, for ../archive.yml"
+  vars:
+      container_state: "stopped"
+  ansible.builtin.import_playbook: "../archive.yml"
+
+- name: "Container state change to stopped, for ../photoprism.yml"
+  vars:
+      container_state: "stopped"
+  ansible.builtin.import_playbook: "../photoprism.yml"
 
 - name: "Container state change to stopped, for ../promtail.yml"
   vars:
@@ -109,8 +104,18 @@
       container_state: "stopped"
   ansible.builtin.import_playbook: "../trilium.yml"
 
-- name: "Container state change to stopped, for ../jellyfin.yml"
+- name: "Container state change to stopped, for ../prometheus.yml"
   vars:
       container_state: "stopped"
-  ansible.builtin.import_playbook: "../jellyfin.yml"
+  ansible.builtin.import_playbook: "../prometheus.yml"
+
+- name: "Container state change to stopped, for ../minecraft.yml"
+  vars:
+      container_state: "stopped"
+  ansible.builtin.import_playbook: "../minecraft.yml"
+
+- name: "Container state change to stopped, for ../deemix.yml"
+  vars:
+      container_state: "stopped"
+  ansible.builtin.import_playbook: "../deemix.yml"
 

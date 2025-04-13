@@ -10,9 +10,9 @@ use rustic_core::{
 fn get_backends(target_repository: String) -> Result<RepositoryBackends> {
     info!("Creating backend for {}", target_repository);
 
-    BackendOptions::default()
+    Ok(BackendOptions::default()
         .repository(target_repository)
-        .to_backends()
+        .to_backends()?)
 }
 
 // Collect repository options
@@ -44,7 +44,7 @@ pub fn create_snapshot(
     let snapshot = SnapshotOptions::default().to_snapshot()?;
 
     // Try to open repository
-    let repo = Repository::new(&options, backends)?
+    let repo = Repository::new(&options, &backends)?
         .open()?
         .to_indexed_ids()?;
 

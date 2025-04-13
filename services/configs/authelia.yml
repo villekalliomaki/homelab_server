@@ -101,6 +101,7 @@ access_control:
         ##
         - domain:
               - "sso.{{ base_domain }}"
+              - "status.{{ base_domain }}"
           policy: bypass
 
         ##
@@ -162,7 +163,7 @@ access_control:
               - "grafana.{{ base_domain }}"
               - "pihole.{{ base_domain }}"
               - "notes.{{ base_domain }}"
-              - "archivebox.{{ base_domain }}"
+              - "archive.{{ base_domain }}"
               - "storage.{{ base_domain }}"
               - "documents.{{ base_domain }}"
           policy: two_factor
@@ -205,5 +206,5 @@ notifier:
         address: "submissions://{{ email.host }}:{{ email.port }}"
         username: "{{ email.username }}"
         password: "{{ email.password }}"
-        sender: "Authelia SSO (sso.{{ base_domain }}) <{{ email.username }}>"
+        sender: "{{ base_domain }} SSO (sso.{{ base_domain }}) <{{ email.username }}>"
         subject: "[sso.{{ base_domain }}] {title}"

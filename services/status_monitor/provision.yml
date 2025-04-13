@@ -1,0 +1,63 @@
+- name: Provision the podman status monitor script
+  hosts: homelab
+  remote_user: root
+
+  vars_files:
+      - ../global.yml
+
+  vars:
+      podman_users_list: ~/scripts/podman_users.txt
+      ntfy_channel: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          30326539666166343130373562363562353433393331346663653733383232356437383038363765
+          3566356332313161303135353266353666616537623364620a336439396263363237666535666564
+          66616334393564663236326537653330373530333733646462386135303033376362386332386232
+          3436383066633330320a336436336131383332653164323961646166623436303437643735623763
+          33323666316564316330323034306630636537643135393936643562303434373437
+
+  tasks:
+      - name: Save ntfy channel to secrets
+        ansible.builtin.copy:
+            dest: ~/secrets/ntfy_channel.txt
+            content: "{{ ntfy_channel }}"
+            mode: u=rw
+
+      - name: Make sure scripts dir exists
+        ansible.builtin.file:
+            state: directory
+            path: ~/scripts
+            mode: u=rw
+
+      - name: Remove list of podman service users
+        ansible.builtin.file:
+            path: "{{ podman_users_list }}"
+            state: absent
+
+      - name: Find playbooks
+        register: playbook_files_output
+        delegate_to: 127.0.0.1
+        ansible.builtin.find:
+            paths: ../
+            patterns: "*.yml"
+            recurse: false
+            file_type: file
+
+      - name: Generate list of podman service users
+        ansible.builtin.lineinfile:
+            path: "{{ podman_users_list }}"
+            create: true
+            line: "{{ item.path | split('/') | last | split('.') | first }}"
+            mode: u=rw
+        loop: "{{ playbook_files_output.files }}"
+
+      - name: Copy script
+        ansible.builtin.copy:
+            src: podman_status_monitor.py
+            dest: ~/scripts/podman_status_monitor.py
+            mode: u=rw
+
+      - name: Cron job to run status monitor
+        ansible.builtin.cron:
+            name: podman_status_monitor
+            minute: "*/5"
+            job: python3 ~/scripts/podman_status_monitor.py

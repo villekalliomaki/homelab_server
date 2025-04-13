@@ -36,3 +36,11 @@ Permission issues is container volume directories are usually from too limited p
 ### Error `AttributeError: 'list' object has no attribute 'get'` when starting a service
 
 If the containers related to a pod are stopped or deleted without deleting the pod, manually or in a script, Ansible will throw an error when trying to create the existing pod. (probably)
+
+### Error `Container archive exited with code 126 when runed`
+
+```
+Error: crun: sd-bus call: Permission denied: Permission denied: OCI permission denied
+```
+
+Systemd user sessions is not started for some reason. Usually after creating a new user and not restarting once. Can be started with `machinectl shell $USER@`.

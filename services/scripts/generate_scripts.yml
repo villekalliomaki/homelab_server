@@ -24,7 +24,7 @@
       - name: Generate podman management scripts
         ansible.builtin.template:
             src: podman_manage.sh.j2
-            dest: "~/scripts/podman_{{ item | replace(' ', '_') }}_all.sh"
+            dest: "~/scripts/podman_{{ item | replace(' ', '_') | replace('-', '_') }}_all.sh"
             mode: u=rwx
         loop:
             - stop
@@ -33,3 +33,4 @@
             - pod stop
             - pod rm
             - pod ps
+            - image prune -f
