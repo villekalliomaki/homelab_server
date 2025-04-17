@@ -35,6 +35,8 @@ try:
             # Strip newline
             username = username.rstrip()
 
+            logging.info(f"Running for user: {username}")
+
             # Get past states of current user's containers
             user_container_states = container_states.get(username, {})
         
@@ -72,12 +74,27 @@ try:
 
                 # If not running anymore
                 if ps_result["state"] != "running" and container_state == "running":
+                    headers = {
+                        "Title": "Container state alert",
+                        "Priority": "high",
+                        "Tags": "warning"
+                    }
+
+                    logging.info(f"Sending alert for {ps_result["name"]}, state change to {ps_result["state"]}")
+
                     # Last state was running, and now somehting else = notify
-                    requests.post(ntfy_url, f"⚠️ {ps_result["name"]} state changed to {ps_result["state"]} ({username}, {ps_result["id"]})")
+                    requests.post(ntfy_url, f"{ps_result["name"]} state changed to {ps_result["state"]} ({username}, {ps_result["id"]})", headers=headers)
 
                 # If running after other state
                 if ps_result["state"] == "running" and container_state != "running":
-                    requests.post(ntfy_url, f"✅ {ps_result["name"]} state changed to {ps_result["state"]} ({username}, {ps_result["id"]})")
+                    headers = {
+                        "Title": "Container state alert",
+                        "Tags": "white_check_mark"
+                    }
+
+                    logging.info(f"Sending alert for {ps_result["name"]}, state change to {ps_result["state"]}")
+
+                    requests.post(ntfy_url, f"{ps_result["name"]} state changed to {ps_result["state"]} ({username}, {ps_result["id"]})", headers=headers)
 
                 # Save new state
                 user_container_states[ps_result["name"]] = ps_result["state"]
@@ -93,4 +110,10 @@ try:
 except Exception as error:
     logging.warning(f"Error occurred: {error}")
 
-    requests.post(ntfy_url, f"⚠️ ERROR while running status monitor: {error}")
+    headers = {
+        "Title": "Error with container monitor",
+        "Priority": "urgent",
+        "Tags": "bangbang"
+    }
+
+    requests.post(ntfy_url, f"Error while running status monitor: {error}", headers=headers)
