@@ -1,6 +1,6 @@
-use std::{env::current_dir, fs::read_to_string, process::exit};
+use std::{env::current_dir, fs::read_to_string};
 
-use log::{error, info};
+use log::info;
 use serde::Deserialize;
 
 #[derive(Deserialize)]
@@ -24,7 +24,10 @@ pub struct Backup {
     pub name: String,
     // Space separated list
     pub source_paths: String,
-    pub target_repo: String,
+    pub endpoint: String,
+    pub repo_path: String,
+    pub user: String,
+    pub ssh_key_path: String,
     pub repo_password: String,
 }
 
@@ -35,8 +38,7 @@ impl Config {
         match toml::from_str(&get_file_content(path)) {
             Ok(c) => c,
             Err(error) => {
-                error!("Failed to build configuration: {error}");
-                exit(1);
+                panic!("Failed to build configuration: {error}");
             }
         }
     }
@@ -46,21 +48,19 @@ fn get_file_content(path: &str) -> String {
     let dir = match current_dir() {
         Ok(v) => v,
         Err(error) => {
-            error!("Failed to get current working directory: {error}");
-            exit(1);
+            panic!("Failed to get current working directory: {error}");
         }
     };
 
     match read_to_string(path) {
         Ok(s) => s,
         Err(error) => {
-            error!(
+            panic!(
                 "Failed to read config file: {} in {}, {}",
                 path,
                 dir.display(),
                 error
             );
-            exit(1);
         }
     }
 }

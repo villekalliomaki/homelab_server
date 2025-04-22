@@ -10,6 +10,9 @@ password = "{{ email.password }}"
 [[backups]]
 name = "{{ backup.name }}"
 source_paths = "{{ backup.source_paths }}"
-target_repo = "{{ backup.target_repo }}"
+endpoint = "{{ backup.endpoint }}"
+repo_path = "{{ backup.repo_path }}"
+user = "{{ backup.user }}"
+ssh_key_path = "{{ backup.ssh_key_path }}"
 repo_password = "{{ backup.repo_password }}"
 {% endfor %}

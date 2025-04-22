@@ -6,9 +6,12 @@
 
   vars:
       backups:
-          - name: Container volumes
+          - name: Container volumes (HEL1 datacenter)
             source_paths: "{{ filesystem.container_volumes }}"
-            target_repo: "{{ filesystem.mounts.storagebox }}/backups/container_volumes"
+            endpoint: "ssh://{{ ssh.storagebox.host }}:23"
+            repo_path: /home/backups/container_volumes
+            user: "{{ ssh.storagebox.username }}"
+            ssh_key_path: /root/.ssh/id_ed25519
             repo_password: !vault |
                 $ANSIBLE_VAULT;1.1;AES256
                 37373631313836363836626238323738333162386262316633613534613864333037346465303332
@@ -16,9 +19,38 @@
                 33323062656530303937346664343731633164353230653766313230646238613333386264393737
                 6437326434306130620a623138613631343461363539383366643663346232633231363735303261
                 39346438656631303033646462383861346530636634343661373830643139346463
-          - name: Music
+          - name: Container volumes (Off-site 1)
+            source_paths: "{{ filesystem.container_volumes }}"
+            endpoint: "10.1.3.8"
+            repo_path: /mnt/external/backups/container_volumes
+            user: ville
+            ssh_key_path: /root/.ssh/id_ed25519
+            repo_password: !vault |
+                $ANSIBLE_VAULT;1.1;AES256
+                37373631313836363836626238323738333162386262316633613534613864333037346465303332
+                6631383034633333343366353730313331373166343865310a666561373236633231373934353631
+                33323062656530303937346664343731633164353230653766313230646238613333386264393737
+                6437326434306130620a623138613631343461363539383366643663346232633231363735303261
+                39346438656631303033646462383861346530636634343661373830643139346463
+          - name: Music (HEL1 datacenter)
             source_paths: "{{ filesystem.media.music }}"
-            target_repo: "{{ filesystem.mounts.storagebox }}/backups/music"
+            endpoint: "ssh://{{ ssh.storagebox.host }}:23"
+            repo_path: /home/backups/music
+            user: "{{ ssh.storagebox.username }}"
+            ssh_key_path: /root/.ssh/id_ed25519
+            repo_password: !vault |
+                $ANSIBLE_VAULT;1.1;AES256
+                62343831666264663561383165353639646265306533396131653738366536343739313734653766
+                3433646465353630376662366462623764376566653964330a303430363965633762633864363764
+                32313962333530633737613835646666353830383364363335626633626664313936343533313430
+                3435356133353764380a313839336265343033623066343865333464333363663264353462363636
+                36356434643033343634633031643939613761373665383262633633646333356338
+          - name: Music (Off-site 1)
+            source_paths: "{{ filesystem.media.music }}"
+            endpoint: "10.1.3.8"
+            repo_path: /mnt/external/backups/music
+            user: ville
+            ssh_key_path: /root/.ssh/id_ed25519
             repo_password: !vault |
                 $ANSIBLE_VAULT;1.1;AES256
                 62343831666264663561383165353639646265306533396131653738366536343739313734653766

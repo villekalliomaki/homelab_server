@@ -34,7 +34,10 @@ fn main() {
         // Create snapshot
         let backup_result = create_snapshot(
             backup.source_paths,
-            backup.target_repo,
+            backup.endpoint,
+            backup.repo_path,
+            backup.ssh_key_path,
+            backup.user,
             backup.repo_password,
         );
 
@@ -48,7 +51,7 @@ fn main() {
 
                 errors.push((backup.name.clone(), error));
 
-                break;
+                continue;
             }
         };
 
@@ -68,7 +71,7 @@ fn main() {
                     )),
                 ));
 
-                break;
+                continue;
             }
         };
 

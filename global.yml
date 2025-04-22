@@ -60,6 +60,7 @@ network:
         sftpgo: 3036
         sftpgo_web: 3037
         uptime_kuma: 3038
+        frigate_web: 3039
     podman_exporter_range_start: 5000
 
 # Locked versions for services if required. If not set will default to latest.
@@ -127,6 +128,8 @@ versions:
     # https://hub.docker.com/r/louislam/uptime-kuma/tags
     # https://github.com/louislam/uptime-kuma/releases
     uptime_kuma: "1.23.16"
+    # https://github.com/blakeblackshear/frigate/releases
+    frigate: "0.15.1"
 
 filesystem:
     systemd_units: /etc/systemd/system

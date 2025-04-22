@@ -5,13 +5,28 @@ use rustic_core::{
     repofile::SnapshotFile, BackupOptions, PathList, Repository, RepositoryBackends,
     RepositoryOptions, SnapshotOptions,
 };
+use std::collections::BTreeMap;
 
 // Generate backend based on the target repository path/uri/url
-fn get_backends(target_repository: String) -> Result<RepositoryBackends> {
-    info!("Creating backend for {}", target_repository);
+fn get_backends(
+    endpoint: String,
+    repo_path: String,
+    ssh_key_path: String,
+    user: String,
+) -> Result<RepositoryBackends> {
+    info!("Creating backend for {}", endpoint);
+
+    // Create options for SFTP repository
+    let mut options = BTreeMap::new();
+
+    options.insert("endpoint".to_string(), endpoint);
+    options.insert("user".to_string(), user);
+    options.insert("key".to_string(), ssh_key_path);
+    options.insert("root".to_string(), repo_path);
 
     Ok(BackendOptions::default()
-        .repository(target_repository)
+        .repository("opendal:sftp")
+        .options(options)
         .to_backends()?)
 }
 
@@ -30,17 +45,17 @@ fn paths_list_from_string(paths: String) -> Result<PathList> {
 
 pub fn create_snapshot(
     sources: String,
-    target_repository: String,
+    endpoint: String,
+    repo_path: String,
+    ssh_key_path: String,
+    user: String,
     password: String,
 ) -> Result<SnapshotFile> {
-    info!(
-        "Starting snapshot from {} to {}",
-        sources, target_repository
-    );
+    info!("Starting snapshot from {} to {}", sources, endpoint);
 
     // Set up
     let options = get_repo_options(password);
-    let backends = get_backends(target_repository)?;
+    let backends = get_backends(endpoint, repo_path, ssh_key_path, user)?;
     let snapshot = SnapshotOptions::default().to_snapshot()?;
 
     // Try to open repository
