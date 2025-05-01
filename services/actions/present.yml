@@ -84,6 +84,11 @@
       container_state: "present"
   ansible.builtin.import_playbook: "../prowlarr.yml"
 
+- name: "Container state change to present, for ../frigate.yml"
+  vars:
+      container_state: "present"
+  ansible.builtin.import_playbook: "../frigate.yml"
+
 - name: "Container state change to present, for ../archive.yml"
   vars:
       container_state: "present"

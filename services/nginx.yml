@@ -10,6 +10,16 @@
           name: nginx
           user: nginx
 
+      # Header value for upstream services
+      upstream_secret: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          66623734613563663331366131353262613763343164323566353032323237386333643338653066
+          3634623236386531333730633137336266316133313630310a663561656465316335356332313930
+          61666630386535356664303732343035343434303161613838306639363365376163613661666266
+          6636383162363066660a353433326133376638386563633361373261656366303035643239396433
+          35653562653863333963313731373562373931653565613334303866396130326133333163663435
+          3161383065303931333837383964636234326133303663376633
+
       # The static config is generated from these. Endpoint is not generated from global variables
       # to allow proxying to services not managed here.
       reverse_proxy_services:
@@ -20,9 +30,6 @@
               - name: trilium
                 domain: "notes.{{ base_domain }}"
                 endpoint: "{{ ansible_wg0.ipv4.address }}:{{ network.service_ports.trilium }}"
-              - name: seafile
-                domain: "seafile.{{ base_domain }}"
-                endpoint: "{{ ansible_wg0.ipv4.address }}:{{ network.service_ports.seafile }}"
               - name: deemix
                 domain: "deemix.{{ base_domain }}"
                 endpoint: "{{ ansible_wg0.ipv4.address }}:{{ network.service_ports.deemix }}"
@@ -53,12 +60,6 @@
               - name: sonarr
                 domain: "sonarr.{{ base_domain }}"
                 endpoint: "{{ ansible_wg0.ipv4.address }}:{{ network.service_ports.sonarr }}"
-              - name: deluge
-                domain: "deluge.{{ base_domain }}"
-                endpoint: "{{ ansible_wg0.ipv4.address }}:{{ network.service_ports.deluge_web_ui }}"
-              - name: flood
-                domain: "flood.{{ base_domain }}"
-                endpoint: "{{ ansible_wg0.ipv4.address }}:{{ network.service_ports.flood }}"
               - name: qbit
                 domain: "qbit.{{ base_domain }}"
                 endpoint: "{{ ansible_wg0.ipv4.address }}:{{ network.service_ports.qbittorrent_web_ui }}"
@@ -72,9 +73,9 @@
               - name: homepage
                 domain: "start.{{ base_domain }}"
                 endpoint: "{{ ansible_wg0.ipv4.address }}:{{ network.service_ports.homepage }}"
-              - name: status
-                domain: "status.{{ base_domain }}"
-                endpoint: "{{ ansible_wg0.ipv4.address }}:{{ network.service_ports.uptime_kuma }}"
+              - name: frigate
+                domain: "nvr.{{ base_domain }}"
+                endpoint: "{{ ansible_wg0.ipv4.address }}:{{ network.service_ports.frigate_web }}"
           both:
               - name: root_redirect
                 domain: "{{ base_domain }}"

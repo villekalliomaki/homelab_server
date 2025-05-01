@@ -39,7 +39,7 @@
             network: "{{ podman.network }}"
             publish:
                 - "{{ network.internal_ip }}:{{ network.service_ports.sftpgo }}:2022"
-                - "{{ network.internal_ip }}:{{ network.service_ports.sftpgo_web }}:80801"
+                - "{{ network.internal_ip }}:{{ network.service_ports.sftpgo_web }}:8080"
             user: "{{ ansible_user_id }}:{{ ansible_user_id }}"
             volume:
                 # Persistent data, user home directories

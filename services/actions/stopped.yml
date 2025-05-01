@@ -84,6 +84,11 @@
       container_state: "stopped"
   ansible.builtin.import_playbook: "../prowlarr.yml"
 
+- name: "Container state change to stopped, for ../frigate.yml"
+  vars:
+      container_state: "stopped"
+  ansible.builtin.import_playbook: "../frigate.yml"
+
 - name: "Container state change to stopped, for ../archive.yml"
   vars:
       container_state: "stopped"

@@ -51,23 +51,23 @@ fn main() {
 
                 errors.push((backup.name.clone(), error));
 
-                continue;
+                break;
             }
         };
 
-        match snapshot.summary {
+        match snapshot.0.summary {
             Some(summary) => summaries.push((backup.name, summary)),
             None => {
                 error!(
                     "Snapshot summary missing for {} ({})",
-                    backup.name, snapshot.id
+                    backup.name, snapshot.0.id
                 );
 
                 errors.push((
                     backup.name.clone(),
                     Error::msg(format!(
                         "Snapshot summary missing for {} ({})",
-                        backup.name, snapshot.id
+                        backup.name, snapshot.0.id
                     )),
                 ));
 
@@ -75,7 +75,7 @@ fn main() {
             }
         };
 
-        info!("Successful backup snapshot {} created", snapshot.id);
+        info!("Successful backup snapshot {} created", snapshot.0.id);
     }
 
     // Compile and send email
@@ -86,7 +86,7 @@ fn main() {
         subject = format!("Backup report: {} OK", summaries.len());
     } else {
         subject = format!(
-            "({} FAILED!): Backup report: {} FAILED, {} ok",
+            "({} FAILED): Backup report: {} FAILED, {} ok",
             errors.len(),
             errors.len(),
             summaries.len(),

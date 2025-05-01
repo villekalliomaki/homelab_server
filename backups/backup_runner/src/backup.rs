@@ -2,8 +2,8 @@ use anyhow::{Ok, Result};
 use log::info;
 use rustic_backend::BackendOptions;
 use rustic_core::{
-    repofile::SnapshotFile, BackupOptions, PathList, Repository, RepositoryBackends,
-    RepositoryOptions, SnapshotOptions,
+    repofile::SnapshotFile, BackupOptions, KeepOptions, PathList, Repository, RepositoryBackends,
+    RepositoryOptions, SnapshotGroupCriterion, SnapshotOptions,
 };
 use std::collections::BTreeMap;
 
@@ -50,7 +50,7 @@ pub fn create_snapshot(
     ssh_key_path: String,
     user: String,
     password: String,
-) -> Result<SnapshotFile> {
+) -> Result<(SnapshotFile, usize)> {
     info!("Starting snapshot from {} to {}", sources, endpoint);
 
     // Set up
@@ -69,5 +69,21 @@ pub fn create_snapshot(
     let parsed_sources = paths_list_from_string(sources)?;
     info!("Backup source paths parsed as: {}", parsed_sources);
 
-    Ok(repo.backup(&BackupOptions::default(), &parsed_sources, snapshot)?)
+    let backup_result = repo.backup(&BackupOptions::default(), &parsed_sources, snapshot)?;
+
+    // Forget snapshots based on criteria
+    let group_by = SnapshotGroupCriterion::default();
+    // Just static for all repos
+    let keep = KeepOptions::default()
+        .keep_daily(90)
+        .keep_weekly(26)
+        .keep_monthly(24)
+        .keep_yearly(10);
+    let forget_snapshots_ids = repo
+        .get_forget_snapshots(&keep, group_by, |_| true)?
+        .into_forget_ids();
+    // Then delete the list of snapshots
+    repo.delete_snapshots(&forget_snapshots_ids)?;
+
+    Ok((backup_result, forget_snapshots_ids.len()))
 }

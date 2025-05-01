@@ -84,6 +84,11 @@
       container_state: "started"
   ansible.builtin.import_playbook: "../prowlarr.yml"
 
+- name: "Container state change to started, for ../frigate.yml"
+  vars:
+      container_state: "started"
+  ansible.builtin.import_playbook: "../frigate.yml"
+
 - name: "Container state change to started, for ../archive.yml"
   vars:
       container_state: "started"

@@ -84,6 +84,11 @@
       container_state: "absent"
   ansible.builtin.import_playbook: "../prowlarr.yml"
 
+- name: "Container state change to absent, for ../frigate.yml"
+  vars:
+      container_state: "absent"
+  ansible.builtin.import_playbook: "../frigate.yml"
+
 - name: "Container state change to absent, for ../archive.yml"
   vars:
       container_state: "absent"

@@ -101,7 +101,6 @@ access_control:
         ##
         - domain:
               - "sso.{{ base_domain }}"
-              - "status.{{ base_domain }}"
           policy: bypass
 
         ##
@@ -111,7 +110,6 @@ access_control:
               - "{{ base_domain }}"
               - "start.{{ base_domain }}"
               - "media.{{ base_domain }}"
-              - "jellyseerr.{{ base_domain }}"
               - "dynmap.{{ base_domain }}"
               - "gallery.{{ base_domain }}"
               - "jupyter-datascience.{{ base_domain }}"
@@ -125,8 +123,6 @@ access_control:
         ##
         - domain:
               - "media.{{ base_domain }}"
-              - "git.{{ base_domain }}"
-              - "seafile.{{ base_domain }}"
           policy: bypass
           networks:
               - "internal"
@@ -134,9 +130,9 @@ access_control:
         ##
         ## 2FA external (anywhere)
         ##
-        - domain:
-              - "git.{{ base_domain }}"
-          policy: two_factor
+        # - domain:
+        #       -
+        #   policy: two_factor
 
         ##
         ## Media management (2FA)
@@ -145,10 +141,8 @@ access_control:
               - "radarr.{{ base_domain }}"
               - "sonarr.{{ base_domain }}"
               - "prowlarr.{{ base_domain }}"
-              - "deluge.{{ base_domain }}"
               - "bazarr.{{ base_domain }}"
               - "deemix.{{ base_domain }}"
-              - "flood.{{ base_domain }}"
               - "qbit.{{ base_domain}}"
           policy: two_factor
           subject:
@@ -169,6 +163,16 @@ access_control:
           policy: two_factor
           subject:
               - ["group:lldap_admin"]
+
+        ##
+        ## NVR access
+        ##
+        - domain:
+              - "nvr.{{ base_domain }}"
+          policy: one_factor
+          subject:
+              - ["group:lldap_admin"]
+              - ["group:nvr"]
 
 session:
     cookies:

@@ -129,7 +129,7 @@ versions:
     # https://github.com/louislam/uptime-kuma/releases
     uptime_kuma: "1.23.16"
     # https://github.com/blakeblackshear/frigate/releases
-    frigate: "0.15.1"
+    # frigate: "0.15.1"
 
 filesystem:
     systemd_units: /etc/systemd/system
@@ -156,6 +156,7 @@ filesystem:
         movies: /mnt/hdd4tb/media/movies
         series: /mnt/hdd4tb/media/tv
         downloads: /mnt/cache/downloads
+        nvr: /mnt/nvr
     mounts:
         storagebox: /mnt/storagebox
         hdd4tb: /mnt/hdd4tb
