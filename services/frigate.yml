@@ -68,4 +68,4 @@
                 YOLO_MODELS: yolov7-320,yolov7x-640
             group_add:
                 - keep-groups
-            shm_size: 256mb
+            shm_size: 512mb
