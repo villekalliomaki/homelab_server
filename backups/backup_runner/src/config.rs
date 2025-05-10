@@ -29,6 +29,8 @@ pub struct Backup {
     pub user: String,
     pub ssh_key_path: String,
     pub repo_password: String,
+    #[serde(default)]
+    pub no_history: bool
 }
 
 impl Config {

@@ -39,6 +39,12 @@
                 - qemu-img
                 - wireshark-cli
                 - jq
+                - pacman-contrib
+
+      - name: Enable pacman cache cleanup
+        ansible.builtin.systemd:
+            unit: paccache.timer
+            enabled: true
 
       #
       # AUR

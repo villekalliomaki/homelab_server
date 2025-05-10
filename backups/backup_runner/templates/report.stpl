@@ -9,9 +9,9 @@
 <% } %>
 
 
-<% if !&self.0.summaries.is_empty() { %>
+<% if !&self.summaries.is_empty() { %>
     <h2>Snapshots:</h2>
-    <% for summary in &self.0.summaries { %>
+    <% for summary in &self.summaries { %>
     <p><b><%= summary.0 %>:</b></p>
     <ul>
         <li>Files processed: <%= summary.1.total_files_processed %></li>
@@ -25,5 +25,4 @@
         <li>Duration (seconds): <%= format!("{:.4}", summary.1.backup_duration) %>s</li>
     </ul>
     <% } %>
-    <p>Number of old backups deleted: <%= &self.1 %></p>
 <% } %>

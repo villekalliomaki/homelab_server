@@ -37,6 +37,7 @@ fn main() {
             backup.endpoint,
             backup.repo_path,
             backup.ssh_key_path,
+            backup.no_history,
             backup.user,
             backup.repo_password,
         );
@@ -55,19 +56,19 @@ fn main() {
             }
         };
 
-        match snapshot.0.summary {
+        match snapshot.summary {
             Some(summary) => summaries.push((backup.name, summary)),
-            None => {
+            _ => {
                 error!(
                     "Snapshot summary missing for {} ({})",
-                    backup.name, snapshot.0.id
+                    backup.name, snapshot.id
                 );
 
                 errors.push((
                     backup.name.clone(),
                     Error::msg(format!(
                         "Snapshot summary missing for {} ({})",
-                        backup.name, snapshot.0.id
+                        backup.name, snapshot.id
                     )),
                 ));
 
@@ -75,7 +76,7 @@ fn main() {
             }
         };
 
-        info!("Successful backup snapshot {} created", snapshot.0.id);
+        info!("Successful backup snapshot {} created", snapshot.id);
     }
 
     // Compile and send email

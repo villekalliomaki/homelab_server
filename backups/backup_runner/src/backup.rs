@@ -48,9 +48,10 @@ pub fn create_snapshot(
     endpoint: String,
     repo_path: String,
     ssh_key_path: String,
+    no_history: bool,
     user: String,
     password: String,
-) -> Result<(SnapshotFile, usize)> {
+) -> Result<SnapshotFile> {
     info!("Starting snapshot from {} to {}", sources, endpoint);
 
     // Set up
@@ -73,17 +74,26 @@ pub fn create_snapshot(
 
     // Forget snapshots based on criteria
     let group_by = SnapshotGroupCriterion::default();
-    // Just static for all repos
-    let keep = KeepOptions::default()
-        .keep_daily(90)
-        .keep_weekly(26)
-        .keep_monthly(24)
-        .keep_yearly(10);
+
+    let mut keep = KeepOptions::default();
+
+    if no_history {
+        // Just keep one daily
+        keep = keep.keep_daily(1);
+    } else {
+        // Normal prune
+        keep = keep.keep_daily(90)
+            .keep_weekly(26)
+            .keep_monthly(24)
+            .keep_yearly(10);
+    }
+
+    // Forget snapshots
     let forget_snapshots_ids = repo
         .get_forget_snapshots(&keep, group_by, |_| true)?
         .into_forget_ids();
     // Then delete the list of snapshots
     repo.delete_snapshots(&forget_snapshots_ids)?;
 
-    Ok((backup_result, forget_snapshots_ids.len()))
+    Ok(backup_result)
 }

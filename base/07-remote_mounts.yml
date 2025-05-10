@@ -27,12 +27,12 @@
 
       # Ignore the 'boot' due to 'opts' contains 'noauto' can probably be ignored
       # because looks like systemd is doing the mount here at boot
-      - name: Mount storagebox remote location
-        ansible.posix.mount:
-            state: mounted
-            # No port here! Also root (/) or home (~/) mount paths don't work!
-            src: "{{ storagebox.ssh_target }}:./"
-            path: "{{ filesystem.mounts.storagebox }}"
-            fstype: fuse.sshfs
-            # Not needed probbaly: uid=0,gid=0,idmap=user maps whatever user the storagebox files are under to root locally
-            opts: port=23,noauto,x-systemd.automount,_netdev,reconnect,identityfile=/root/.ssh/id_ed25519
+      # - name: Mount storagebox remote location
+      #   ansible.posix.mount:
+      #       state: mounted
+      #       # No port here! Also root (/) or home (~/) mount paths don't work!
+      #       src: "{{ storagebox.ssh_target }}:./"
+      #       path: "{{ filesystem.mounts.storagebox }}"
+      #       fstype: fuse.sshfs
+      #       # Not needed probbaly: uid=0,gid=0,idmap=user maps whatever user the storagebox files are under to root locally
+      #       opts: port=23,noauto,x-systemd.automount,_netdev,reconnect,identityfile=/root/.ssh/id_ed25519

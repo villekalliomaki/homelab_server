@@ -64,6 +64,7 @@
             repo_path: /home/backups/nvr
             user: "{{ ssh.storagebox.username }}"
             ssh_key_path: /root/.ssh/id_ed25519
+            no_history: true
             repo_password: !vault |
                 $ANSIBLE_VAULT;1.1;AES256
                 64363036306632343930623435656338396630623462383836316636323838646634393262636163
