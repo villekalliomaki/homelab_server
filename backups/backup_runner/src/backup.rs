@@ -82,10 +82,10 @@ pub fn create_snapshot(
         keep = keep.keep_daily(1);
     } else {
         // Normal prune
-        keep = keep.keep_daily(90)
-            .keep_weekly(26)
-            .keep_monthly(24)
-            .keep_yearly(10);
+        keep = keep.keep_daily(30)
+            .keep_weekly(12)
+            .keep_monthly(12)
+            .keep_yearly(5);
     }
 
     // Forget snapshots

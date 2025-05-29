@@ -16,6 +16,6 @@ user = "{{ backup.user }}"
 ssh_key_path = "{{ backup.ssh_key_path }}"
 repo_password = "{{ backup.repo_password }}"
 {% if backup.no_history is defined %}
-no_history = "{{ backup.no_history }}"
+no_history = {{ backup.no_history | lower }}
 {% endif %}
 {% endfor %}
