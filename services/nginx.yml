@@ -69,6 +69,9 @@
               - name: archive
                 domain: "archive.{{ base_domain }}"
                 endpoint: "{{ ansible_wg0.ipv4.address }}:{{ network.service_ports.sftpgo_web }}"
+              - name: n8n
+                domain: "n8n.{{ base_domain }}"
+                endpoint: "{{ ansible_wg0.ipv4.address }}:{{ network.service_ports.n8n }}"
           external:
               - name: homepage
                 domain: "start.{{ base_domain }}"

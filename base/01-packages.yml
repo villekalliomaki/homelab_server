@@ -24,8 +24,7 @@
                 - sudo
                 - git
                 - base-devel
-                # For building yay with Ansible
-                - python-pexpect
+                - python-pexpect # For building yay with Ansible
                 - certbot-dns-cloudflare
                 - nvidia
                 - cronie
@@ -40,6 +39,10 @@
                 - wireshark-cli
                 - jq
                 - pacman-contrib
+                - tmux
+                - iperf3
+                - smartmontools
+                - ufw
 
       - name: Enable pacman cache cleanup
         ansible.builtin.systemd:

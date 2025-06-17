@@ -22,6 +22,14 @@ scrape_configs:
                 [
                     "{{ network.internal_ip }}:{{ network.service_ports.qbittorrent_exporter }}",
                 ]
+    - job_name: "node_exporter"
+      scrape_interval: "30s"
+      scheme: "http"
+      static_configs:
+          - targets:
+                [
+                    "{{ network.internal_ip }}:{{ network.service_ports.node_exporter }}",
+                ]
 # Podman exporter scrape configs are generated automatically
 #scrape_config_files:
 #    - /prometheus/scrape_configs/authelia.yml

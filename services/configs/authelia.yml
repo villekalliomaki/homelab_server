@@ -160,6 +160,7 @@ access_control:
               - "archive.{{ base_domain }}"
               - "storage.{{ base_domain }}"
               - "documents.{{ base_domain }}"
+              - "n8n.{{ base_domain }}"
           policy: two_factor
           subject:
               - ["group:lldap_admin"]

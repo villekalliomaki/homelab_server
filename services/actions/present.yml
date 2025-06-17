@@ -19,6 +19,11 @@
       container_state: "present"
   ansible.builtin.import_playbook: "../authelia.yml"
 
+- name: "Container state change to present, for ../n8n.yml"
+  vars:
+      container_state: "present"
+  ansible.builtin.import_playbook: "../n8n.yml"
+
 - name: "Container state change to present, for ../qbittorrent.yml"
   vars:
       container_state: "present"

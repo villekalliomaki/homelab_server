@@ -2,8 +2,8 @@ use anyhow::{Ok, Result};
 use log::info;
 use rustic_backend::BackendOptions;
 use rustic_core::{
-    repofile::SnapshotFile, BackupOptions, KeepOptions, PathList, Repository, RepositoryBackends,
-    RepositoryOptions, SnapshotGroupCriterion, SnapshotOptions,
+    repofile::SnapshotFile, BackupOptions, KeepOptions, PathList, PruneOptions, Repository,
+    RepositoryBackends, RepositoryOptions, SnapshotGroupCriterion, SnapshotOptions,
 };
 use std::collections::BTreeMap;
 
@@ -82,7 +82,8 @@ pub fn create_snapshot(
         keep = keep.keep_daily(1);
     } else {
         // Normal prune
-        keep = keep.keep_daily(30)
+        keep = keep
+            .keep_daily(30)
             .keep_weekly(12)
             .keep_monthly(12)
             .keep_yearly(5);
@@ -92,8 +93,15 @@ pub fn create_snapshot(
     let forget_snapshots_ids = repo
         .get_forget_snapshots(&keep, group_by, |_| true)?
         .into_forget_ids();
+
     // Then delete the list of snapshots
     repo.delete_snapshots(&forget_snapshots_ids)?;
+
+    // Then prune repo to acutally delete old snapshot data
+    // (And delete instantly)
+    let prune_options = PruneOptions::default().instant_delete(true);
+
+    repo.prune(&prune_options, repo.prune_plan(&prune_options)?)?;
 
     Ok(backup_result)
 }

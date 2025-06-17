@@ -19,6 +19,11 @@
       container_state: "started"
   ansible.builtin.import_playbook: "../authelia.yml"
 
+- name: "Container state change to started, for ../n8n.yml"
+  vars:
+      container_state: "started"
+  ansible.builtin.import_playbook: "../n8n.yml"
+
 - name: "Container state change to started, for ../qbittorrent.yml"
   vars:
       container_state: "started"

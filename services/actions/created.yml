@@ -19,6 +19,11 @@
       container_state: "created"
   ansible.builtin.import_playbook: "../authelia.yml"
 
+- name: "Container state change to created, for ../n8n.yml"
+  vars:
+      container_state: "created"
+  ansible.builtin.import_playbook: "../n8n.yml"
+
 - name: "Container state change to created, for ../qbittorrent.yml"
   vars:
       container_state: "created"

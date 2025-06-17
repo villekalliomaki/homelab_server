@@ -1,0 +1,20 @@
+- name: Configure SSH server
+  hosts: homelab
+
+  tasks:
+      - name: Allowed ports
+        community.general.ufw:
+            rule: allow
+            port: "{{ item }}"
+        loop:
+            - "22"
+            - "80"
+            - "443"
+            - "444"
+            - "25565"
+
+      - name: Default deny incoming and enable
+        community.general.ufw:
+            state: enabled
+            policy: deny
+            direction: incoming

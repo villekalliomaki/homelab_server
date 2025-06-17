@@ -46,21 +46,18 @@ network:
         minecraft: 3021
         flaresolverr: 3023
         minecraft_star_technology: 3024
-        deluge_web_ui: 3025
         qbittorrent_gluetun: 3026
-        flood: 3027
         qbittorrent_web_ui: 3028
         qbittorrent_exporter: 3029
-        syncthing_data: 3030
-        syncthing_stats: 3031
         jupyter_datascience: 3032
         jupyter_tensorflow: 3033
         jupyter_gpu: 3034
         jupyter_pytorch: 3035
         sftpgo: 3036
         sftpgo_web: 3037
-        uptime_kuma: 3038
         frigate_web: 3039
+        n8n: 3040
+        node_exporter: 3041
     podman_exporter_range_start: 5000
 
 # Locked versions for services if required. If not set will default to latest.
@@ -130,6 +127,8 @@ versions:
     uptime_kuma: "1.23.16"
     # https://github.com/blakeblackshear/frigate/releases
     # frigate: "0.15.1"
+    # https://github.com/n8n-io/n8n/releases
+    n8n: "1.97.1"
 
 filesystem:
     systemd_units: /etc/systemd/system
