@@ -19,11 +19,6 @@
       container_state: "absent"
   ansible.builtin.import_playbook: "../authelia.yml"
 
-- name: "Container state change to absent, for ../n8n.yml"
-  vars:
-      container_state: "absent"
-  ansible.builtin.import_playbook: "../n8n.yml"
-
 - name: "Container state change to absent, for ../qbittorrent.yml"
   vars:
       container_state: "absent"

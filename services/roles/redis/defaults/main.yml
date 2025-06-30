@@ -1,7 +1,7 @@
 ---
 # defaults file for redis
 
-redis_container_image: docker.io/library/redis:7.2
+redis_container_image: "docker.io/library/redis:{{ versions.redis }}"
 
 redis_recreate: false
 

@@ -25,5 +25,5 @@
 - name: Firewall
   ansible.builtin.import_playbook: 08-firewall.yml
 
-- name: Node exporter
-  ansible.builtin.import_playbook: 09-exporter.yml
+- name: Stat exporters
+  ansible.builtin.import_playbook: 09-exporters.yml

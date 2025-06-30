@@ -1,6 +1,9 @@
 - name: Configure SSH server
   hosts: homelab
 
+  vars_files:
+      - ../global.yml
+
   tasks:
       - name: Allowed ports
         community.general.ufw:
@@ -8,13 +11,19 @@
             port: "{{ item }}"
         loop:
             - "22"
+            - "53"
             - "80"
             - "443"
             - "444"
+            - "1111"
             - "25565"
 
-      - name: Default deny incoming and enable
+      - name: Allow Jellyfin access directly from VPN
+        community.general.ufw:
+            rule: allow
+            port: "{{ network.service_ports.jellyfin }}"
+            from: 10.1.3.0/24
+
+      - name: Enable
         community.general.ufw:
             state: enabled
-            policy: deny
-            direction: incoming

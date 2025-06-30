@@ -58,10 +58,17 @@ network:
         frigate_web: 3039
         n8n: 3040
         node_exporter: 3041
+        dcgm_exporter: 3042
     podman_exporter_range_start: 5000
 
 # Locked versions for services if required. If not set will default to latest.
 versions:
+    # https://hub.docker.com/_/postgres/tags
+    # https://www.postgresql.org/docs/release/
+    postgresql: "16.2"
+    # https://hub.docker.com/_/redis/tags
+    # https://github.com/redis/redis/releases
+    redis: "8.0.2"
     # https://hub.docker.com/r/villekalliomaki/nginx/tags
     nginx: "1.28.0"
     # https://hub.docker.com/r/authelia/authelia/tags
@@ -69,13 +76,13 @@ versions:
     authelia: "4.39.4"
     # https://github.com/gethomepage/homepage/pkgs/container/homepage
     # https://github.com/gethomepage/homepage/releases
-    homepage: "v1.2.0"
+    homepage: "v1.3.2"
     # https://hub.docker.com/r/nitnelave/lldap/tags
     # https://github.com/lldap/lldap/releases
     lldap: "v0.6.1"
     # https://hub.docker.com/r/pihole/pihole/tags
     # https://github.com/pi-hole/pi-hole/releases
-    pihole: "2025.04.0"
+    pihole: "2025.06.2"
     # https://hub.docker.com/r/zadam/trilium/tags
     # https://github.com/zadam/trilium/releases
     trilium: "0.63.7"
@@ -84,13 +91,13 @@ versions:
     jellyfin: "10.10.7"
     # https://hub.docker.com/r/prom/prometheus/tags
     # https://github.com/prometheus/prometheus/releases
-    prometheus: "v3.4.0"
+    prometheus: "v3.4.1"
     # https://hub.docker.com/r/hudik/hoodik/tags
     # https://github.com/hudikhq/hoodik/releases
     hoodik: "v1.5.1"
     # https://hub.docker.com/r/filebrowser/filebrowser/tags
     # https://github.com/filebrowser/filebrowser/releases
-    filebrowser: "v2.32.0"
+    filebrowser: "v2.34.1"
     # https://quay.io/repository/jupyter/datascience-notebook?tab=tags
     # https://github.com/jupyter/docker-stacks/tree/main/images/datascience-notebook
     jupyter_notebook_datascience: "notebook-7.4.2"
@@ -103,16 +110,16 @@ versions:
     jupyter_notebook_pytorch: "notebook-7.4.2"
     # https://hub.docker.com/r/flaresolverr/flaresolverr/tags
     # https://github.com/FlareSolverr/FlareSolverr/releases
-    flaresolverr: "v3.3.21"
+    flaresolverr: "v3.3.25"
     # https://hub.docker.com/r/linuxserver/radarr/tags
     # https://github.com/linuxserver/docker-radarr/releases
-    radarr: "5.25.0"
+    radarr: "5.26.2"
     # https://hub.docker.com/r/linuxserver/sonarr/tags
     # https://github.com/linuxserver/docker-sonarr/releases
-    sonarr: "4.0.14"
+    sonarr: "4.0.15"
     # https://hub.docker.com/r/linuxserver/prowlarr/tags
     # https://github.com/linuxserver/docker-prowlarr/releases
-    prowlarr: "1.36.3"
+    prowlarr: "1.37.0"
     # https://hub.docker.com/r/qmcgaw/gluetun/tags
     # https://github.com/qdm12/gluetun/releases
     gluetun: "v3.40.0"
@@ -124,11 +131,13 @@ versions:
     sftpgo: "v2.6.6"
     # https://hub.docker.com/r/louislam/uptime-kuma/tags
     # https://github.com/louislam/uptime-kuma/releases
-    uptime_kuma: "1.23.16"
+    # uptime_kuma: "1.23.16"
     # https://github.com/blakeblackshear/frigate/releases
-    # frigate: "0.15.1"
+    frigate: "0.15.1"
     # https://github.com/n8n-io/n8n/releases
-    n8n: "1.97.1"
+    n8n: "1.99.1"
+    # https://github.com/NVIDIA/dcgm-exporter/releases
+    dcgm_exporter: ""
 
 filesystem:
     systemd_units: /etc/systemd/system

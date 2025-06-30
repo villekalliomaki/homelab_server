@@ -43,6 +43,7 @@
                 - iperf3
                 - smartmontools
                 - ufw
+                - net-tools
 
       - name: Enable pacman cache cleanup
         ansible.builtin.systemd:

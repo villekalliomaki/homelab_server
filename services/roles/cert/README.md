@@ -17,7 +17,7 @@ cert_key_options:
 cert_csr_options:
     output: /tmp/cert_test/test.csr
     common_name: example.org
-    # Can also be an empty list or missing is none
+    # Can also be an empty list or missing if none
     subject_alt_names:
         - "DNS:subdomain.example.org"
         - "DNS:*.example.org"

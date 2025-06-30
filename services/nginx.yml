@@ -66,9 +66,6 @@
               - name: ldap
                 domain: "ldap.{{ base_domain }}"
                 endpoint: "{{ ansible_wg0.ipv4.address }}:{{ network.service_ports.lldap_admin }}"
-              - name: archive
-                domain: "archive.{{ base_domain }}"
-                endpoint: "{{ ansible_wg0.ipv4.address }}:{{ network.service_ports.sftpgo_web }}"
               - name: n8n
                 domain: "n8n.{{ base_domain }}"
                 endpoint: "{{ ansible_wg0.ipv4.address }}:{{ network.service_ports.n8n }}"
@@ -92,6 +89,9 @@
               - name: photoprism
                 domain: "gallery.{{ base_domain }}"
                 endpoint: "{{ ansible_wg0.ipv4.address }}:{{ network.service_ports.photoprism }}"
+              - name: archive
+                domain: "archive.{{ base_domain }}"
+                endpoint: "{{ ansible_wg0.ipv4.address }}:{{ network.service_ports.sftpgo_web }}"
 
   tasks:
       - name: User

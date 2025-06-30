@@ -23,20 +23,13 @@
                 create: true
                 subdirectories:
                     - config
+                    - database
                     - data
-
-      - name: Create database file if it doesn't exist
-        ansible.builtin.file:
-            path: "{{ dirs_container_volume_subdirectories.results[0].path }}/database.db"
-            state: touch
-            owner: "{{ service.user }}"
-            group: "{{ service.user }}"
-            mode: u=rwx
 
       - name: Copy config file
         ansible.builtin.copy:
             src: ./configs/filebrowser_documents.json
-            dest: "{{ dirs_container_volume_subdirectories.results[0].path }}/.filebrowser.json"
+            dest: "{{ dirs_container_volume_subdirectories.results[0].path }}/settings.json"
             owner: "{{ service.user }}"
             group: "{{ service.user }}"
             mode: u=rwx
@@ -55,8 +48,8 @@
             network: "{{ podman.network }}"
             publish:
                 - "{{ network.internal_ip }}:{{ network.service_ports.filebrowser_documents }}:80"
+            user: "{{ ansible_user_id }}"
             volumes:
-                # Can't change config or database paths...
-                - "{{ dirs_container_volume_subdirectories.results[0].path }}/database.db:/database.db"
-                - "{{ dirs_container_volume_subdirectories.results[0].path }}/.filebrowser.json:/.filebrowser.json"
-                - "{{ dirs_container_volume_subdirectories.results[1].path }}:/data"
+                - "{{ dirs_container_volume_subdirectories.results[0].path }}:/config"
+                - "{{ dirs_container_volume_subdirectories.results[1].path }}:/database"
+                - "{{ dirs_container_volume_subdirectories.results[2].path }}:/data"

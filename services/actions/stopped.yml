@@ -19,11 +19,6 @@
       container_state: "stopped"
   ansible.builtin.import_playbook: "../authelia.yml"
 
-- name: "Container state change to stopped, for ../n8n.yml"
-  vars:
-      container_state: "stopped"
-  ansible.builtin.import_playbook: "../n8n.yml"
-
 - name: "Container state change to stopped, for ../qbittorrent.yml"
   vars:
       container_state: "stopped"
