@@ -1,5 +1,5 @@
 - name: Storage service
-  hosts: homelab
+  hosts: marion
   remote_user: root
 
   vars_files:
@@ -17,36 +17,16 @@
           3038373466326365310a643937396364643230653138393834646261623734636161306430356535
           63396231613630623634393232623839316439333266343833373666636339353961
 
-  tasks:
-      - name: User
-        ansible.builtin.import_role:
-            name: service_user
+  roles:
+      - service_user
 
-      - name: Directories
-        ansible.builtin.import_role:
-            name: directories
-        vars:
-            directories_container_volume:
-                create: true
+      - role: directories
+        directories_options:
+            volume:
                 subdirectories:
                     - data
-                    - postgresql_data
 
-      - name: Service pod
-        ansible.builtin.import_role:
-            name: pod
-
-      - name: DB
-        ansible.builtin.import_role:
-            name: postgresql
-        vars:
-            postgresql_user:
-                username: "{{ service.name }}"
-                password: "{{ postgresql_password }}"
-                database: "{{ service.name }}"
-            postgresql_volume_path: "{{ dirs_container_volume_subdirectories.results[1].path }}"
-            postgresql_log_path: "{{ dirs_container_logs.path }}"
-
+  tasks:
       - name: Hoodik container
         become: true
         become_user: "{{ service.user }}"
@@ -55,7 +35,7 @@
             state: "{{ container_state | default('started') }}"
             image: "docker.io/hudik/hoodik:{{ versions.hoodik }}"
             volumes:
-                - "{{ dirs_container_volume_subdirectories.results[0].path }}:/data"
+                - "{{ directories_volume_subdirectories_output.results[0].path }}:/data"
             publish:
                 - "{{ network.internal_ip }}:{{ network.service_ports.hoodik }}:5443"
             env:
@@ -70,6 +50,6 @@
                 SSL_DISABLED: "true"
             log_driver: "{{ podman.log_driver }}"
             log_options:
-                path: "{{ dirs_container_logs.path }}/{{ podman.container_log_file }}"
+                path: "{{ directories_logs_output.path }}/{{ podman.container_log_file }}"
             restart_policy: "{{ podman.restart_policy | regex_replace('[^A-Za-z0-9-:]', '') }}"
             network: "{{ podman.network }}"

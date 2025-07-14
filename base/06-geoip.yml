@@ -1,5 +1,5 @@
 - name: Set up automatically updating geo IP database
-  hosts: homelab
+  hosts: marion
 
   vars_files:
       - ../global.yml
@@ -27,7 +27,7 @@
       - name: Create geoipupdate config file
         ansible.builtin.template:
             dest: /etc/GeoIP.conf
-            src: configs/GeoIP.conf.j2
+            src: config/GeoIP.conf.j2
             mode: a=,u=rw
 
       - name: Set up cron to update database daily

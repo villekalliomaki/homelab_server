@@ -1,17 +1,10 @@
 - name: Set up common directories or mounts and their permissions
-  hosts: homelab
+  hosts: marion
 
   vars_files:
       - ../global.yml
 
   tasks:
-      - name: Music library
-        ansible.builtin.file:
-            path: "{{ filesystem.media.music }}"
-            state: directory
-            recurse: true
-            mode: a=rwx
-
       # Subdirectories are more restrictive
       - name: Container volume directory
         ansible.builtin.file:

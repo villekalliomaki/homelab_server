@@ -1,5 +1,5 @@
 - name: Set up Let's Encrypt certs with automatic renewals
-  hosts: homelab
+  hosts: marion
 
   vars_files:
       - ../global.yml

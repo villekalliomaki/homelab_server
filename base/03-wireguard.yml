@@ -3,7 +3,7 @@
 # - The forwarding rules assume that the LAN interface is enp3s0!
 
 - name: Configure wireguard for remote access
-  hosts: homelab
+  hosts: marion
 
   tasks:
       - name: Copy config

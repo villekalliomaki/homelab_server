@@ -1,5 +1,5 @@
 - name: Trilium notes
-  hosts: homelab
+  hosts: marion
   remote_user: root
 
   vars_files:
@@ -10,18 +10,11 @@
           name: trilium
           user: trilium
 
+  roles:
+      - service_user
+      - directories
+
   tasks:
-      - name: User
-        ansible.builtin.import_role:
-            name: service_user
-
-      - name: Directories
-        ansible.builtin.import_role:
-            name: directories
-        vars:
-            directories_container_volume:
-                create: true
-
       - name: Trilium container
         become: true
         become_user: "{{ service.user }}"
@@ -31,10 +24,10 @@
             image: "docker.io/zadam/trilium:{{ versions.trilium }}"
             log_driver: "{{ podman.log_driver }}"
             log_options:
-                path: "{{ dirs_container_logs.path }}/{{ podman.container_log_file }}"
+                path: "{{ directories_logs_output.path }}/{{ podman.container_log_file }}"
             restart_policy: "{{ podman.restart_policy | regex_replace('[^A-Za-z0-9-:]', '') }}"
             network: "{{ podman.network }}"
             publish:
                 - "{{ network.internal_ip }}:{{ network.service_ports.trilium }}:8080"
             volumes:
-                - "{{ dirs_container_volume.path }}:/home/node/trilium-data"
+                - "{{ directories_volume_output.path }}:/home/node/trilium-data"

@@ -1,20 +1,22 @@
 ---
-# tasks file for cert
+- name: Build options
+  ansible.builtin.set_fact:
+      cert_options_merged: "{{ cert_options_defaults | combine(cert_options, recursive=true) }}"
 
 - name: Create private key
   community.crypto.openssl_privatekey:
-      path: "{{ cert_key_options.output }}"
-      owner: "{{ cert_key_options.owner | default(service.user) }}"
-      group: "{{ cert_key_options.group | default(service.user) }}"
-      mode: "{{ cert_key_options.mode | default('u=rw') }}"
+      path: "{{ cert_options_merged.key.output }}"
+      owner: "{{ cert_options_merged.key.owner | default(cert_options_merged.service.user) }}"
+      group: "{{ cert_options_merged.key.group | default(cert_options_merged.service.user) }}"
+      mode: "{{ cert_options_merged.key.mode }}"
 
 - name: Create CSR
   register: cert_csr_output
   community.crypto.openssl_csr:
-      path: "{{ cert_csr_options.output }}"
-      privatekey_path: "{{  cert_key_options.output  }}"
-      common_name: "{{ cert_csr_options.common_name }}"
-      subject_alt_name: "{{ cert_csr_options.subject_alt_names | default([]) }}"
+      path: "{{ cert_options_merged.csr.output }}"
+      privatekey_path: "{{ cert_options_merged.key.output }}"
+      common_name: "{{ cert_options_merged.csr.cn }}"
+      subject_alt_name: "{{ cert_options_merged.csr.subject_alt_names }}"
       return_content: true
 
 - name: Sign the new certificate locally
@@ -23,15 +25,15 @@
   community.crypto.x509_certificate_pipe:
       csr_content: "{{ cert_csr_output.csr }}"
       provider: ownca
-      ownca_path: "{{ cert_ownca_path }}"
-      ownca_privatekey_path: "{{ cert_ownca_privatekey_path }}"
-      ownca_not_after: "{{ cert_crt_options.not_after | default('+90d') }}"
-      ownca_not_before: "{{ cert_crt_options.not_before | default('-1d') }}"
+      ownca_path: "{{ cert_options_merged.ca.crt_path }}"
+      ownca_privatekey_path: "{{ cert_options_merged.ca.key_path }}"
+      ownca_not_after: "{{ cert_options_merged.crt.not_after }}"
+      ownca_not_before: "{{ cert_options_merged.crt.not_before }}"
 
 - name: Write the certificate
   ansible.builtin.copy:
       content: "{{ cert_signed_output.certificate }}"
-      dest: "{{ cert_crt_options.output }}"
-      owner: "{{ cert_crt_options.owner | default(service.user) }}"
-      group: "{{ cert_crt_options.group | default(service.user) }}"
-      mode: "{{ cert_crt_options.mode | default('u=rw') }}"
+      dest: "{{ cert_options_merged.crt.output }}"
+      owner: "{{ cert_options_merged.crt.owner | default(cert_options_merged.service.user) }}"
+      group: "{{ cert_options_merged.crt.group | default(cert_options_merged.service.user) }}"
+      mode: "{{ cert_options_merged.crt.mode }}"

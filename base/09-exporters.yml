@@ -1,5 +1,5 @@
 - name: Install and run node_exporter + NVIDIA exporter
-  hosts: homelab
+  hosts: marion
 
   vars_files:
       - ../global.yml

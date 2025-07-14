@@ -1,5 +1,5 @@
 - name: Install or update system packages
-  hosts: homelab
+  hosts: marion
 
   tasks:
       #

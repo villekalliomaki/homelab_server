@@ -1,39 +1,54 @@
 # PostgreSQL role
 
-Container name is service name with `_postgresql` appended. Depends on `global.yml`.
+Create a PostgreSQL container to be used in a podman pod, related to some service. Requires directories for data and logs. Does use variable `container_state` if available, and otherwise defaults to a started state. Container, pod and database names will use the name of the service if nothing specific is defined.
 
-Role gets the target container state from the `container_state` variable. If it doesn't exit the state will default to `started`. The variable is not prefixed to avoid redefining it to comply with existing playbooks.
+Currently using PostgreSQL version 16 as the default, but can be set to anything else as well.
 
-Almost always the container has to be inside a pod, which can be set using `postgresql_pod_name`. By defalt the pod used is the same as service name, which is also the default behaviour with the pod role.
+Service name and user are required to be in the context in which the role is used, but the values in the context can be overridden using the `service` dictionary in `postgresql_options`.
 
-A directory for container logs has to always be specified, and the name of the log file `postgresql_container_log` can't be changed to make it easier for promtail to find it.
+## Arguments
 
-Container creation output is saved to `postgresql_container_output`.
-
-## Variables example
-
-Required:
+Minimal:
 
 ```yml
-postgresql_volume_path: /tmp/postgresql_test
-postgresql_log_path: /tmp/postgresql_logs
-
-# Inherited from the service playbook
 service:
-    name: service_name
-    user: username
+        name: service1
+        user: user1
 
-# Database user
-postgresql_user:
-    username: user
-    password: password
-    database: db_name
+postgresql_options:
+    database:
+        username: user
+        password: abc123
+        name: db_name
+    paths:
+        volume: /tmp/db1/data
+        logs: /tmp/db1/log
 ```
 
-Optional:
+All:
 
 ```yml
-postgresql_container_image: docker.io/library/postgres:16.2
+service:
+        name: service1
+        user: user1
 
-postgresql_recreate: false
+postgresql_options:
+    service: # Override
+        name: service1
+        user: user1
+    database:
+        username: user
+        password: abc123
+        name: db_name
+    paths:
+        volume: /tmp/db1/data
+        logs: /tmp/db1/log
+    container_name: service_database1
+    pod_name: service_pod
+    version: 16.2
+    image: docker.io/library/postgres
 ```
+
+## Return values
+
+The results for the PostgreSQL container creation is saved to `postgresql_container_output`.

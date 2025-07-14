@@ -1,5 +1,5 @@
 - name: Torrent tracker manager
-  hosts: homelab
+  hosts: marion
   remote_user: root
 
   vars_files:
@@ -10,18 +10,11 @@
           name: prowlarr
           user: prowlarr
 
+  roles:
+      - service_user
+      - directories
+
   tasks:
-      - name: User
-        ansible.builtin.import_role:
-            name: service_user
-
-      - name: Directories
-        ansible.builtin.import_role:
-            name: directories
-        vars:
-            directories_container_volume:
-                create: true
-
       - name: Prowlarr container
         become: true
         become_user: "{{ service.user }}"
@@ -31,13 +24,13 @@
             image: "lscr.io/linuxserver/prowlarr:{{ versions.prowlarr }}"
             log_driver: "{{ podman.log_driver }}"
             log_options:
-                path: "{{ dirs_container_logs.path }}/{{ podman.container_log_file }}"
+                path: "{{ directories_logs_output.path }}/{{ podman.container_log_file }}"
             restart_policy: "{{ podman.restart_policy | regex_replace('[^A-Za-z0-9-:]', '') }}"
             network:
                 # Allow this container to reach the host
                 - pasta:--map-gw
             volumes:
-                - "{{ dirs_container_volume.path }}:/config"
+                - "{{ directories_volume_output.path }}:/config"
             publish:
                 - "{{ network.internal_ip }}:{{ network.service_ports.prowlarr }}:9696"
             env:

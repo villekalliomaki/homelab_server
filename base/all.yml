@@ -1,5 +1,5 @@
 - name: Run base installation
-  hosts: homelab
+  hosts: marion
 
 - name: Packages
   ansible.builtin.import_playbook: 01-packages.yml

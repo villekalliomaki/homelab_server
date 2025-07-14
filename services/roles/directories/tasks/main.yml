@@ -1,86 +1,82 @@
 ---
-# tasks file for directories
-
-- name: Check permission arguments exist
-  ansible.builtin.assert:
-      that:
-          - service.name
-          - service.user
-      fail_msg: Service name and user missing
+- name: Build options
+  ansible.builtin.set_fact:
+      directories_options_merged: "{{ directories_options_defaults | combine(directories_options | default(directories_options_defaults), recursive=true) }}"
 
 #
-# Container volume and subdirectories
+# Volume and subdirectories
 #
-- name: Container volume
+- name: Volume
   ansible.builtin.file:
-      path: "{{ filesystem.container_volumes }}/{{ service.name }}"
+      path: "{{ directories_options_merged.volume.base_path }}/{{ directories_options_merged.service.name }}"
       state: directory
-      recurse: "{{ directories_container_volume.recurse | default(true) }}"
-      owner: "{{ service.user }}"
-      group: "{{ directories_container_volume.group | default(service.user) }}"
-      mode: "{{ directories_container_volume.mode | default(directories_default_mode) }}"
-  when: directories_container_volume is not undefined and directories_container_volume.create
-  register: dirs_container_volume
+      recurse: "{{ directories_options_merged.volume.recurse }}"
+      owner: "{{ directories_options_merged.service.user }}"
+      group: "{{ directories_options_merged.volume.group | default(directories_options_merged.service.user) }}"
+      mode: "{{ directories_options_merged.volume.mode }}"
+  when: directories_options_merged.volume.create
+  register: directories_volume_output
 
-- name: Container volume subdirectories
+- name: Volume subdirectories
   ansible.builtin.file:
-      path: "{{ filesystem.container_volumes }}/{{ service.name }}/{{ item }}"
+      path: "{{ directories_options_merged.volume.base_path }}/{{ directories_options_merged.service.name }}/{{ item }}"
       state: directory
-      recurse: "{{ directories_container_volume.recurse | default(true) }}"
-      owner: "{{ service.user }}"
-      group: "{{ directories_container_volume.group | default(service.user) }}"
-      mode: "{{ directories_container_volume.mode | default(directories_default_mode) }}"
-  when: directories_container_volume.subdirectories is not undefined and directories_container_volume.create
-  loop: "{{ directories_container_volume.subdirectories }}"
-  register: dirs_container_volume_subdirectories
-
-#
-# Container logs
-#
-- name: Container logs
-  ansible.builtin.file:
-      path: "{{ filesystem.container_logs }}/{{ service.name }}"
-      state: directory
-      recurse: "{{ directories_container_logs.recurse | default(true) }}"
-      owner: "{{ service.user }}"
-      group: "{{ directories_container_logs.group | default(service.user) }}"
-      mode: "{{ directories_container_logs.mode | default(directories_default_mode) }}"
-  register: dirs_container_logs
-
-- name: Container logs subdirectories
-  ansible.builtin.file:
-      path: "{{ filesystem.container_logs }}/{{ service.name }}/{{ item }}"
-      state: directory
-      recurse: "{{ directories_container_logs.recurse | default(true) }}"
-      owner: "{{ service.user }}"
-      group: "{{ directories_container_logs.group | default(service.user) }}"
-      mode: "{{ directories_container_logs.mode | default(directories_default_mode) }}"
-  when: directories_container_logs.subdirectories is not undefined
-  loop: "{{ directories_container_logs.subdirectories }}"
-  register: dirs_container_logs_subdirectories
+      recurse: "{{ directories_options_merged.volume.recurse }}"
+      owner: "{{ directories_options_merged.service.user }}"
+      group: "{{ directories_options_merged.volume.group | default(directories_options_merged.service.user) }}"
+      mode: "{{ directories_options_merged.volume.mode }}"
+  when: directories_options_merged.volume.create and directories_options_merged.volume.subdirectories | length > 0
+  loop: "{{ directories_options_merged.volume.subdirectories }}"
+  register: directories_volume_subdirectories_output
 
 #
-# Container cache
+# Logs and subdirectories
 #
-- name: Container cache
+- name: Logs
   ansible.builtin.file:
-      path: "{{ filesystem.cache }}/{{ service.name }}"
+      path: "{{ directories_options_merged.logs.base_path }}/{{ directories_options_merged.service.name }}"
       state: directory
-      recurse: "{{ directories_container_cache.recurse | default(true) }}"
-      owner: "{{ service.user }}"
-      group: "{{ directories_container_cache.group | default(service.user) }}"
-      mode: "{{ directories_container_cache.mode | default(directories_default_mode) }}"
-  when: directories_container_cache is not undefined and directories_container_cache.create
-  register: dirs_container_cache
+      recurse: "{{ directories_options_merged.logs.recurse }}"
+      owner: "{{ directories_options_merged.service.user }}"
+      group: "{{ directories_options_merged.logs.group | default(directories_options_merged.service.user) }}"
+      mode: "{{ directories_options_merged.logs.mode }}"
+  when: directories_options_merged.logs.create
+  register: directories_logs_output
 
-- name: Container cache subdirectories
+- name: Logs subdirectories
   ansible.builtin.file:
-      path: "{{ filesystem.cache }}/{{ service.name }}/{{ item }}"
+      path: "{{ directories_options_merged.logs.base_path }}/{{ directories_options_merged.service.name }}/{{ item }}"
       state: directory
-      recurse: "{{ directories_container_cache.recurse | default(true) }}"
-      owner: "{{ service.user }}"
-      group: "{{ directories_container_cache.group | default(service.user) }}"
-      mode: "{{ directories_container_cache.mode | default(directories_default_mode) }}"
-  when: directories_container_cache.subdirectories is not undefined and directories_container_cache.create
-  loop: "{{ directories_container_cache.subdirectories }}"
-  register: dirs_container_cache_subdirectories
+      recurse: "{{ directories_options_merged.logs.recurse }}"
+      owner: "{{ directories_options_merged.service.user }}"
+      group: "{{ directories_options_merged.logs.group | default(directories_options_merged.service.user) }}"
+      mode: "{{ directories_options_merged.logs.mode }}"
+  when: directories_options_merged.logs.create and directories_options_merged.logs.subdirectories | length > 0
+  loop: "{{ directories_options_merged.logs.subdirectories }}"
+  register: directories_logs_subdirectories_output
+
+#
+# Cache and subdirectories
+#
+- name: Cache
+  ansible.builtin.file:
+      path: "{{ directories_options_merged.cache.base_path }}/{{ directories_options_merged.service.name }}"
+      state: directory
+      recurse: "{{ directories_options_merged.cache.recurse }}"
+      owner: "{{ directories_options_merged.service.user }}"
+      group: "{{ directories_options_merged.cache.group | default(directories_options_merged.service.user) }}"
+      mode: "{{ directories_options_merged.cache.mode }}"
+  when: directories_options_merged.cache.create
+  register: directories_cache_output
+
+- name: Cache subdirectories
+  ansible.builtin.file:
+      path: "{{ directories_options_merged.cache.base_path }}/{{ directories_options_merged.service.name }}/{{ item }}"
+      state: directory
+      recurse: "{{ directories_options_merged.cache.recurse }}"
+      owner: "{{ directories_options_merged.service.user }}"
+      group: "{{ directories_options_merged.cache.group | default(directories_options_merged.service.user) }}"
+      mode: "{{ directories_options_merged.cache.mode }}"
+  when: directories_options_merged.cache.create and directories_options_merged.cache.subdirectories | length > 0
+  loop: "{{ directories_options_merged.cache.subdirectories }}"
+  register: directories_cache_subdirectories_output

@@ -1,0 +1,104 @@
+---
+argument_specs:
+    main:
+        short_description: Create a certificate signed by a private CA.
+        options:
+            service:
+                type: dict
+                required: true
+                description: Name of the service and the user running it. Not specific to this role, and should be available in the context.
+                options:
+                    name:
+                        type: str
+                        required: true
+                    user:
+                        type: str
+                        required: true
+            cert_options:
+                type: dict
+                required: true
+                options:
+                    service:
+                        type: dict
+                        description: Override for the regular service argument.
+                        options:
+                            name:
+                                type: str
+                            user:
+                                type: str
+                    base_domain:
+                        type: str
+                        required: true
+                        description: Base domain for root CA lookup.
+                    key:
+                        type: dict
+                        required: true
+                        description: Private key options.
+                        options:
+                            output:
+                                type: str
+                                required: true
+                                description: Output file path.
+                            owner:
+                                type: str
+                                default: "[service user]"
+                            group:
+                                type: str
+                                default: "[service user]"
+                            mode:
+                                type: str
+                                default: a=,g=rw,u=rw
+                    csr:
+                        type: dict
+                        required: true
+                        description: Certificate signing request options.
+                        options:
+                            output:
+                                type: str
+                                required: true
+                                description: Output file path.
+                            cn:
+                                type: str
+                                required: true
+                                description: Common name.
+                            subject_alt_names:
+                                type: list
+                                elements: str
+                                default: []
+                    crt:
+                        type: dict
+                        required: true
+                        description: Certificate options.
+                        options:
+                            output:
+                                type: str
+                                required: true
+                                description: Output file path.
+                            not_after:
+                                type: str
+                                default: +90d
+                                description: Time certificate is valid.
+                            not_before:
+                                type: str
+                                default: -1d
+                                description: Accepted time deviation from signing.
+                            owner:
+                                type: str
+                                default: "[service user]"
+                            group:
+                                type: str
+                                default: "[service user]"
+                            mode:
+                                type: str
+                                default: a=,g=rw,u=rw
+                    ca:
+                        type: dict
+                        required: true
+                        description: Private CA options.
+                        options:
+                            crt_path:
+                                type: str
+                                required: true
+                            key_path:
+                                type: str
+                                required: true

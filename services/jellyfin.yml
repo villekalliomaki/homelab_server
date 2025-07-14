@@ -1,5 +1,5 @@
 - name: Jellyfin media player
-  hosts: homelab
+  hosts: marion
   remote_user: root
 
   vars_files:
@@ -10,23 +10,18 @@
           name: jellyfin
           user: jellyfin
 
-  tasks:
-      - name: User
-        ansible.builtin.import_role:
-            name: service_user
-        vars:
-            service_user_groups:
+  roles:
+      - role: service_user
+        service_user_options:
+            groups:
                 - media
 
-      - name: Directories
-        ansible.builtin.import_role:
-            name: directories
-        vars:
-            directories_container_volume:
-                create: true
-            directories_container_cache:
+      - role: directories
+        directories_options:
+            cache:
                 create: true
 
+  tasks:
       - name: Regenerate CDI spec
         register: cdi_spec_output
         changed_when: '"Generated CDI spec" in cdi_spec_output.stdout'
@@ -41,7 +36,7 @@
             image: "docker.io/jellyfin/jellyfin:{{ versions.jellyfin }}"
             log_driver: "{{ podman.log_driver }}"
             log_options:
-                path: "{{ dirs_container_logs.path }}/{{ podman.container_log_file }}"
+                path: "{{ directories_logs_output.path }}/{{ podman.container_log_file }}"
             restart_policy: "{{ podman.restart_policy | regex_replace('[^A-Za-z0-9-:]', '') }}"
             network: "{{ podman.network }}"
             publish:
@@ -55,8 +50,8 @@
             device:
                 - nvidia.com/gpu=all
             volumes:
-                - "{{ dirs_container_volume.path }}:/config"
-                - "{{ dirs_container_cache.path }}:/cache"
+                - "{{ directories_volume_output.path }}:/config"
+                - "{{ directories_cache_output.path }}:/cache"
                 - "{{ filesystem.media.movies }}:/media/movies"
                 - "{{ filesystem.media.series }}:/media/series"
                 - "{{ filesystem.media.music }}:/media/music"

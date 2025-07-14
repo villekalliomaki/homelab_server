@@ -1,5 +1,5 @@
 - name: Pihole service
-  hosts: homelab
+  hosts: marion
   remote_user: root
 
   vars_files:
@@ -10,21 +10,17 @@
           name: pihole
           user: pihole
 
-  tasks:
-      - name: User
-        ansible.builtin.import_role:
-            name: service_user
+  roles:
+      - service_user
 
-      - name: Directories
-        ansible.builtin.import_role:
-            name: directories
-        vars:
-            directories_container_volume:
-                create: true
+      - role: directories
+        directories_options:
+            volume:
                 subdirectories:
                     - config
                     - dnsmasq.d
 
+  tasks:
       - name: Pihole container
         become: true
         become_user: "{{ service.user }}"
@@ -34,7 +30,7 @@
             image: "docker.io/pihole/pihole:{{ versions.pihole }}"
             log_driver: "{{ podman.log_driver }}"
             log_options:
-                path: "{{ dirs_container_logs.path }}/{{ podman.container_log_file }}"
+                path: "{{ directories_logs_output.path }}/{{ podman.container_log_file }}"
             restart_policy: "{{ podman.restart_policy | regex_replace('[^A-Za-z0-9-:]', '') }}"
             network: "{{ podman.network }}"
             publish:
@@ -42,8 +38,8 @@
                 - "{{ network.external_ip }}:{{ network.exposed_ports.pihole_dns }}:53/udp"
                 - "{{ network.internal_ip }}:{{ network.service_ports.pihole_admin }}:80"
             volume:
-                - "{{ dirs_container_volume_subdirectories.results[0].path }}:/etc/pihole"
-                - "{{ dirs_container_volume_subdirectories.results[1].path }}:/etc/dnsmasq.d"
+                - "{{ directories_volume_subdirectories_output.results[0].path }}:/etc/pihole"
+                - "{{ directories_volume_subdirectories_output.results[1].path }}:/etc/dnsmasq.d"
             env:
                 PIHOLE_UID: 0
                 PIHOLE_GID: 0

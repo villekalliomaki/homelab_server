@@ -1,0 +1,25 @@
+---
+directories_default_mode: a=,u=rwx,g=rwx
+
+directories_options_defaults:
+    service:
+        name: "{{ service.name }}"
+        user: "{{ service.user }}"
+    volume:
+        create: true
+        subdirectories: []
+        mode: "{{ directories_default_mode }}"
+        recurse: true
+        base_path: /var/container_volumes
+    logs:
+        create: true
+        subdirectories: []
+        mode: "{{ directories_default_mode }}"
+        recurse: true
+        base_path: /var/log/containers
+    cache:
+        create: false
+        subdirectories: []
+        mode: "{{ directories_default_mode }}"
+        recurse: true
+        base_path: /mnt/cache

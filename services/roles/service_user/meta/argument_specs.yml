@@ -1,0 +1,32 @@
+---
+argument_specs:
+    main:
+        short_description: Create a service user for podman rootless containers
+        options:
+            service:
+                type: dict
+                required: true
+                description: Name of the service and the user running it. Not specific to this role, and should be available in the context.
+                options:
+                    name:
+                        type: str
+                        required: true
+                    user:
+                        type: str
+                        required: true
+            service_user_options:
+                type: dict
+                options:
+                    service:
+                        type: dict
+                        description: Override for the regular service argument.
+                        options:
+                            name:
+                                type: str
+                            user:
+                                type: str
+                    groups:
+                        type: list
+                        elements: str
+                        default: []
+                        description: A list of groups the user will be added to. Empty list results in user being removed from all additional groups.

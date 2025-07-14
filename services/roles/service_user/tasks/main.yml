@@ -1,26 +1,23 @@
 ---
-# tasks file for service_user
+- name: Build options
+  ansible.builtin.set_fact:
+      service_user_options_merged: "{{ service_user_options_defaults | combine(service_user_options | default(service_user_options_defaults), recursive=true) }}" # noqa: yaml[line-length]
 
-- name: Check that user's name exists
-  ansible.builtin.assert:
-      that: service.user
-      fail_msg: Username has to be specified
-
-- name: Create or remove groups
+- name: Create or remove user
   ansible.builtin.user:
-      name: "{{ service.user }}"
-      # Removes all but primary
+      name: "{{ service_user_options_merged.service.user }}"
+      # Removes all but primary group
       groups: ""
       create_home: true
       system: true
   register: service_user_output
 
-- name: Add groups
+- name: Add user to groups
   ansible.builtin.user:
-      name: "{{ service.user }}"
-      groups: "{{ service_user_groups }}"
+      name: "{{ service_user_options_merged.service.user }}"
+      groups: "{{ service_user_options_merged.groups }}"
       append: true
-  when: service_user_groups | length > 0
+  when: service_user_options_merged.groups | length > 0
 
 # Generate non-overlapping subuid and subgid ranges from the user's uid
 # Source: https://eengstrom.github.io/musings/generate-non-contiguous-subuid-subgid-maps-for-rootless-podman

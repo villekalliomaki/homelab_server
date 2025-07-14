@@ -1,9 +1,0 @@
----
-# defaults file for redis
-
-redis_container_image: "docker.io/library/redis:{{ versions.redis }}"
-
-redis_recreate: false
-
-# By default nothing is mounted, but this array is populated automatically when a data path is provided
-redis_volumes_internal: []

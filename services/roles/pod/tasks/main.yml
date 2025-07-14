@@ -1,21 +1,16 @@
 ---
-# tasks file for pod
+- name: Build options
+  ansible.builtin.set_fact:
+      pod_options_merged: "{{ pod_options_defaults | combine(pod_options | default(pod_options_defaults), recursive=true) }}"
 
-- name: Check required variables exist
-  ansible.builtin.assert:
-      that:
-          - service.name
-          - service.user
-      fail_msg: Some required variables missing
-
-- name: Create pod
-  become_user: "{{ service.user }}"
+- name: Create the pod
+  become_user: "{{ pod_options_merged.service.user }}"
   become: true
   register: create_pod_output
   containers.podman.podman_pod:
-      name: "{{ service.name }}"
-      infra_name: "{{ service.name }}_pod"
+      name: "{{ pod_options_merged.service.name }}"
+      infra_name: "{{ pod_options_merged.service.name }}_pod"
       state: "{{ container_state | default('started') }}"
-      network: "{{ pod_network }}"
-      publish: "{{ pod_publish }}"
-      userns: "{{ pod_user_namespace }}"
+      network: "{{ pod_options_merged.network }}"
+      publish: "{{ pod_options_merged.publish }}"
+      userns: "{{ pod_options_merged.user_namespace }}"

@@ -1,4 +1,4 @@
-# Arch Linux based server installation
+# Server installation
 
 Directory structure:
 
@@ -6,10 +6,8 @@ Directory structure:
 -   `services`: Ansible playbooks to run services with podman.
 -   `containers`: Custom container build files.
 -   `docs`: General documentation in markdown files.
--   `secrets`: Passphrases, certificates and keys not kept in version control. Synced seperately with Syncthing.
--   `backups`: Deployment and scripts for automated backups.
-
-These can also have subdirectories, for example for common reusable groups of tasks.
+-   `secrets`: Passphrases, certificates and keys not kept in version control.
+-   `backups`: Tool and deployment for automated remote backups.
 
 ## Manual preparation
 
@@ -20,13 +18,3 @@ Before running any automated installation steps, the Arch system has to be insta
 3. Start SSH server: `systemctl enable --now sshd`
 4. Copy authorized_keys to the root user of the server.
 5. Add the server to the local SSH config with the hostname matching the inventory and the correct IP address.
-
-## Running playbooks
-
-Ansible inventory file is in the repository. The hostnames in it should be configured in the local machines SSH client's settings.
-
-Example command at the repository root:
-
-```sh
-ansible-playbook --vault-password-file=secrets/ansible_vault_passphrase -i inventory base/01-packages.yml
-```

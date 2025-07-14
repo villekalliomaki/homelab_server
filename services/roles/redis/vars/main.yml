@@ -1,0 +1,11 @@
+---
+redis_options_defaults:
+    service:
+        name: "{{ service.name }}"
+        user: "{{ service.user }}"
+    image: docker.io/library/redis
+    version: "8.0.2"
+    recreate: false
+    log_driver: k8s-file
+    log_file: redis_container_log
+    max_memory: 200mb

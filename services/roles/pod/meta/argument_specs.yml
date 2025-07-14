@@ -1,0 +1,42 @@
+---
+argument_specs:
+    main:
+        short_description: Create pod for multiple containers.
+        options:
+            service:
+                type: dict
+                required: true
+                description: Name of the service and the user running it. Not specific to this role, and should be available in the context.
+                options:
+                    name:
+                        type: str
+                        required: true
+                    user:
+                        type: str
+                        required: true
+            pod_options:
+                type: dict
+                options:
+                    service:
+                        type: dict
+                        description: Override for the regular service argument.
+                        options:
+                            name:
+                                type: str
+                            user:
+                                type: str
+                    network:
+                        type: list
+                        elements: str
+                        default:
+                            - pasta
+                        description: Podman network options. Defaults to pasta.
+                    publish:
+                        type: list
+                        elements: str
+                        default: []
+                        description: List of publisted ports for the pod. By default nothing is published.
+                    user_namespace:
+                        type: str
+                        default: ""
+                        description: Empty string disables user namespaces.

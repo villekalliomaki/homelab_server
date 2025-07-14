@@ -1,5 +1,5 @@
 - name: Promtail
-  hosts: homelab
+  hosts: marion
   remote_user: root
 
   vars_files:
@@ -10,27 +10,20 @@
           name: promtail
           user: promtail
 
-  tasks:
-      - name: User
-        ansible.builtin.import_role:
-            name: service_user
-        vars:
-            service_user_groups:
-                # Required to access system journal
+  roles:
+      - role: service_user
+        service_user_options:
+            groups:
                 - systemd-journal
                 - podman-logs
 
-      - name: Directories
-        ansible.builtin.import_role:
-            name: directories
-        vars:
-            directories_container_volume:
-                create: true
+      - directories
 
+  tasks:
       - name: Copy config template
         ansible.builtin.template:
             src: configs/promtail.yml
-            dest: "{{ dirs_container_volume.path }}/config.yml"
+            dest: "{{ directories_volume_output.path }}/config.yml"
             owner: "{{ service.user }}"
             group: "{{ service.user }}"
             mode: u=rw
@@ -44,14 +37,14 @@
             image: docker.io/grafana/promtail
             log_driver: "{{ podman.log_driver }}"
             log_options:
-                path: "{{ dirs_container_logs.path }}/{{ podman.container_log_file }}"
+                path: "{{ directories_logs_output.path }}/{{ podman.container_log_file }}"
             restart_policy: "{{ podman.restart_policy | regex_replace('[^A-Za-z0-9-:]', '') }}"
             network: "{{ podman.network }}"
             # Required to allow reads permitted by groups on the service user
             groups:
                 - keep-groups
             volumes:
-                - "{{ dirs_container_volume.path }}:/data"
+                - "{{ directories_volume_output.path }}:/data"
                 - "{{ filesystem.container_logs }}:/var/log/containers:ro"
                 - "/var/log/journal/:/var/log/journal/:ro"
             command: -config.file=/data/config.yml

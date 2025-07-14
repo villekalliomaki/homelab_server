@@ -1,5 +1,5 @@
 - name: QBittorrent torrent download client
-  hosts: homelab
+  hosts: marion
   remote_user: root
 
   vars_files:
@@ -43,17 +43,12 @@
               3438663731313961320a313834396538666461383461613337366163373938616532333131633237
               39663165316233366133633563323063346566383563646637616231323436653139
 
-  tasks:
-      - name: User
-        ansible.builtin.import_role:
-            name: service_user
+  roles:
+      - service_user
 
-      - name: Directories
-        ansible.builtin.import_role:
-            name: directories
-        vars:
-            directories_container_volume:
-                create: true
+      - role: directories
+        directories_options:
+            volume:
                 subdirectories:
                     - client
                     - flood
@@ -61,20 +56,18 @@
                     - gluetun
                     - scripts
 
-      - name: Pod
-        ansible.builtin.import_role:
-            name: pod
-        vars:
-            pod_publish:
+      - role: pod
+        pod_options:
+            publish:
                 - "{{ network.internal_ip }}:{{ network.service_ports.qbittorrent_web_ui }}:8111"
                 - "{{ network.internal_ip }}:{{ network.service_ports.qbittorrent_gluetun }}:8000"
                 - "{{ network.internal_ip }}:{{ network.service_ports.qbittorrent_exporter }}:8090"
-                # - "{{ network.internal_ip }}:{{ network.service_ports.flood }}:3000"
 
+  tasks:
       - name: Generate forwarded port update script
         ansible.builtin.template:
             src: configs/gluetun/qbittorrent_update.sh
-            dest: "{{ dirs_container_volume_subdirectories.results[4].path }}/qbittorrent_update.sh"
+            dest: "{{ directories_volume_subdirectories_output.results[4].path }}/qbittorrent_update.sh"
             owner: "{{ service.user }}"
             group: "{{ service.user }}"
             mode: u=rwx,g=rwx
@@ -82,7 +75,7 @@
       - name: Generate gluetun config
         ansible.builtin.template:
             src: configs/gluetun/qbittorrent.toml
-            dest: "{{ dirs_container_volume_subdirectories.results[3].path }}/config.toml"
+            dest: "{{ directories_volume_subdirectories_output.results[3].path }}/config.toml"
             owner: "{{ service.user }}"
             group: "{{ service.user }}"
             mode: u=rw,g=rw
@@ -97,7 +90,7 @@
             image: "docker.io/qmcgaw/gluetun:{{ versions.gluetun }}"
             log_driver: "{{ podman.log_driver }}"
             log_options:
-                path: "{{ dirs_container_logs.path }}/{{ podman.container_log_file }}_gluetun"
+                path: "{{ directories_logs_output.path }}/{{ podman.container_log_file }}_gluetun"
             restart_policy: "{{ podman.restart_policy | regex_replace('[^A-Za-z0-9-:]', '') }}"
             env:
                 VPN_SERVICE_PROVIDER: protonvpn
@@ -114,7 +107,7 @@
             device:
                 - /dev/net/tun:/dev/net/tun
             volumes:
-                - "{{ dirs_container_volume_subdirectories.results[3].path }}:/gluetun/auth"
+                - "{{ directories_volume_subdirectories_output.results[3].path }}:/gluetun/auth"
 
       - name: Wait for gluetun to start
         ansible.builtin.wait_for:
@@ -150,7 +143,7 @@
 
       - name: Write forwarded port to config
         ansible.builtin.lineinfile:
-            path: "{{ dirs_container_volume_subdirectories.results[0].path }}/qBittorrent/qBittorrent.conf"
+            path: "{{ directories_volume_subdirectories_output.results[0].path }}/qBittorrent/qBittorrent.conf"
             regexp: '^(.*)Session\\Port=(.*)$'
             line: "Session\Port={{ gluetun_forwarded_port }}"
             backrefs: true
@@ -165,11 +158,11 @@
             image: "docker.io/linuxserver/qbittorrent:{{ versions.qbittorrent }}"
             log_driver: "{{ podman.log_driver }}"
             log_options:
-                path: "{{ dirs_container_logs.path }}/{{ podman.container_log_file }}"
+                path: "{{ directories_logs_output.path }}/{{ podman.container_log_file }}"
             restart_policy: "{{ podman.restart_policy | regex_replace('[^A-Za-z0-9-:]', '') }}"
             volumes:
                 - "{{ filesystem.media.downloads }}:/downloads"
-                - "{{ dirs_container_volume_subdirectories.results[0].path }}:/config"
+                - "{{ directories_volume_subdirectories_output.results[0].path }}:/config"
             env:
                 PUID: "{{ ansible_user_id }}"
                 PGID: "{{ ansible_user_id }}"
@@ -186,7 +179,7 @@
             image: ghcr.io/martabal/qbittorrent-exporter
             log_driver: "{{ podman.log_driver }}"
             log_options:
-                path: "{{ dirs_container_logs.path }}/{{ podman.container_log_file }}_exporter"
+                path: "{{ directories_logs_output.path }}/{{ podman.container_log_file }}_exporter"
             env:
                 QBITTORRENT_BASE_URL: http://127.0.0.1:8111
                 QBITTORRENT_PASSWORD: "{{ qbittorrent.password }}"
@@ -197,6 +190,5 @@
         become_user: "{{ service.user }}"
         ansible.builtin.cron:
             name: qbittorrent_update_gluetun_port
-            job: "{{ dirs_container_volume_subdirectories.results[4].path }}/qbittorrent_update.sh"
-            # Every 5 minutes
+            job: "{{ directories_volume_subdirectories_output.results[4].path }}/qbittorrent_update.sh"
             minute: "*/5"

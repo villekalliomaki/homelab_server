@@ -1,5 +1,13 @@
 ---
-# vars file for cert
-
-cert_ownca_path: "../secrets/ca/{{ base_domain }}.crt"
-cert_ownca_privatekey_path: "../secrets/ca/{{ base_domain }}.key"
+cert_options_defaults:
+    service:
+        name: "{{ service.name }}"
+        user: "{{ service.user }}"
+    key:
+        mode: a=,g=rw,u=rw
+    csr:
+        subject_alt_names: []
+    crt:
+        not_after: +90d
+        not_before: -1d
+        mode: a=,g=rw,u=rw

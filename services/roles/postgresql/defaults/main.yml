@@ -1,6 +1,0 @@
----
-# defaults file for postgresql
-
-postgresql_container_image: "docker.io/library/postgres:{{ versions.postgresql }}"
-
-postgresql_recreate: false

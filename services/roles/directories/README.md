@@ -1,71 +1,72 @@
 # Directories role
 
-**Depends on `global.yml`.**
+By default only the base level volume and log directories are created. Subdirectories or cache have to be explicitly requested. Default base paths for all directories are defined, and can be changed. A name for the service and an username for the ownership of directories are required.
 
-## Minimal required arguments
+Service name and user are required to be in the context in which the role is used, but the values in the context can be overridden using the `service` dictionary in `directories_options`.
 
-Does not create anything, but nothing else is required to make role as flexible as possible.
+## Arguments
+
+Minimal:
 
 ```yml
 service:
-    name: service_name
-    user: username
+    name: service1
+    user: username1
 ```
 
-## Container volume
 
-Volume directory is named after service. With just `create: true` the base container volume will be created using the default settings. If `create` is not set to true, nothing is done even if other settings are defined. Group will default to the user's primary group if not defined, which is just the username.
+All:
 
 ```yml
-directories_container_volume:
-    # Required to be created
-    create: true
-    # Optional from here
-    subdirectories: []
-    mode: a=,u=rwx,g=rwx
-    recurse: true
-    group: some_group
+service:
+    name: service1
+    user: user1
+
+directories_options:
+    service: # Override
+        name: service1
+        user: username1
+    volume:
+        create: true
+        subdirectories: []
+        mode: a=,u=rwx,g=rwx
+        recurse: true
+        # Defaults to service user's name if null
+        group: null
+        base_path: /var/container_volumes
+    logs:
+        create: true
+        subdirectories: []
+        mode: a=,u=rwx,g=rwx
+        recurse: true
+        # Defaults to service user's name if null
+        group: null
+        base_path: /var/log/containers
+    cache:
+        create: false
+        subdirectories: []
+        mode: a=,u=rwx,g=rwx
+        recurse: true
+        # Defaults to service user's name if null
+        group: null
+        base_path: /mnt/cache
 ```
 
-Return values:
+## Return values
 
--   `dirs_container_volume`
--   `dirs_container_volume_subdirectories`
+Paths of the directories created can be accessed using variables defined by the role. For example the path for single volume directory is `directories_volume_output.path` and `directories_volume_subdirectories_output.results[0].path` for the first subdirectory.
 
-## Container logs
+Volumes:
 
-Identical to container volume, but can't be disabled. Subdirectories are optional.
+-   `directories_volume_output`
+-   `directories_volume_subdirectories_output`
 
-```yml
-directories_container_logs:
-    # Optional from here
-    subdirectories: []
-    mode: a=,u=rwx,g=rwx
-    recurse: true
-    group: some_group
-```
+Logs:
 
-Return values:
+-   `directories_logs_output`
+-   `directories_logs_subdirectories_output`
 
--   `dirs_container_logs`
--   `dirs_container_logs_subdirectories`
+Cache:
 
-## Container cache
-
-Also the same.
-
-```yml
-directories_container_cache:
-    # Required to be created
-    create: true
-    # Optional from here
-    subdirectories: []
-    mode: a=,u=rwx,g=rwx
-    recurse: true
-    group: some_group
-```
-
-Return values:
-
--   `dirs_container_cache`
--   `dirs_container_cache_subdirectories`
+-   `directories_cache_output`
+-   `directories_cache_subdirectories_output`

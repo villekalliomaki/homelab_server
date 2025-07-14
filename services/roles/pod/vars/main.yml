@@ -1,0 +1,9 @@
+---
+pod_options_defaults:
+    service:
+        name: "{{ service.name }}"
+        user: "{{ service.user }}"
+    user_namespace: ""
+    network:
+        - pasta
+    publish: []

@@ -32,12 +32,10 @@ network:
         paperless_ngx: 3007
         photoprism: 3008
         deemix: 3009
-        seafile: 3010
         prometheus: 3011
         prowlarr: 3012
         radarr: 3013
         sonarr: 3014
-        jellyseer: 3015
         loki: 3016
         grafana: 3017
         jellyfin: 3018
@@ -70,7 +68,7 @@ versions:
     # https://github.com/redis/redis/releases
     redis: "8.0.2"
     # https://hub.docker.com/r/villekalliomaki/nginx/tags
-    nginx: "1.28.0"
+    nginx: "1.29.0"
     # https://hub.docker.com/r/authelia/authelia/tags
     # https://github.com/authelia/authelia/releases
     authelia: "4.39.4"
@@ -159,10 +157,9 @@ filesystem:
     # Heavy writes and reads
     cache: /mnt/cache
     media:
-        # Should probably be somewhere else
-        music: /var/media/music
         movies: /mnt/hdd4tb/media/movies
         series: /mnt/hdd4tb/media/tv
+        music: /mnt/hdd4tb/media/music
         downloads: /mnt/cache/downloads
         nvr: /mnt/nvr
     mounts:

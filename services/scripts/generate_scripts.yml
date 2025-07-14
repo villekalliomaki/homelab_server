@@ -1,5 +1,5 @@
 - name: Generate management scripts
-  hosts: homelab
+  hosts: marion
   remote_user: root
 
   vars_files:

@@ -1,39 +1,52 @@
 # Redis role
 
-Identical to the PostgreSQL role, exept for Redis related variables. Only supports rootless containers.
+Mostly based on the PostgreSQL role, but creates a Redis container to be used with some service. Utilizes variable `container_state` if it's available. Service name will be used for pod and container names if they are not specifically set.
 
-Container name is service name with `_redis` appended. Depends on `global.yml`.
+Currently there is no way to run Redis just in memory, and a data volume path is always required.
 
-Role gets the target container state from the `container_state` variable. If it doesn't exit the state will default to `started`. The variable is not prefixed to avoid redefining it to comply with existing playbooks.
+Service name and user are required to be in the context in which the role is used, but the values in the context can be overridden using the `service` dictionary in `redis_options`.
 
-Almost always the container has to be inside a pod, which can be set using `redis_pod_name`. By defalt the pod used is the same as service name, which is also the default behaviour with the pod role.
+## Arguments
 
-A directory for container logs has to always be specified, and the name of the log file `redis_container_log` can't be changed to make it easier for promtail to find it.
-
-Container creation output is saved to `redis_container_output`.
-
-## Persistent data
-
-By default Redis runs completely in memory, so everything deleted when the container is restarted. To save redis data to the disk, just provide the full path to a directory using `redis_data_path`. **WARNING: path is not validated in any way, and mode or ownership can be changed!**
-
-## Variables example
+Minimal:
 
 ```yml
-redis_log_path: /tmp/redis_logs
-# Optional for persistent data
-redis_data_path: /tmp/redis_data
-
-# Inherited from the service playbook
 service:
-    name: service_name
-    user: username
+    name: service1
+    user: user1
 
-# Redis user
-redis_user:
-    username: user
-    password: password
-
-# Optional container config
-redis_container_image: docker.io/library/redis:7.2
-redis_recreate: false
+redis_options:
+    password: redis_password
+    paths:
+        volume: /tmp/db1/data
+        logs: /tmp/db1/log
 ```
+
+All:
+
+```yml
+service:
+        name: service1
+        user: user1
+
+redis_options:
+    service: # Override
+        name: service1
+        user: user1
+    password: redis_password
+    paths:
+        volume: /tmp/db1/data
+        logs: /tmp/db1/log
+    container_name: service_database1
+    pod_name: service_pod
+    image: docker.io/library/redis
+    version: "8.0.2"
+    recreate: false
+    log_driver: k8s-file
+    log_file: redis_container_log
+    max_memory: 200mb
+```
+
+## Return values
+
+The details of the created Redis container are saved to `redis_container_output`.

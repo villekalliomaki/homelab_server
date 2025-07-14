@@ -1,39 +1,28 @@
 ---
-# tasks file for postgresql
-
-- name: Check required variables exist
-  ansible.builtin.assert:
-      that:
-          - service.name
-          - service.user
-          - postgresql_volume_path
-          - postgresql_log_path
-          - postgresql_user.username
-          - postgresql_user.password
-          - postgresql_user.database
-      fail_msg: Some required variable(s) missing
+- name: Build options
+  ansible.builtin.set_fact:
+      postgresql_options_merged: "{{ postgresql_options_defaults | combine(postgresql_options, recursive=true) }}"
 
 - name: Create container
   become: true
-  become_user: "{{ service.user }}"
+  become_user: "{{ postgresql_options_merged.service.user }}"
   register: postgresql_container_output
   containers.podman.podman_container:
-      name: "{{ service.name }}_postgresql"
+      name: "{{ postgresql_options_merged.container_name | default(postgresql_options_merged.service.name + '_postgresql') }}"
       state: "{{ container_state | default('started') }}"
-      pod: "{{ postgresql_pod_name | default(service.name) }}"
-      image: "{{ postgresql_container_image }}"
+      pod: "{{ postgresql_options_merged.pod_name | default(postgresql_options_merged.service.name) }}"
+      image: "{{ postgresql_options_merged.image }}:{{ postgresql_options_merged.version }}"
       # Sometimes has to be recreated to avoid permission errors with uid mapping
       # But can break something else if true
-      recreate: "{{ postgresql_recreate }}"
-      restart_policy: "{{ podman.restart_policy | regex_replace('[^A-Za-z0-9-:]', '') }}"
+      recreate: "{{ postgresql_options_merged.recreate }}"
       volumes:
           # The :U at the end *should* chown the contents of the volume directory to
           # the user the container happends to be mapped to with subuid and subgid
-          - "{{ postgresql_volume_path }}:/var/lib/postgresql/data:U"
+          - "{{ postgresql_options_merged.paths.volume }}:/var/lib/postgresql/data:U"
       env:
-          POSTGRES_DB: "{{ postgresql_user.database }}"
-          POSTGRES_USER: "{{ postgresql_user.username }}"
-          POSTGRES_PASSWORD: "{{ postgresql_user.password }}"
-      log_driver: "{{ podman.log_driver }}"
+          POSTGRES_DB: "{{ postgresql_options_merged.database.name | default(postgresql_options_merged.service.name) }}"
+          POSTGRES_USER: "{{ postgresql_options_merged.database.username | default(postgresql_options_merged.service.name) }}"
+          POSTGRES_PASSWORD: "{{ postgresql_options_merged.database.password }}"
+      log_driver: "{{ postgresql_options_merged.log_driver }}"
       log_options:
-          path: "{{ postgresql_log_path }}/postgresql_container_log"
+          path: "{{ postgresql_options_merged.paths.logs }}/{{ postgresql_options_merged.log_file }}"

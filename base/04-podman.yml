@@ -1,5 +1,5 @@
 - name: Configure everything podman related
-  hosts: homelab
+  hosts: marion
 
   vars_files: ../global.yml
 

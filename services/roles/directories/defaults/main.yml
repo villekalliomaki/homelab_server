@@ -1,4 +1,0 @@
----
-# defaults file for directories
-
-directories_default_mode: "a=,u=rwx,g=rwx"

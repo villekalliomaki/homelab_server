@@ -1,0 +1,60 @@
+---
+argument_specs:
+    main:
+        short_description: Create cronjob for podman container restarts.
+        options:
+            service:
+                type: dict
+                required: true
+                description: Name of the service and the user running it. Not specific to this role, and should be available in the context.
+                options:
+                    name:
+                        type: str
+                        required: true
+                    user:
+                        type: str
+                        required: true
+            cron_restart_options:
+                type: dict
+                required: true
+                options:
+                    service:
+                        type: dict
+                        description: Override for the regular service argument.
+                        options:
+                            name:
+                                type: str
+                            user:
+                                type: str
+                    identifier:
+                        type: str
+                        required: true
+                        description: Unique name for cronjob.
+                    time:
+                        type: dict
+                        options:
+                            minute:
+                                type: str
+                                default: "*"
+                            hour:
+                                type: str
+                                default: "*"
+                            day:
+                                type: str
+                                default: "*"
+                            month:
+                                type: str
+                                default: "*"
+                            weekday:
+                                type: str
+                                default: "*"
+                        description: Time to run cronjob.
+                    grace:
+                        type: int
+                        default: 120
+                        description: Time in seconds to wait for graceful shutdown
+                    containers:
+                        type: list
+                        elements: str
+                        required: true
+                        description: List of container names to be restarted.

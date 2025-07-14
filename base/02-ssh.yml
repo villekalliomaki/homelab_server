@@ -2,7 +2,7 @@
 # - Initially the file can be set by hand, but updating it this way keeps it the correct version here
 
 - name: Configure SSH server
-  hosts: homelab
+  hosts: marion
 
   tasks:
       - name: Copy authorized keys
@@ -25,7 +25,7 @@
 
       - name: Copy config snippets
         ansible.builtin.copy:
-            src: configs/ssh/
+            src: config/ssh/
             dest: /etc/ssh/sshd_config.d/
             mode: a=,u=rw
 

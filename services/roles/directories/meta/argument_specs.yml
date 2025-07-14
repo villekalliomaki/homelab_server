@@ -1,0 +1,99 @@
+---
+argument_specs:
+    main:
+        short_description: Create directories for podman containers.
+        options:
+            service:
+                type: dict
+                required: true
+                description: Name of the service and the user running it. Not specific to this role, and should be available in the context.
+                options:
+                    name:
+                        type: str
+                        required: true
+                    user:
+                        type: str
+                        required: true
+            directories_options:
+                type: dict
+                options:
+                    service:
+                        type: dict
+                        description: Override for the regular service argument.
+                        options:
+                            name:
+                                type: str
+                            user:
+                                type: str
+                    volume:
+                        type: dict
+                        description: Options for container volume directories.
+                        options:
+                            create:
+                                type: bool
+                                default: true
+                            subdirectories:
+                                type: list
+                                elements: str
+                                default: []
+                            mode:
+                                type: str
+                                default: a=,u=rwx,g=rwx
+                            recurse:
+                                type: bool
+                                default: true
+                                description: Set ownership and mode recursively.
+                            group:
+                                type: str
+                                description: Group which owns the directory. Defaults to the user of the service if not set.
+                            base_path:
+                                type: str
+                                default: /var/container_volumes
+                    logs:
+                        type: dict
+                        description: Options for container log directory
+                        options:
+                            create:
+                                type: bool
+                                default: true
+                            subdirectories:
+                                type: list
+                                elements: str
+                                default: []
+                            mode:
+                                type: str
+                                default: a=,u=rwx,g=rwx
+                            recurse:
+                                type: bool
+                                default: true
+                                description: Set ownership and mode recursively.
+                            group:
+                                type: str
+                                description: Group which owns the directory. Defaults to the user of the service if not set.
+                            base_path:
+                                type: str
+                                default: /var/log/containers
+                    cache:
+                        type: dict
+                        description: Options for container cache directory.
+                        options:
+                            create:
+                                type: bool
+                                default: false
+                            subdirectories:
+                                type: list
+                                elements: str
+                                default: []
+                            mode:
+                                type: str
+                                default: a=,u=rwx,g=rwx
+                            recurse:
+                                type: bool
+                                default: true
+                                description: Set ownership and mode recursively.
+                            group:
+                                type: str
+                                description: Group which owns the directory. Defaults to the user of the service if not set.
+                            base_path:
+                                type: str
+                                default: /mnt/cache

@@ -1,5 +1,5 @@
 - name: Prometheus server
-  hosts: homelab
+  hosts: marion
   remote_user: root
 
   vars_files:
@@ -10,23 +10,16 @@
           name: prometheus
           user: prometheus
 
+  roles:
+      - service_user
+      - directories
+
   tasks:
-      - name: User
-        ansible.builtin.import_role:
-            name: service_user
-
-      - name: Directories
-        ansible.builtin.import_role:
-            name: directories
-        vars:
-            directories_container_volume:
-                create: true
-
       - name: Generate config directories
         with_community.general.filetree: configs/prometheus
         when: item.state == 'directory'
         ansible.builtin.file:
-            path: "{{ dirs_container_volume.path }}/{{ item.path }}"
+            path: "{{ directories_volume_output.path }}/{{ item.path }}"
             owner: "{{ service.user }}"
             group: "{{ service.user }}"
             state: directory
@@ -37,7 +30,7 @@
         when: item.state == 'file'
         ansible.builtin.template:
             src: "{{ item.src }}"
-            dest: "{{ dirs_container_volume.path }}/{{ item.path }}"
+            dest: "{{ directories_volume_output.path }}/{{ item.path }}"
             owner: "{{ service.user }}"
             group: "{{ service.user }}"
             mode: a=,u=rw
@@ -60,7 +53,7 @@
             image: "docker.io/prom/prometheus:{{ versions.prometheus }}"
             log_driver: "{{ podman.log_driver }}"
             log_options:
-                path: "{{ dirs_container_logs.path }}/{{ podman.container_log_file }}"
+                path: "{{ directories_logs_output.path }}/{{ podman.container_log_file }}"
             restart_policy: "{{ podman.restart_policy | regex_replace('[^A-Za-z0-9-:]', '') }}"
             network: "{{ podman.network }}"
             # Map real to to nobody inside container
@@ -68,5 +61,5 @@
             publish:
                 - "{{ network.internal_ip }}:{{ network.service_ports.prometheus }}:9090"
             volumes:
-                - "{{ dirs_container_volume.path }}:/prometheus"
+                - "{{ directories_volume_output.path }}:/prometheus"
             command: --config.file=/prometheus/general_config.yml

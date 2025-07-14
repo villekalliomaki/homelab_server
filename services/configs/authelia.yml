@@ -201,8 +201,8 @@ storage:
     postgres:
         address: "tcp://127.0.0.1:5432"
         schema: public
-        database: "{{ postgresql.database }}"
-        username: "{{ postgresql.username }}"
+        database: "{{ service.name }}"
+        username: "{{ service.name }}"
         password: "{{ postgresql.password }}"
         timeout: 5s
 

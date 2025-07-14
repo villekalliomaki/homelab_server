@@ -1,0 +1,21 @@
+---
+- name: Build options
+  ansible.builtin.set_fact:
+      cron_restart_options_merged: "{{ cron_restart_options_defaults | combine(cron_restart_options, recursive=true) }}"
+
+- name: Build commands
+  ansible.builtin.set_fact:
+      podman_stop_cmd: "podman stop {{ cron_restart_options_merged.containers | join(' ') }} -t {{ cron_restart_options_merged.grace }}"
+      podman_start_cmd: "podman start {{ cron_restart_options_merged.containers | join(' ') }} -t {{ cron_restart_options_merged.grace }}"
+
+- name: Set cronjob
+  become: true
+  become_user: "{{ cron_restart_options_merged.service.user }}"
+  ansible.builtin.cron:
+      name: "{{ cron_restart_options_merged.identifier }}"
+      minute: "{{ cron_restart_options_merged.time.minute }}"
+      hour: "{{ cron_restart_options_merged.time.hour }}"
+      day: "{{ cron_restart_options_merged.time.day }}"
+      month: "{{ cron_restart_options_merged.time.month }}"
+      weekday: "{{ cron_restart_options_merged.time.weekday }}"
+      job: "{{ podman_stop_cmd }} && sleep 5 && {{ podman_start_cmd }}"

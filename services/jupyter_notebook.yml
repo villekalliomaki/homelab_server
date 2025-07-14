@@ -1,5 +1,5 @@
 - name: Juputer notebook
-  hosts: homelab
+  hosts: marion
   remote_user: root
 
   vars_files:
@@ -18,49 +18,45 @@
               3331353037333862620a336133356233383965396461643165653633666462666533326365616666
               30343833613239316364383135623161623138346135353734363963333636376261
 
-  tasks:
-      - name: User
-        ansible.builtin.import_role:
-            name: service_user
+  roles:
+      - service_user
 
-      - name: Directories
-        ansible.builtin.import_role:
-            name: directories
-        vars:
-            directories_container_volume:
-                create: true
+      - role: directories
+        directories_options:
+            volume:
                 subdirectories:
                     - utu
                     - test
 
-      - name: Jupyter datascience notebook container (this can take a while)
-        become: true
-        become_user: "{{ service.user }}"
-        containers.podman.podman_container:
-            name: "{{ service.name }}_datascience"
-            state: "{{ container_state | default('started') }}"
-            image: "quay.io/jupyter/datascience-notebook:{{ versions.jupyter_notebook_datascience }}"
-            log_driver: "{{ podman.log_driver }}"
-            log_options:
-                path: "{{ dirs_container_logs.path }}/{{ podman.container_log_file }}_datascience"
-            restart_policy: "{{ podman.restart_policy | regex_replace('[^A-Za-z0-9-:]', '') }}"
-            network: "{{ podman.network }}"
-            publish:
-                - "{{ network.internal_ip }}:{{ network.service_ports.jupyter_datascience }}:8888"
-            volumes:
-                - "{{ dirs_container_volume_subdirectories.results[0].path }}:/home/root/utu"
-                - "{{ dirs_container_volume_subdirectories.results[1].path }}:/home/root/test"
-            env:
-                NB_USER: root
-                NB_UID: 0
-                NB_GID: 0
-            user: "0:0"
-            # Not actually running as root, podman rootless translates service user to root inside container
-            command: |
-                jupyter notebook
-                --allow-root
-                --no-browser
-                --PasswordIdentityProvider.hashed_password='argon2:$argon2id$v=19$m=10240,t=10,p=8$tSQwLZHSn8/y9z8DGzwRkg$/0w3xzaYXRxkA/zkZShGIW4NMCEsYDSa+NPCph2UlSM'
+  tasks:
+    #   - name: Jupyter datascience notebook container (this can take a while)
+    #     become: true
+    #     become_user: "{{ service.user }}"
+    #     containers.podman.podman_container:
+    #         name: "{{ service.name }}_datascience"
+    #         state: "{{ container_state | default('started') }}"
+    #         image: "quay.io/jupyter/datascience-notebook:{{ versions.jupyter_notebook_datascience }}"
+    #         log_driver: "{{ podman.log_driver }}"
+    #         log_options:
+    #             path: "{{ directories_logs_output.path }}/{{ podman.container_log_file }}_datascience"
+    #         restart_policy: "{{ podman.restart_policy | regex_replace('[^A-Za-z0-9-:]', '') }}"
+    #         network: "{{ podman.network }}"
+    #         publish:
+    #             - "{{ network.internal_ip }}:{{ network.service_ports.jupyter_datascience }}:8888"
+    #         volumes:
+    #             - "{{ directories_volume_subdirectories_output.results[0].path }}:/home/root/utu"
+    #             - "{{ directories_volume_subdirectories_output.results[1].path }}:/home/root/test"
+    #         env:
+    #             NB_USER: root
+    #             NB_UID: 0
+    #             NB_GID: 0
+    #         user: "0:0"
+    #         # Not actually running as root, podman rootless translates service user to root inside container
+    #         command: |
+    #             jupyter notebook
+    #             --allow-root
+    #             --no-browser
+    #             --PasswordIdentityProvider.hashed_password='argon2:$argon2id$v=19$m=10240,t=10,p=8$tSQwLZHSn8/y9z8DGzwRkg$/0w3xzaYXRxkA/zkZShGIW4NMCEsYDSa+NPCph2UlSM'
 
       - name: Jupyter TensorFlow notebook container (this can take a while)
         become: true
@@ -72,14 +68,14 @@
             image: "quay.io/jupyter/tensorflow-notebook:cuda-{{ versions.jupyter_notebook_tensorflow }}"
             log_driver: "{{ podman.log_driver }}"
             log_options:
-                path: "{{ dirs_container_logs.path }}/{{ podman.container_log_file }}_tensorflow"
+                path: "{{ directories_logs_output.path }}/{{ podman.container_log_file }}_tensorflow"
             restart_policy: "{{ podman.restart_policy | regex_replace('[^A-Za-z0-9-:]', '') }}"
             network: "{{ podman.network }}"
             publish:
                 - "{{ network.internal_ip }}:{{ network.service_ports.jupyter_tensorflow }}:8888"
             volumes:
-                - "{{ dirs_container_volume_subdirectories.results[0].path }}:/home/root/utu"
-                - "{{ dirs_container_volume_subdirectories.results[1].path }}:/home/root/test"
+                - "{{ directories_volume_subdirectories_output.results[0].path }}:/home/root/utu"
+                - "{{ directories_volume_subdirectories_output.results[1].path }}:/home/root/test"
             env:
                 NB_USER: root
                 NB_UID: 0
@@ -108,14 +104,14 @@
             # image: "quay.io/jupyter/pytorch-notebook:{{ versions.jupyter_notebook_pytorch }}"
             log_driver: "{{ podman.log_driver }}"
             log_options:
-                path: "{{ dirs_container_logs.path }}/{{ podman.container_log_file }}_pytorch"
+                path: "{{ directories_logs_output.path }}/{{ podman.container_log_file }}_pytorch"
             restart_policy: "{{ podman.restart_policy | regex_replace('[^A-Za-z0-9-:]', '') }}"
             network: "{{ podman.network }}"
             publish:
                 - "{{ network.internal_ip }}:{{ network.service_ports.jupyter_pytorch }}:8888"
             volumes:
-                - "{{ dirs_container_volume_subdirectories.results[0].path }}:/home/root/utu"
-                - "{{ dirs_container_volume_subdirectories.results[1].path }}:/home/root/test"
+                - "{{ directories_volume_subdirectories_output.results[0].path }}:/home/root/utu"
+                - "{{ directories_volume_subdirectories_output.results[1].path }}:/home/root/test"
             env:
                 NB_USER: root
                 NB_UID: 0
@@ -143,14 +139,14 @@
       #         image: "docker.io/cschranz/gpu-jupyter:{{ versions.jupyter_notebook_gpu }}"
       #         log_driver: "{{ podman.log_driver }}"
       #         log_options:
-      #             path: "{{ dirs_container_logs.path }}/{{ podman.container_log_file }}_gpu"
+      #             path: "{{ directories_logs_output.path }}/{{ podman.container_log_file }}_gpu"
       #         restart_policy: "{{ podman.restart_policy | regex_replace('[^A-Za-z0-9-:]', '') }}"
       #         network: "{{ podman.network }}"
       #         publish:
       #             - "{{ network.internal_ip }}:{{ network.service_ports.jupyter_gpu }}:8888"
       #         volumes:
-      #             - "{{ dirs_container_volume_subdirectories.results[0].path }}:/home/root/utu"
-      #             - "{{ dirs_container_volume_subdirectories.results[1].path }}:/home/root/test"
+      #             - "{{ directories_volume_subdirectories_output.results[0].path }}:/home/root/utu"
+      #             - "{{ directories_volume_subdirectories_output.results[1].path }}:/home/root/test"
       #         env:
       #             JUPYTER_ENABLE_LAB: "yes"
       #             JUPYTER_TOKEN: "{{ jupyter_user.password }}"

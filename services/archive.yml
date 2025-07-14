@@ -1,5 +1,5 @@
 - name: SFTPGo file archive
-  hosts: homelab
+  hosts: marion
   remote_user: root
 
   vars_files:
@@ -10,21 +10,17 @@
           name: archive
           user: archive
 
-  tasks:
-      - name: User
-        ansible.builtin.import_role:
-            name: service_user
+  roles:
+      - service_user
 
-      - name: Directories
-        ansible.builtin.import_role:
-            name: directories
-        vars:
-            directories_container_volume:
-                create: true
+      - role: directories
+        directories_options:
+            volume:
                 subdirectories:
                     - data
                     - home
 
+  tasks:
       - name: SFTPGo container
         become: true
         become_user: "{{ service.user }}"
@@ -34,7 +30,7 @@
             image: "docker.io/drakkan/sftpgo:{{ versions.sftpgo }}"
             log_driver: "{{ podman.log_driver }}"
             log_options:
-                path: "{{ dirs_container_logs.path }}/{{ podman.container_log_file }}"
+                path: "{{ directories_logs_output.path }}/{{ podman.container_log_file }}"
             restart_policy: "{{ podman.restart_policy | regex_replace('[^A-Za-z0-9-:]', '') }}"
             network: "{{ podman.network }}"
             publish:
@@ -43,6 +39,6 @@
             user: "{{ ansible_user_id }}:{{ ansible_user_id }}"
             volume:
                 # Persistent data, user home directories
-                - "{{ dirs_container_volume_subdirectories.results[0].path }}:/srv/sftpgo"
+                - "{{ directories_volume_subdirectories_output.results[0].path }}:/srv/sftpgo"
                 # Home directory for the sftpgo system user
-                - "{{ dirs_container_volume_subdirectories.results[1].path }}:/var/lib/sftpgo"
+                - "{{ directories_volume_subdirectories_output.results[1].path }}:/var/lib/sftpgo"

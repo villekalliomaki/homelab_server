@@ -1,5 +1,5 @@
 - name: Light LDAP
-  hosts: homelab
+  hosts: marion
   remote_user: root
 
   vars_files:
@@ -10,8 +10,6 @@
           name: lldap
           user: lldap
       postgresql:
-          database: lldap
-          username: lldap
           password: !vault |
               $ANSIBLE_VAULT;1.1;AES256
               66656236343462636133663765653638336433613662383438643062656164646336303834656433
@@ -45,39 +43,30 @@
               65616234333134636338333135633666343930383430613734616639353661646663356261343636
               636266626533363137346636323231383834
 
-  tasks:
-      - name: User
-        ansible.builtin.import_role:
-            name: service_user
+  roles:
+      - service_user
 
-      - name: Directories
-        ansible.builtin.import_role:
-            name: directories
-        vars:
-            directories_container_volume:
-                create: true
+      - role: directories
+        directories_options:
+            volume:
                 subdirectories:
                     - postgresql
 
-      - name: Pod
-        ansible.builtin.import_role:
-            name: pod
-        vars:
-            pod_publish:
+      - role: pod
+        pod_options:
+            publish:
                 - "{{ network.internal_ip }}:{{ network.service_ports.lldap_ldap }}:3890"
                 - "{{ network.internal_ip }}:{{ network.service_ports.lldap_admin }}:17170"
 
-      - name: Database
-        ansible.builtin.import_role:
-            name: postgresql
-        vars:
-            postgresql_user:
-                username: "{{ postgresql.username }}"
+      - role: postgresql
+        postgresql_options:
+            database:
                 password: "{{ postgresql.password }}"
-                database: "{{ postgresql.database }}"
-            postgresql_volume_path: "{{ dirs_container_volume_subdirectories.results[0].path }}"
-            postgresql_log_path: "{{ dirs_container_logs.path }}"
+            paths:
+                volume: "{{ directories_volume_subdirectories_output.results[0].path }}"
+                logs: "{{ directories_logs_output.path }}"
 
+  tasks:
       - name: LLDAP container
         become: true
         become_user: "{{ service.user }}"
@@ -95,9 +84,9 @@
                 LLDAP_LDAP_USER_EMAIL: "{{ lldap_admin.email }}"
                 LLDAP_LDAP_USER_DN: "{{ lldap_admin.username }}"
                 LLDAP_LDAP_USER_PASS: "{{ lldap_admin.password }}"
-                LLDAP_DATABASE_URL: "postgresql://{{ postgresql.username }}:{{ postgresql.password }}@127.0.0.1/{{ postgresql.database }}"
+                LLDAP_DATABASE_URL: "postgresql://{{ service.name }}:{{ postgresql.password }}@127.0.0.1/{{ service.name }}"
             requires:
                 - "{{ postgresql_container_output.container.Name }}"
             log_driver: "{{ podman.log_driver }}"
             log_options:
-                path: "{{ dirs_container_logs.path }}/{{ podman.container_log_file }}"
+                path: "{{ directories_logs_output.path }}/{{ podman.container_log_file }}"

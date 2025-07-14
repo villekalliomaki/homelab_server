@@ -1,0 +1,75 @@
+---
+argument_specs:
+    main:
+        short_description: Create a Redis database container for an user.
+        options:
+            service:
+                type: dict
+                required: true
+                description: Name of the service and the user running it. Not specific to this role, and should be available in the context.
+                options:
+                    name:
+                        type: str
+                        required: true
+                    user:
+                        type: str
+                        required: true
+            redis_options:
+                type: dict
+                required: true
+                options:
+                    service:
+                        type: dict
+                        description: Override for the regular service argument.
+                        options:
+                            name:
+                                type: str
+                            user:
+                                type: str
+                    password:
+                        type: str
+                        required: true
+                        description: Password for Redis access.
+                    max_memory:
+                        type: str
+                        default: 200mb
+                        description: Memory limit for Redis.
+                    paths:
+                        type: dict
+                        required: true
+                        options:
+                            volume:
+                                type: str
+                                required: true
+                                description: Full path for the database volume.
+                            logs:
+                                type: str
+                                required: true
+                                description: Full path to a directory for database logs.
+                    container_name:
+                        type: str
+                        default: "[service_name]_redis"
+                        description: Override for continer name. Defaults to the name of the service suffixed by _redis.
+                    pod_name:
+                        type: str
+                        default: "[service_name]"
+                        description: Optional pod name for the container to attach to.
+                    version:
+                        type: str
+                        default: "16.2"
+                        description: Version tag of the Redis image.
+                    image:
+                        type: str
+                        default: docker.io/library/redis
+                        description: URL for the docker image.
+                    recreate:
+                        type: bool
+                        default: false
+                        description: If the container should be recreated in all cases.
+                    log_driver:
+                        type: str
+                        default: k8s-file
+                    log_file:
+                        type: str
+                        default: redis_container_log
+                        description: The name of the log file for the container.

@@ -1,5 +1,5 @@
-- name: Centralized log storage
-  hosts: homelab
+- name: Log database
+  hosts: marion
   remote_user: root
 
   vars_files:
@@ -10,22 +10,15 @@
           name: loki
           user: loki
 
+  roles:
+      - service_user
+      - directories
+
   tasks:
-      - name: User
-        ansible.builtin.import_role:
-            name: service_user
-
-      - name: Directories
-        ansible.builtin.import_role:
-            name: directories
-        vars:
-            directories_container_volume:
-                create: true
-
       - name: Copy config template
         ansible.builtin.template:
             src: configs/loki.yml
-            dest: "{{ dirs_container_volume.path }}/config.yml"
+            dest: "{{ directories_volume_output.path }}/config.yml"
             owner: "{{ service.user }}"
             group: "{{ service.user }}"
             mode: u=rw
@@ -39,12 +32,12 @@
             image: docker.io/grafana/loki
             log_driver: "{{ podman.log_driver }}"
             log_options:
-                path: "{{ dirs_container_logs.path }}/{{ podman.container_log_file }}"
+                path: "{{ directories_logs_output.path }}/{{ podman.container_log_file }}"
             restart_policy: "{{ podman.restart_policy | regex_replace('[^A-Za-z0-9-:]', '') }}"
             network: "{{ podman.network }}"
             user: "{{ ansible_user_id }}"
             publish:
                 - "{{ network.internal_ip }}:{{ network.service_ports.loki }}:3100"
             volumes:
-                - "{{ dirs_container_volume.path }}:/loki"
+                - "{{ directories_volume_output.path }}:/loki"
             command: -config.file=/loki/config.yml

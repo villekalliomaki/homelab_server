@@ -1,5 +1,5 @@
 - name: Provision the podman status monitor script
-  hosts: homelab
+  hosts: marion
   remote_user: root
 
   vars_files:

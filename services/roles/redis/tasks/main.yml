@@ -1,42 +1,29 @@
 ---
-# tasks file for redis
-
-- name: Check required variables exist
-  ansible.builtin.assert:
-      that:
-          - service.name
-          - service.user
-          - redis_log_path
-          - redis_user.password
-      fail_msg: Some required variable(s) missing
-
-- name: Register volume if data path is defined
+- name: Build options
   ansible.builtin.set_fact:
-      # Default is in defaults/main.yml
-      redis_volumes_internal: "{{ redis_data_path }}:/data"
-  when: redis_data_path is not undefined
+      redis_options_merged: "{{ redis_options_defaults | combine(redis_options, recursive=true) }}"
 
 - name: Create container
   become: true
-  become_user: "{{ service.user }}"
+  become_user: "{{ redis_options_merged.service.user }}"
   register: redis_container_output
   containers.podman.podman_container:
-      name: "{{ service.name }}_redis"
+      name: "{{ redis_options_merged.container_name | default(redis_options_merged.service.name + '_redis') }}"
       state: "{{ container_state | default('started') }}"
-      pod: "{{ redis_pod_name | default(service.name) }}"
-      image: "{{ redis_container_image }}"
+      pod: "{{ redis_options_merged.pod_name | default(redis_options_merged.service.name) }}"
+      image: "{{ redis_options_merged.image }}:{{ redis_options_merged.version }}"
       # Sometimes has to be recreated to avoid permission errors with uid mapping
       # But can break something else if true
-      recreate: "{{ redis_recreate }}"
-      restart_policy: "{{ podman.restart_policy | regex_replace('[^A-Za-z0-9-:]', '') }}"
-      volumes: "{{ redis_volumes_internal }}"
+      recreate: "{{ redis_options_merged.recreate }}"
+      volumes:
+          - "{{ redis_options_merged.paths.volume }}:/data"
       # Binding to 0.0.0.0 doesn't expose Redis to outside pod because the port is not published
       command: >
           redis-server
-          --maxmemory 200mb
-          --requirepass {{ redis_user.password }}
+          --maxmemory {{ redis_options_merged.max_memory }}
+          --requirepass {{ redis_options_merged.password }}
           --protected-mode no
           --bind 0.0.0.0
-      log_driver: "{{ podman.log_driver }}"
+      log_driver: "{{ redis_options_merged.log_driver }}"
       log_options:
-          path: "{{ redis_log_path }}/redis_log"
+          path: "{{ redis_options_merged.paths.logs }}/{{ redis_options_defaults.log_file }}"

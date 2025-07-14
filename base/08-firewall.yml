@@ -1,5 +1,5 @@
 - name: Configure SSH server
-  hosts: homelab
+  hosts: marion
 
   vars_files:
       - ../global.yml

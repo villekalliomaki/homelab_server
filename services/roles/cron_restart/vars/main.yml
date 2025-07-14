@@ -1,0 +1,9 @@
+---
+cron_restart_options_defaults:
+    time:
+        minute: "*"
+        hour: "*"
+        day: "*"
+        month: "*"
+        weekday: "*"
+    grace: 120

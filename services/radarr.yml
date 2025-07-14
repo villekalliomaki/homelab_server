@@ -1,5 +1,5 @@
 - name: Movie download manager
-  hosts: homelab
+  hosts: marion
   remote_user: root
 
   vars_files:
@@ -10,18 +10,11 @@
           name: radarr
           user: radarr
 
+  roles:
+      - service_user
+      - directories
+
   tasks:
-      - name: User
-        ansible.builtin.import_role:
-            name: service_user
-
-      - name: Directories
-        ansible.builtin.import_role:
-            name: directories
-        vars:
-            directories_container_volume:
-                create: true
-
       - name: Radarr container
         become: true
         become_user: "{{ service.user }}"
@@ -31,11 +24,11 @@
             state: "{{ container_state | default('started') }}"
             log_driver: "{{ podman.log_driver }}"
             log_options:
-                path: "{{ dirs_container_logs.path }}/{{ podman.container_log_file }}"
+                path: "{{ directories_logs_output.path }}/{{ podman.container_log_file }}"
             restart_policy: "{{ podman.restart_policy | regex_replace('[^A-Za-z0-9-:]', '') }}"
             network: "{{ podman.network }}"
             volumes:
-                - "{{ dirs_container_volume.path }}:/config"
+                - "{{ directories_volume_output.path }}:/config"
                 - "{{ filesystem.media.movies }}:/media/movies"
                 - "{{ filesystem.media.downloads }}:/media/downloads"
             publish:

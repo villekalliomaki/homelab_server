@@ -1,0 +1,10 @@
+---
+postgresql_options_defaults:
+    service:
+        name: "{{ service.name }}"
+        user: "{{ service.user }}"
+    version: "16.2"
+    image: docker.io/library/postgres
+    recreate: false
+    log_driver: k8s-file
+    log_file: postgresql_container_log

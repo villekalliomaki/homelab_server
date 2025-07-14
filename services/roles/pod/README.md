@@ -1,21 +1,35 @@
 # Pod role
 
-Role gets the target container state from the `container_state` variable. If it doesn't exit the state will default to `started`. The variable is not prefixed to avoid redefining it to comply with existing playbooks.
+Role gets the target container state from the `container_state` variable. If it doesn't exit the state will default to `started`. The creation of the pod will be done using whichever user is defined in the arguments, as this role should work with rooless services.
 
-To run the pod as a rootless user, the role needs a username to change to, and to keep variable names as same as possible service name is also set with a variable without a prefix:
+Service name and user are required to be in the context in which the role is used, but the values in the context can be overridden using the `service` dictionary in `pod_options`.
 
-## Variables example
+## Arguments
+
+Minimal:
 
 ```yml
 service:
-    name: service_name
-    user: username
+    name: service1
+    user: user1
+```
 
-pod_publish:
-    - "127.0.0.1:80:80"
+All:
 
-pod_network:
-    - pasta
+```yml
+service:
+    name: service1
+    user: user1
 
-pod_user_namespace: ""
+pod_options:
+    # Override
+    service:
+        name: service1
+        user: user1
+    # Optional
+    user_namespace: ""
+    network:
+        - pasta
+    publish:
+        - 127.0.0.1:80:80
 ```
