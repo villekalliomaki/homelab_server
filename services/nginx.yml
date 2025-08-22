@@ -66,6 +66,9 @@
               - name: ldap
                 domain: "ldap.{{ base_domain }}"
                 endpoint: "{{ ansible_wg0.ipv4.address }}:{{ network.service_ports.lldap_admin }}"
+              - name: kavita
+                domain: "kavita.{{ base_domain }}"
+                endpoint: "{{ ansible_wg0.ipv4.address }}:{{ network.service_ports.kavita }}"
           external:
               - name: homepage
                 domain: "start.{{ base_domain }}"

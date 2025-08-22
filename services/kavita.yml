@@ -1,0 +1,42 @@
+- name: Kavita E-book reader
+  hosts: marion
+  remote_user: root
+
+  vars_files:
+      - ../global.yml
+
+  vars:
+      service:
+          name: kavita
+          user: kavita
+
+  roles:
+      - service_user
+
+      - role: directories
+        directories_options:
+            volume:
+                subdirectories:
+                    - config
+                    - books
+
+  tasks:
+      - name: Kavita container
+        become: true
+        become_user: "{{ service.user }}"
+        containers.podman.podman_container:
+            name: "{{ service.name }}"
+            state: "{{ container_state | default('started') }}"
+            image: "docker.io/jvmilazz0/kavita:{{ versions.kavita }}"
+            log_driver: "{{ podman.log_driver }}"
+            log_options:
+                path: "{{ directories_logs_output.path }}/{{ podman.container_log_file }}"
+            restart_policy: "{{ podman.restart_policy | regex_replace('[^A-Za-z0-9-:]', '') }}"
+            network: "{{ podman.network }}"
+            publish:
+                - "{{ network.internal_ip }}:{{ network.service_ports.kavita }}:5000"
+            volume:
+                - "{{ directories_volume_subdirectories_output.results[0].path }}:/kavita/config"
+                - "{{ directories_volume_subdirectories_output.results[1].path }}:/books"
+            env:
+                TZ: Europe/Helsinki
