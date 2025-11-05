@@ -100,7 +100,7 @@
         containers.podman.podman_container:
             name: "{{ service.name }}_pytorch"
             state: "{{ container_state | default('started') }}"
-            image: "quay.io/jupyter/pytorch-notebook:cuda12-{{ versions.jupyter_notebook_pytorch }}"
+            image: "quay.io/jupyter/pytorch-notebook:{{ versions.jupyter_notebook_pytorch }}"
             # image: "quay.io/jupyter/pytorch-notebook:{{ versions.jupyter_notebook_pytorch }}"
             log_driver: "{{ podman.log_driver }}"
             log_options:

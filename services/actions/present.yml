@@ -24,11 +24,6 @@
       container_state: "present"
   ansible.builtin.import_playbook: "../kavita.yml"
 
-- name: "Container state change to present, for ../qbittorrent.yml"
-  vars:
-      container_state: "present"
-  ansible.builtin.import_playbook: "../qbittorrent.yml"
-
 - name: "Container state change to present, for ../hoodik.yml"
   vars:
       container_state: "present"
@@ -64,30 +59,10 @@
       container_state: "present"
   ansible.builtin.import_playbook: "../pihole.yml"
 
-- name: "Container state change to present, for ../sonarr.yml"
-  vars:
-      container_state: "present"
-  ansible.builtin.import_playbook: "../sonarr.yml"
-
-- name: "Container state change to present, for ../radarr.yml"
-  vars:
-      container_state: "present"
-  ansible.builtin.import_playbook: "../radarr.yml"
-
 - name: "Container state change to present, for ../grafana.yml"
   vars:
       container_state: "present"
   ansible.builtin.import_playbook: "../grafana.yml"
-
-- name: "Container state change to present, for ../homepage.yml"
-  vars:
-      container_state: "present"
-  ansible.builtin.import_playbook: "../homepage.yml"
-
-- name: "Container state change to present, for ../prowlarr.yml"
-  vars:
-      container_state: "present"
-  ansible.builtin.import_playbook: "../prowlarr.yml"
 
 - name: "Container state change to present, for ../frigate.yml"
   vars:

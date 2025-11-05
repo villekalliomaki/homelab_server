@@ -24,11 +24,6 @@
       container_state: "created"
   ansible.builtin.import_playbook: "../kavita.yml"
 
-- name: "Container state change to created, for ../qbittorrent.yml"
-  vars:
-      container_state: "created"
-  ansible.builtin.import_playbook: "../qbittorrent.yml"
-
 - name: "Container state change to created, for ../hoodik.yml"
   vars:
       container_state: "created"
@@ -64,30 +59,10 @@
       container_state: "created"
   ansible.builtin.import_playbook: "../pihole.yml"
 
-- name: "Container state change to created, for ../sonarr.yml"
-  vars:
-      container_state: "created"
-  ansible.builtin.import_playbook: "../sonarr.yml"
-
-- name: "Container state change to created, for ../radarr.yml"
-  vars:
-      container_state: "created"
-  ansible.builtin.import_playbook: "../radarr.yml"
-
 - name: "Container state change to created, for ../grafana.yml"
   vars:
       container_state: "created"
   ansible.builtin.import_playbook: "../grafana.yml"
-
-- name: "Container state change to created, for ../homepage.yml"
-  vars:
-      container_state: "created"
-  ansible.builtin.import_playbook: "../homepage.yml"
-
-- name: "Container state change to created, for ../prowlarr.yml"
-  vars:
-      container_state: "created"
-  ansible.builtin.import_playbook: "../prowlarr.yml"
 
 - name: "Container state change to created, for ../frigate.yml"
   vars:

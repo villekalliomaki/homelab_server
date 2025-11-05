@@ -5,7 +5,7 @@
       - ../global.yml
 
   tasks:
-      - name: Allowed ports
+      - name: Allowed ports from anywhere
         community.general.ufw:
             rule: allow
             port: "{{ item }}"
@@ -18,6 +18,23 @@
             - "1111"
             - "25565"
 
+      - name: Allowed ports from VPN
+        community.general.ufw:
+            rule: allow
+            port: "{{ item }}"
+            from_ip: 10.1.3.0/24
+        loop:
+            - "3036"
+
+      - name: Allow VPN passthrough traffic
+        community.general.ufw:
+            rule: allow
+            direction: " {{ item }}"
+            interface: wg0
+        loop:
+            - in
+            - out
+
       - name: Allow Jellyfin access directly from VPN
         community.general.ufw:
             rule: allow
@@ -25,5 +42,7 @@
             from: 10.1.3.0/24
 
       - name: Enable
-        community.general.ufw:
-            state: enabled
+        ansible.builtin.systemd:
+            service: ufw
+            state: started
+            enabled: true

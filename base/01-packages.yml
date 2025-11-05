@@ -44,6 +44,7 @@
                 - smartmontools
                 - ufw
                 - net-tools
+                - wget
 
       - name: Enable pacman cache cleanup
         ansible.builtin.systemd:

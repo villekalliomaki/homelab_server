@@ -69,34 +69,34 @@ versions:
     # https://github.com/redis/redis/releases
     # redis: "8.0.2"
     # https://hub.docker.com/r/villekalliomaki/nginx/tags
-    nginx: "1.29.0"
+    nginx: "1.29.1"
     # https://hub.docker.com/r/authelia/authelia/tags
     # https://github.com/authelia/authelia/releases
-    authelia: "4.39.5"
+    authelia: "4.39.13"
     # https://github.com/gethomepage/homepage/pkgs/container/homepage
     # https://github.com/gethomepage/homepage/releases
-    homepage: "v1.4.0"
+    homepage: "v1.5.0"
     # https://hub.docker.com/r/nitnelave/lldap/tags
     # https://github.com/lldap/lldap/releases
-    lldap: "v0.6.1"
+    lldap: "v0.6.2"
     # https://hub.docker.com/r/pihole/pihole/tags
     # https://github.com/pi-hole/pi-hole/releases
-    pihole: "2025.07.1"
+    pihole: "2025.08.0"
     # https://hub.docker.com/r/triliumnext/trilium/tags
     # https://github.com/TriliumNext/Trilium/releases
-    trilium: "v0.97.1"
+    trilium: "v0.99.1"
     # https://hub.docker.com/r/jellyfin/jellyfin/tags
     # https://github.com/jellyfin/jellyfin/releases
-    jellyfin: "10.10.7"
+    jellyfin: "10.11.2"
     # https://hub.docker.com/r/prom/prometheus/tags
     # https://github.com/prometheus/prometheus/releases
-    prometheus: "v3.5.0"
+    prometheus: "v3.7.1"
     # https://hub.docker.com/r/hudik/hoodik/tags
     # https://github.com/hudikhq/hoodik/releases
-    hoodik: "v1.5.1"
+    hoodik: "v1.6.0"
     # https://hub.docker.com/r/filebrowser/filebrowser/tags
     # https://github.com/filebrowser/filebrowser/releases
-    filebrowser: "v2.42.0"
+    filebrowser: "v2.42.5"
     # https://quay.io/repository/jupyter/datascience-notebook?tab=tags
     # https://github.com/jupyter/docker-stacks/tree/main/images/datascience-notebook
     jupyter_notebook_datascience: "notebook-7.4.2"
@@ -106,10 +106,10 @@ versions:
     # https://hub.docker.com/r/cschranz/gpu-jupyter/tags
     # https://github.com/iot-salzburg/gpu-jupyter/releases
     jupyter_notebook_gpu: "v1.8_cuda-12.5_ubuntu-22.04"
-    jupyter_notebook_pytorch: "notebook-7.4.2"
+    jupyter_notebook_pytorch: "notebook-7.4.7"
     # https://hub.docker.com/r/flaresolverr/flaresolverr/tags
     # https://github.com/FlareSolverr/FlareSolverr/releases
-    flaresolverr: "v3.3.25"
+    flaresolverr: "v3.4.0"
     # https://hub.docker.com/r/linuxserver/radarr/tags
     # https://github.com/linuxserver/docker-radarr/releases
     radarr: "5.26.2"
@@ -118,7 +118,7 @@ versions:
     sonarr: "4.0.15"
     # https://hub.docker.com/r/linuxserver/prowlarr/tags
     # https://github.com/linuxserver/docker-prowlarr/releases
-    prowlarr: "1.37.0"
+    prowlarr: "2.0.5"
     # https://hub.docker.com/r/qmcgaw/gluetun/tags
     # https://github.com/qdm12/gluetun/releases
     gluetun: "v3.40.0"
@@ -132,7 +132,7 @@ versions:
     # https://github.com/louislam/uptime-kuma/releases
     # uptime_kuma: "1.23.16"
     # https://github.com/blakeblackshear/frigate/releases
-    frigate: "0.15.1"
+    frigate: "0.16.2"
     # https://github.com/n8n-io/n8n/releases
     # n8n: "1.99.1"
     # https://github.com/NVIDIA/dcgm-exporter/releases
@@ -148,10 +148,10 @@ filesystem:
     container_volumes: /var/container_volumes
     # For sharing logs between containers or to the host
     container_logs: /var/log/containers
-    # The actual VM disks
-    vm_disks: /var/vm_disks
+    # VM disk images
+    vm_disks: /var/lib/libvirt/images
     # Passthrough directories to VMs
-    vm_directories: /var/vm_directories
+    # vm_directories: /var/vm_directories
     lets_encrypt_certs:
         # Live certs are symlinks to the archive, to both have to be mounted
         base_directory: /etc/letsencrypt

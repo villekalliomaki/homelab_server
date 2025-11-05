@@ -1,0 +1,16 @@
+- name: Install and setup virtualization
+  hosts: marion
+
+  tasks:
+      - name: Virtualization packages
+        community.general.pacman:
+            package:
+                - libvirt
+                - dnsmasq
+                - openbsd-netcat
+
+      - name: Use iptables backend
+        ansible.builtin.lineinfile:
+            path: /etc/libvirt/network.conf
+            regexp: "^firewall_backend ="
+            line: firewall_backend = "iptables"
